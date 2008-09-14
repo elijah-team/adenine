@@ -25,11 +25,38 @@
 
 package edu.mit.lcs.haystack.adenine.parser2;
 
-import java.io.Reader;
-import java.util.*;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.AssignmentParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.BlockParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.BreakParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.CallParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.ContinueParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.ForParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.FunctionParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.IfParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.ImportJavaParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.MainParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.MethodParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.ReturnParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.SkipBlockParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.VarParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.WhileParser;
+import edu.mit.lcs.haystack.adenine.parser2.constructs.WithParser;
+import edu.mit.lcs.haystack.adenine.tokenizer.CommentToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.ErrorToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IScannerVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.ITokenIterator;
+import edu.mit.lcs.haystack.adenine.tokenizer.IndentToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.NewLineToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.ResourceToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
+import edu.mit.lcs.haystack.adenine.tokenizer.Tokenizer;
+import edu.mit.lcs.haystack.adenine.tokenizer.WhitespaceToken;
 
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
-import edu.mit.lcs.haystack.adenine.parser2.constructs.*;
+import java.io.Reader;
+import java.util.HashMap;
 
 /**
  * @author David Huynh

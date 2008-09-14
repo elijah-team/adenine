@@ -25,10 +25,12 @@
 
 package edu.mit.lcs.haystack.adenine.functions;
 
-import java.util.HashSet;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.ICallable;
+import edu.mit.lcs.haystack.adenine.interpreter.Message;
 
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
+import java.util.HashSet;
 
 /**
  * @version 	1.0

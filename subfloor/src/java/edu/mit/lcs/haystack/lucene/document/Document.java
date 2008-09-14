@@ -18,16 +18,16 @@ package edu.mit.lcs.haystack.lucene.document;
  * limitations under the License.
  */
 
+import edu.mit.lcs.haystack.lucene.index.FrequencyMap;
+import edu.mit.lcs.haystack.lucene.index.IndexReader;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.Searcher;
+
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Vector;
-import edu.mit.lcs.haystack.lucene.index.IndexReader; // for javadoc
-import org.apache.lucene.search.Searcher; // for javadoc
-import org.apache.lucene.search.Hits; // for javadoc
-/* HAYSTACK */
-import edu.mit.lcs.haystack.lucene.index.FrequencyMap;
 /* HAYSTACK END */
 /** Documents are the unit of indexing and search.
  *

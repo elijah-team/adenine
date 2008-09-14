@@ -25,10 +25,17 @@
 
 package edu.mit.lcs.haystack.adenine.parser;
 
-import edu.mit.lcs.haystack.adenine.*;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.SyntaxException;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Stack;
 
 class InputLine {
 	InputLine(String s, int i) {

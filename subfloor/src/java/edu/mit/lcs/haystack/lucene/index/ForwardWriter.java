@@ -16,12 +16,12 @@ package edu.mit.lcs.haystack.lucene.index;
  * the License.
  */
 
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.OutputStream;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.OutputStream;
 
 final class ForwardWriter {
 	OutputStream docFwd = null;

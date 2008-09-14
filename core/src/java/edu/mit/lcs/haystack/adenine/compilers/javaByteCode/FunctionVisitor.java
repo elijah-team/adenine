@@ -26,17 +26,40 @@
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
 import edu.mit.lcs.haystack.adenine.AdenineException;
-import edu.mit.lcs.haystack.adenine.constructs.*;
+import edu.mit.lcs.haystack.adenine.constructs.IFunctionVisitor;
 import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
 import edu.mit.lcs.haystack.adenine.interpreter.ICallable;
 import edu.mit.lcs.haystack.adenine.interpreter.Message;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.ICodeBlockVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import org.apache.bcel.generic.AALOAD;
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ARETURN;
+import org.apache.bcel.generic.ARRAYLENGTH;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.BranchHandle;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.ICONST;
+import org.apache.bcel.generic.IF_ICMPGE;
+import org.apache.bcel.generic.IINC;
+import org.apache.bcel.generic.ILOAD;
+import org.apache.bcel.generic.ISTORE;
+import org.apache.bcel.generic.InstructionConstants;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.JSR;
+import org.apache.bcel.generic.LocalVariableGen;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NOP;
+import org.apache.bcel.generic.PUSH;
+import org.apache.bcel.generic.Type;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import org.apache.bcel.generic.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author David Huynh

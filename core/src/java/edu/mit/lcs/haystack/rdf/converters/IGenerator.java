@@ -25,11 +25,11 @@
 
 package edu.mit.lcs.haystack.rdf.converters;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.RDFException;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @author Dennis Quan

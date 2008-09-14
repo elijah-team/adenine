@@ -25,9 +25,13 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.utils;
 
-import edu.mit.lcs.haystack.rdf.*;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.IAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * @author David Huynh

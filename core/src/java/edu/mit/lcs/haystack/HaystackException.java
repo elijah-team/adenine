@@ -25,7 +25,8 @@
 
 package edu.mit.lcs.haystack;
 
-import java.io.*;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * Base class for all Haystack exceptions.

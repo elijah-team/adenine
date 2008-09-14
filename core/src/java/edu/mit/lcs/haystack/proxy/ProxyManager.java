@@ -25,9 +25,6 @@
 
 package edu.mit.lcs.haystack.proxy;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.RDFNode;
@@ -36,6 +33,9 @@ import edu.mit.lcs.haystack.rdf.Statement;
 import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.security.Identity;
 import edu.mit.lcs.haystack.security.IdentityManager;
+
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Manages proxies to local and remote services.

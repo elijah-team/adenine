@@ -25,8 +25,8 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.utils;
 
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.IParserVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
 
 /**
  * @author David Huynh

@@ -3,17 +3,6 @@
  */
 package edu.mit.lcs.haystack.server.standard.melatonin;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import org.apache.log4j.Category;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.proxy.IServiceAccessor;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
@@ -26,6 +15,16 @@ import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.server.core.service.GenericService;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
+import org.apache.log4j.Category;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * @author Dennis Quan

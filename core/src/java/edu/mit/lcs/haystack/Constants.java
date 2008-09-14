@@ -25,7 +25,8 @@
 
 package edu.mit.lcs.haystack;
 
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * Namespace and resource constants used throughout Haystack.

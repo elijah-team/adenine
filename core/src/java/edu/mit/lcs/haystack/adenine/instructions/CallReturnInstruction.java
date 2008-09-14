@@ -25,9 +25,10 @@
 
 package edu.mit.lcs.haystack.adenine.instructions;
 
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.Environment;
+import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * @version 	1.0

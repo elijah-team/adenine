@@ -25,7 +25,7 @@
 
 package edu.mit.lcs.haystack.adenine;
 
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * @version 	1.0

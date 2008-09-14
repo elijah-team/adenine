@@ -25,23 +25,87 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
-import java.io.*;
-import java.util.*;
+import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.compiler.Compiler;
+import edu.mit.lcs.haystack.adenine.compiler.ExistentialExpression;
+
+import edu.mit.lcs.haystack.adenine.functions.AddFunction;
+import edu.mit.lcs.haystack.adenine.functions.AndFunction;
+import edu.mit.lcs.haystack.adenine.functions.AppendFunction;
+import edu.mit.lcs.haystack.adenine.functions.ApplyFunction;
+import edu.mit.lcs.haystack.adenine.functions.AskFunction;
+import edu.mit.lcs.haystack.adenine.functions.BitAndFunction;
+import edu.mit.lcs.haystack.adenine.functions.ConnectFunction;
+import edu.mit.lcs.haystack.adenine.functions.ContainsFunction;
+import edu.mit.lcs.haystack.adenine.functions.DeserializeFunction;
+import edu.mit.lcs.haystack.adenine.functions.DivideFunction;
+import edu.mit.lcs.haystack.adenine.functions.EqualityFunction;
+import edu.mit.lcs.haystack.adenine.functions.ExtractFunction;
+import edu.mit.lcs.haystack.adenine.functions.FederatingQueryEngineFunction;
+import edu.mit.lcs.haystack.adenine.functions.ForkFunction;
+import edu.mit.lcs.haystack.adenine.functions.GtFunction;
+import edu.mit.lcs.haystack.adenine.functions.InequalityFunction;
+import edu.mit.lcs.haystack.adenine.functions.InstanceOfFunction;
+import edu.mit.lcs.haystack.adenine.functions.LengthFunction;
+import edu.mit.lcs.haystack.adenine.functions.ListFunction;
+import edu.mit.lcs.haystack.adenine.functions.LtFunction;
+import edu.mit.lcs.haystack.adenine.functions.MinusFunction;
+import edu.mit.lcs.haystack.adenine.functions.MultiplyFunction;
+import edu.mit.lcs.haystack.adenine.functions.NewFunction;
+import edu.mit.lcs.haystack.adenine.functions.NotFunction;
+import edu.mit.lcs.haystack.adenine.functions.OrFunction;
+import edu.mit.lcs.haystack.adenine.functions.PlusFunction;
+import edu.mit.lcs.haystack.adenine.functions.PrintDataFunction;
+import edu.mit.lcs.haystack.adenine.functions.PrintFunction;
+import edu.mit.lcs.haystack.adenine.functions.PrintListFunction;
+import edu.mit.lcs.haystack.adenine.functions.PrintSetFunction;
+import edu.mit.lcs.haystack.adenine.functions.QueryExtractFunction;
+import edu.mit.lcs.haystack.adenine.functions.QueryFunction;
+import edu.mit.lcs.haystack.adenine.functions.QuerySizeFunction;
+import edu.mit.lcs.haystack.adenine.functions.ReifyFunction;
+import edu.mit.lcs.haystack.adenine.functions.RemoveFunction;
+import edu.mit.lcs.haystack.adenine.functions.ReplaceFunction;
+import edu.mit.lcs.haystack.adenine.functions.SetFunction;
+import edu.mit.lcs.haystack.adenine.functions.SortFunction;
+import edu.mit.lcs.haystack.adenine.functions.XMLDOMFunction;
+
+import edu.mit.lcs.haystack.adenine.instructions.ReturnException;
+import edu.mit.lcs.haystack.adenine.parser.Block;
+import edu.mit.lcs.haystack.adenine.parser.Parser;
+import edu.mit.lcs.haystack.adenine.query.DefaultQueryEngine;
+
+import edu.mit.lcs.haystack.core.CoreLoader;
+
+import edu.mit.lcs.haystack.proxy.IServiceAccessor;
+import edu.mit.lcs.haystack.proxy.ProxyManager;
+
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.ListUtilities;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
+import edu.mit.lcs.haystack.rdf.PackageFilterRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.RDFNode;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+import edu.mit.lcs.haystack.rdf.URIGenerator;
+import edu.mit.lcs.haystack.rdf.Utilities;
 
 import org.apache.log4j.Category;
 
-import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.core.CoreLoader;
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.functions.*;
-import edu.mit.lcs.haystack.adenine.instructions.*;
-import edu.mit.lcs.haystack.adenine.parser.*;
-import edu.mit.lcs.haystack.adenine.query.DefaultQueryEngine;
-import edu.mit.lcs.haystack.adenine.compiler.Compiler;
-import edu.mit.lcs.haystack.adenine.compiler.ExistentialExpression;
-import edu.mit.lcs.haystack.proxy.IServiceAccessor;
-import edu.mit.lcs.haystack.proxy.ProxyManager;
-import edu.mit.lcs.haystack.rdf.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Interprets Adenine code.

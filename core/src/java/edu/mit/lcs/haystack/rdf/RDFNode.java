@@ -25,7 +25,7 @@
 
 package edu.mit.lcs.haystack.rdf;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * Base class of all RDF nodes.

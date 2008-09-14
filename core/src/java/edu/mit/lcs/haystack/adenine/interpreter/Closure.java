@@ -25,10 +25,16 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
-import java.util.*;
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.instructions.*;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.instructions.ReturnException;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.ListUtilities;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Utilities;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @version 	1.0

@@ -25,7 +25,8 @@
 
 package edu.mit.lcs.haystack.proxy;
 
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.security.Identity;
 
 /**

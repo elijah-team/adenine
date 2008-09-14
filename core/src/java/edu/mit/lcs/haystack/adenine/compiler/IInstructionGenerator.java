@@ -25,12 +25,12 @@
 
 package edu.mit.lcs.haystack.adenine.compiler;
 
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.parser.Token;
+import edu.mit.lcs.haystack.rdf.RDFException;
+
 import java.util.HashMap;
 import java.util.ListIterator;
-
-import edu.mit.lcs.haystack.adenine.AdenineException;
-import edu.mit.lcs.haystack.adenine.parser.*;
-import edu.mit.lcs.haystack.rdf.RDFException;
 
 /**
  * @version 	1.0

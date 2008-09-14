@@ -16,11 +16,15 @@ package edu.mit.lcs.haystack.lucene;
  * the License.
  */
 
-import org.apache.lucene.analysis.*;
-import edu.mit.lcs.haystack.lucene.document.*;
-import edu.mit.lcs.haystack.lucene.index.*;
+import edu.mit.lcs.haystack.lucene.document.Document;
 import edu.mit.lcs.haystack.lucene.document.Field;
-import org.apache.lucene.store.*;
+import edu.mit.lcs.haystack.lucene.index.ForwardIndexWriter;
+import edu.mit.lcs.haystack.lucene.index.FrequencyMap;
+import edu.mit.lcs.haystack.lucene.index.IndexReader;
+import edu.mit.lcs.haystack.lucene.index.IndexWriter;
+import org.apache.lucene.analysis.SimpleAnalyzer;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 import java.util.Vector;
 

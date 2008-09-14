@@ -25,7 +25,7 @@
 
 package edu.mit.lcs.haystack.adenine.instructions;
 
-import edu.mit.lcs.haystack.adenine.interpreter.*;
+import edu.mit.lcs.haystack.adenine.interpreter.ContinuationException;
 
 /**
  * @version 	1.0

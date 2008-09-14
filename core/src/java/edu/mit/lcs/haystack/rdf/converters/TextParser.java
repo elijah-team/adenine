@@ -25,12 +25,25 @@
 
 package edu.mit.lcs.haystack.rdf.converters;
 
-import java.io.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.IURIGenerator;
+import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Utilities;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.net.*;
-
-
-import edu.mit.lcs.haystack.rdf.*;
 
 /**
  * <p>A Parser is an abstract class implementing the IParser

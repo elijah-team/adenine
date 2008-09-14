@@ -25,12 +25,12 @@
 
 package edu.mit.lcs.haystack.adenine.parser2;
 
-import edu.mit.lcs.haystack.adenine.tokenizer.Location;
-import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
 import edu.mit.lcs.haystack.adenine.tokenizer.FloatToken;
 import edu.mit.lcs.haystack.adenine.tokenizer.IntegerToken;
 import edu.mit.lcs.haystack.adenine.tokenizer.LiteralToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
 import edu.mit.lcs.haystack.adenine.tokenizer.StringToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
 
 /**
  * @author David Huynh

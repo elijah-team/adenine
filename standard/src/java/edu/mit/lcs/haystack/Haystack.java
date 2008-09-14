@@ -25,24 +25,39 @@
 
 package edu.mit.lcs.haystack;
 
-import java.io.*;
-import java.net.*;
-import edu.mit.lcs.haystack.adenine.*;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
+import edu.mit.lcs.haystack.adenine.Console;
+import edu.mit.lcs.haystack.adenine.SWTConsole;
 import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
 import edu.mit.lcs.haystack.adenine.compilers.rdfCode.RDFCodeCompiler;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
 import edu.mit.lcs.haystack.core.CoreLoader;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.rdf.converters.AdenineConverter;
 import edu.mit.lcs.haystack.security.Identity;
 import edu.mit.lcs.haystack.security.IdentityManager;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
 
 /**
  * Main class for starting up Haystack server and Ozone UI.

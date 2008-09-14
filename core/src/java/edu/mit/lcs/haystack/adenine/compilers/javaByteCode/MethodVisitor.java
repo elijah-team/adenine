@@ -25,17 +25,27 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import edu.mit.lcs.haystack.*;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.AdenineException;
 import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.ListUtilities;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+import org.apache.bcel.generic.InstructionConstants;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUSH;
+import org.apache.bcel.generic.Type;
 
-import java.util.*;
-
-import org.apache.bcel.generic.*;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Dennis Quan

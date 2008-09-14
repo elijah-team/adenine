@@ -25,8 +25,22 @@
 
 package edu.mit.lcs.haystack.adenine.parser2;
 
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
 import edu.mit.lcs.haystack.adenine.constructs.IMethodVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.CommentToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.FloatToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.ITokenIterator;
+import edu.mit.lcs.haystack.adenine.tokenizer.IndentToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IntegerToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.LiteralToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.NewLineToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.ResourceToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Span;
+import edu.mit.lcs.haystack.adenine.tokenizer.StringToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
+import edu.mit.lcs.haystack.adenine.tokenizer.WhitespaceToken;
 
 /**
  * @author David Huynh

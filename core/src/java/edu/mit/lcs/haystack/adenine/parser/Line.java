@@ -25,7 +25,8 @@
 
 package edu.mit.lcs.haystack.adenine.parser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @version 	1.0

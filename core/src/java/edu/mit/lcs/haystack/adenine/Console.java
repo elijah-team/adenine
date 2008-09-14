@@ -25,17 +25,25 @@
 
 package edu.mit.lcs.haystack.adenine;
 
-import java.io.*;
-import java.util.*;
-
-import edu.mit.lcs.haystack.HaystackException;
 import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.HaystackException;
 import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
 import edu.mit.lcs.haystack.adenine.compilers.rdfCode.RDFCodeCompiler;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.Environment;
+import edu.mit.lcs.haystack.adenine.interpreter.ICallable;
+import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
+import edu.mit.lcs.haystack.adenine.interpreter.Message;
 import edu.mit.lcs.haystack.core.CoreLoader;
 import edu.mit.lcs.haystack.proxy.IServiceAccessor;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.HashMap;
 
 /**
  * Displays an Adenine console using standard I/O ports.

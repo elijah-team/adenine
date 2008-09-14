@@ -25,24 +25,45 @@
 
 package edu.mit.lcs.haystack.adenine;
 
-import java.io.*;
-import java.util.*;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
 import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.URIFinder;
 import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
 import edu.mit.lcs.haystack.adenine.compilers.rdfCode.RDFCodeCompiler;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.Environment;
+import edu.mit.lcs.haystack.adenine.interpreter.ICallable;
+import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
+import edu.mit.lcs.haystack.adenine.interpreter.Message;
 import edu.mit.lcs.haystack.core.CoreLoader;
-import edu.mit.lcs.haystack.URIFinder;
 import edu.mit.lcs.haystack.proxy.IServiceAccessor;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
 
 /**
  * Displays an SWT-based Adenine console.

@@ -25,14 +25,20 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.rdfCode;
 
-import edu.mit.lcs.haystack.*;
-import edu.mit.lcs.haystack.rdf.*;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.compilers.utils.ParserVisitorBase;
+import edu.mit.lcs.haystack.adenine.parser2.IAnonymousModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * @author David Huynh

@@ -25,11 +25,6 @@
 
 package edu.mit.lcs.haystack.server.core.rdfstore;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.content.ContentClient;
 import edu.mit.lcs.haystack.rdf.FederationRDFContainer;
@@ -43,6 +38,11 @@ import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
 import edu.mit.lcs.haystack.server.rdfstore.Cholesterol3RDFStoreService;
+
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Dennis Quan

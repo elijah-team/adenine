@@ -25,11 +25,27 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.rdfCode;
 
-import edu.mit.lcs.haystack.rdf.*;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
 import edu.mit.lcs.haystack.adenine.compilers.utils.ParserVisitorBase;
+import edu.mit.lcs.haystack.adenine.parser2.IAnonymousModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IApplyVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IAskModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IListVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.ISubExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullSubExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.FloatToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IntegerToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.LiteralToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.StringToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
 
 /**
  * @author David Huynh

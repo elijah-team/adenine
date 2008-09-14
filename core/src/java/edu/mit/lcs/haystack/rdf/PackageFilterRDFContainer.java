@@ -27,7 +27,8 @@ package edu.mit.lcs.haystack.rdf;
 
 import edu.mit.lcs.haystack.Constants;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Filters an existing RDF container for add requests; adds 

@@ -25,10 +25,18 @@
 
 package edu.mit.lcs.haystack.adenine.compiler;
 
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.parser.*;
-import edu.mit.lcs.haystack.rdf.*;
-import java.util.*;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.SyntaxException;
+import edu.mit.lcs.haystack.adenine.parser.IdentifierToken;
+import edu.mit.lcs.haystack.adenine.parser.SemicolonToken;
+import edu.mit.lcs.haystack.adenine.parser.Token;
+import edu.mit.lcs.haystack.adenine.parser.URIToken;
+import edu.mit.lcs.haystack.rdf.RDFException;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 /**
  * @version 	1.0

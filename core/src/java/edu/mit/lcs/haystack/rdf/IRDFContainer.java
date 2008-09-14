@@ -25,7 +25,8 @@
 
 package edu.mit.lcs.haystack.rdf;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Base interface of all RDF containers.

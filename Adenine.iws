@@ -16,16 +16,330 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/adenine.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/.classpath" afterPath="$PROJECT_DIR$/standard/.classpath" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/Haystack Subfloor.iml" afterPath="$PROJECT_DIR$/subfloor/Haystack Subfloor.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/proxy/IProtocol.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/proxy/IProtocol.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AppendFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AppendFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/Parser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/Parser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IMethodVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IMethodVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IBlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IBlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/BitAndFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/BitAndFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Message.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Message.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/UniqueMethodVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/UniqueMethodVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IParserVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IParserVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ListFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ListFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/TopLevelCallVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/TopLevelCallVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ExtractFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ExtractFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/BlockParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/BlockParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IAnonymousModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IAnonymousModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/AdenineException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/AdenineException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/IConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/IConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/MainParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/MainParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/WhileVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/WhileVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/WithParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/WithParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/RDFContainsConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/RDFContainsConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AssignmentVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AssignmentVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/WhileParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/WhileParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/CholesterolRDFStoreService.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/CholesterolRDFStoreService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelSubExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelSubExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AttributeVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AttributeVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelListVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelListVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IReturnVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IReturnVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IndexInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IndexInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/LiteralToken.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/LiteralToken.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/QueryFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/QueryFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/TermInfosWriter.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/TermInfosWriter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrameWithMethodGen.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrameWithMethodGen.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AskModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AskModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/DefaultQueryEngine.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/DefaultQueryEngine.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PlusFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PlusFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Closure.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Closure.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ReturnVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ReturnVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/LengthFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/LengthFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermEnum.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermEnum.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/IndexWriter.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/IndexWriter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ContinueVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ContinueVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IApplyVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IApplyVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintSetFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintSetFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/security/Identity.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/security/Identity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/CallGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/CallGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaByteCodeCompiler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaByteCodeCompiler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/MethodVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/MethodVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/InnerCodeBlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/InnerCodeBlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/ICompiler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/ICompiler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/RDFListener.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/RDFListener.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelAttributeVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelAttributeVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/AdenineConverter.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/AdenineConverter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/ForwardReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/ForwardReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/UnboundIdentifierException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/UnboundIdentifierException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ReturnVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ReturnVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/IGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/IGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermVector.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/AdenineConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/AdenineConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/ICallVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/ICallVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineSourceAgent.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineSourceAgent.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/IRDFContainer.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/IRDFContainer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Statement.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Statement.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/rdfstore/Cholesterol3RDFStoreService.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/rdfstore/Cholesterol3RDFStoreService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/document/Field.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/document/Field.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LiteralInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LiteralInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/AdenineLineStyler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/AdenineLineStyler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IFunctionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IFunctionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ForVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ForVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/SkipBlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/SkipBlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/content/IContentService.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/content/IContentService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/OrConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/OrConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/MultiplyFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/MultiplyFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportJavaInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportJavaInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/QueryInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/QueryInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/TopLevelCallVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/TopLevelCallVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IAssignmentVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IAssignmentVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/FunctionParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/FunctionParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/content/SimpleContentService.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/content/SimpleContentService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AskFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AskFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IWhileVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IWhileVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Interpreter.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Interpreter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WithInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WithInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/LiteralExpression.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/LiteralExpression.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/StringToken.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/StringToken.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/OrFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/OrFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/Compiler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/Compiler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/BlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/BlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FieldsReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FieldsReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/SortFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/SortFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/melatonin/Job.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/melatonin/Job.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ISubExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ISubExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ReturnParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ReturnParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/AndConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/AndConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/melatonin/MelatoninAgent.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/melatonin/MelatoninAgent.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/BreakGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/BreakGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/BreakVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/BreakVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/FederationRDFContainer.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/FederationRDFContainer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WhileGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WhileGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/MethodGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/MethodGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/GenerateUserID.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/GenerateUserID.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/MethodParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/MethodParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/BlockFilterTokenIterator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/BlockFilterTokenIterator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/AdenineClassLoaderManager.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/AdenineClassLoaderManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/ListWatchRecord.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/ListWatchRecord.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/IInstructionGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/IInstructionGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AskModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AskModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/proxy/ProxyManager.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/proxy/ProxyManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IWithVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IWithVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelAnonymousModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelAnonymousModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/NewFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/NewFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentInfos.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentInfos.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/TopLevelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/TopLevelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/RemoteRDFContainer.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/RemoteRDFContainer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/FederatingQueryEngine.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/FederatingQueryEngine.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WhileInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WhileInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BreakException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BreakException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ContinueVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ContinueVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/QueryExtractFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/QueryExtractFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/InequalityFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/InequalityFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/GtFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/GtFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BNodeInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BNodeInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/Haystack.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/Haystack.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IVarVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IVarVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/URIFinder.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/URIFinder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/XMLDOMFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/XMLDOMFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentMerger.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentMerger.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ListVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ListVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/ContainerToken.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/ContainerToken.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaClassPrettyPrinter.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaClassPrettyPrinter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ModelInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ModelInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ForInInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ForInInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrameWithBreakContinue.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrameWithBreakContinue.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AddFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AddFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/mercury/MercuryAgent.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/mercury/MercuryAgent.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/AdenineConstants.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/AdenineConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ReturnInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ReturnInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/.classpath" afterPath="$PROJECT_DIR$/core/.classpath" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/EqualityFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/EqualityFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ApplyVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ApplyVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/BreakVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/BreakVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/BreakParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/BreakParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/SWTConsole.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/SWTConsole.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/AssignmentParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/AssignmentParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/VarVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/VarVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/InnerCodeBlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/InnerCodeBlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ReplaceFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ReplaceFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/Constants.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/Constants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/NullApplyVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/NullApplyVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/InstanceOfFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/InstanceOfFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/AdenineClassLoader.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/AdenineClassLoader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/IndexTest.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/IndexTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrame.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrame.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ResourceInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ResourceInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/ForwardWriter.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/ForwardWriter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/service/ISessionBasedService.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/service/ISessionBasedService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/URIToken.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/URIToken.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/SetFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/SetFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/ContentBasedRDFStoreService.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/ContentBasedRDFStoreService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/security/IdentityManager.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/security/IdentityManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/CallParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/CallParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/IfGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/IfGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/InputFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/InputFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/ListUtilities.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/ListUtilities.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaByteCodeUtilities.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaByteCodeUtilities.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ApplyVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ApplyVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/StringInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/StringInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintListFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintListFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IAskModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IAskModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintDataFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/PrintDataFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/TextParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/TextParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/LtFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/LtFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ImportJavaVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ImportJavaVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ExistentialExpression.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ExistentialExpression.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/ReaderInputStream.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/ReaderInputStream.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ParserUtilities.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ParserUtilities.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportJavaGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportJavaGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/scheduler/SchedulerAgent.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/scheduler/SchedulerAgent.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/MainVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/MainVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/FunctionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/FunctionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/TopLevelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/TopLevelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ReturnException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ReturnException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FieldInfos.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FieldInfos.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/Line.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/Line.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ICodeBlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ICodeBlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/MethodVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/MethodVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ResourceExpression.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ResourceExpression.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ForGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ForGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/TopLevelMethodVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/TopLevelMethodVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/NotFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/NotFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/FunctionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/FunctionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/ISkipBlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/ISkipBlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IBreakVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IBreakVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermPositions.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermPositions.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/MinusFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/MinusFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/AssignmentInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/AssignmentInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/ConditionSet.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/ConditionSet.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IIfVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IIfVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WithGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WithGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/DereferencementInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/DereferencementInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/IfParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/IfParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/CompoundFileWriter.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/CompoundFileWriter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentMergeQueue.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentMergeQueue.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ConstructVisitorBase.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ConstructVisitorBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/service/ServiceManager.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/service/ServiceManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/FunctionGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/FunctionGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/IInstructionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/IInstructionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ReifyFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ReifyFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/SubExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/SubExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/Parser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/Parser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/IRDFStore.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/IRDFStore.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/VarVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/VarVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ReturnGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ReturnGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelAddExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelAddExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FrequencyMap.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FrequencyMap.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/RDFNode.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/RDFNode.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/DivideFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/DivideFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/IParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/converters/IParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ContinueGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ContinueGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallReturnInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallReturnInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FieldsWriter.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/FieldsWriter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/proxy/DefaultMarshaller.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/proxy/DefaultMarshaller.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/UnknownInstructionException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/UnknownInstructionException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/ParserVisitorBase.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/ParserVisitorBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ListVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ListVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IContinueVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IContinueVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/AssignmentGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/AssignmentGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/VarInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/VarInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/DocumentWriter.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/DocumentWriter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AnonymousModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AnonymousModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Utilities.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Utilities.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/Method2Instruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/Method2Instruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AnonymousModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AnonymousModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IfInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IfInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BreakInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BreakInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/VariableFrame.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/VariableFrame.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/WhileVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/WhileVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AssignmentVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/AssignmentVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/JavaMethodWrapper.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/JavaMethodWrapper.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/SkipBlockParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/SkipBlockParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermDocs.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/SegmentTermDocs.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/RemoveFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/RemoveFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ImportJavaParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ImportJavaParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IListVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/IListVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ITopLevelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/ITopLevelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IImportJavaVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IImportJavaVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/RDFPredicateConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/RDFPredicateConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/BlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/BlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/CachingRDFStoreService.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/server/core/rdfstore/CachingRDFStoreService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/FederatingQueryEngineFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/FederatingQueryEngineFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/WithVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/WithVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ContainsFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ContainsFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ForkFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ForkFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/document/Document.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/document/Document.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/VarGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/VarGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ConstructVisitorBase.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ConstructVisitorBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/ContinuationException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/ContinuationException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IMainVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IMainVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AnonymousCompiledMethod.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AnonymousCompiledMethod.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/CompoundFileReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/CompoundFileReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/ForwardIndexWriter.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/ForwardIndexWriter.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Adenine.iws" afterPath="$PROJECT_DIR$/Adenine.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Adenine.ipr" afterPath="$PROJECT_DIR$/Adenine.ipr" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/Haystack Standard Functionality.iml" afterPath="$PROJECT_DIR$/standard/Haystack Standard Functionality.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/Haystack Core.iml" afterPath="$PROJECT_DIR$/core/Haystack Core.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/run.sh" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/NullExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/NullExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/RDFCodeCompiler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/RDFCodeCompiler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/LocalRDFContainer.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/LocalRDFContainer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/SkipBlockVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/SkipBlockVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/WithVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/WithVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AndFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/AndFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ImportJavaVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ImportJavaVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/Condition.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/Condition.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AttributeVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/AttributeVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ForParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ForParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/IndexReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/IndexReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ContinueException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ContinueException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/Block.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/Block.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ContinueParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/ContinueParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/TermInfosReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/TermInfosReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IForVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/constructs/IForVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/IfVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/IfVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/tokenizer/Tokenizer.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/tokenizer/Tokenizer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LibraryInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LibraryInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ModelVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/ModelVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/RDFMultiContainsConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/RDFMultiContainsConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelVisitorBase.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/utils/TopLevelVisitorBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ConnectFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/ConnectFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DynamicEnvironment.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DynamicEnvironment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/IQueryEngine.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/IQueryEngine.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/DAMLListIterator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/DAMLListIterator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/RDFNodeInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/RDFNodeInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CallVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CallVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/IDereferenceable.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/IDereferenceable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ContinueInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ContinueInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionCallInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionCallInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/MultiReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/MultiReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/QuerySizeFunction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/functions/QuerySizeFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/SetDifferenceConditionHandler.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/query/SetDifferenceConditionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/PackageFilterRDFContainer.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/PackageFilterRDFContainer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ForVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/ForVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/CallVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/CallVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/IfVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/rdfCode/IfVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IdentifierInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IdentifierInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/SubExpressionVisitor.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/SubExpressionVisitor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/MethodInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/MethodInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/HaystackException.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/HaystackException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/ICallable.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/ICallable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/VarParser.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser2/constructs/VarParser.java" />
     </list>
     <ignored path="Adenine.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -92,7 +406,9 @@
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrame.java">
           <provider selected="true" editor-type-id="text-editor">
             <state line="27" column="0" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.018461538">
-              <folding />
+              <folding>
+                <marker date="1221422137000" expanded="false" signature="1347:2105" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -100,8 +416,10 @@
       <file leaf-file-name="ContentClient.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="168" column="37" selection-start="6426" selection-end="6426" vertical-scroll-proportion="0.018897638">
-              <folding />
+            <state line="170" column="37" selection-start="6563" selection-end="6563" vertical-scroll-proportion="0.018897638">
+              <folding>
+                <marker date="1221422138000" expanded="false" signature="1324:2556" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -109,8 +427,28 @@
       <file leaf-file-name="DebugDisplay.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="23" selection-start="1779" selection-end="1779" vertical-scroll-proportion="0.018897638">
+            <state line="34" column="0" selection-start="1668" selection-end="1668" vertical-scroll-proportion="0.20787401">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JavaByteCodeUtilities.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaByteCodeUtilities.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="39" column="62" selection-start="1941" selection-end="1941" vertical-scroll-proportion="0.3023622">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Interpreter.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Interpreter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="776" column="19" selection-start="26646" selection-end="26646" vertical-scroll-proportion="0.33228347">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -118,13 +456,15 @@
       <file leaf-file-name="Console.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="204" column="0" selection-start="7444" selection-end="7444" vertical-scroll-proportion="1.3354331">
-              <folding />
+            <state line="212" column="0" selection-start="7885" selection-end="7885" vertical-scroll-proportion="1.3354331">
+              <folding>
+                <marker date="1221422135000" expanded="false" signature="1324:2193" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CoreLoader.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="CoreLoader.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java">
           <provider selected="true" editor-type-id="text-editor">
             <state line="36" column="1" selection-start="1595" selection-end="1595" vertical-scroll-proportion="0.018461538">
@@ -224,6 +564,36 @@
           <option name="myItemId" value="Haystack Subfloor" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
         </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src/java/edu/mit/lcs/haystack/lucene" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
       </PATH>
       <PATH>
         <PATH_ELEMENT>
@@ -241,6 +611,38 @@
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
           <option name="myItemId" value="Haystack Core" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
         </PATH_ELEMENT>
@@ -282,36 +684,6 @@
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java/edu/mit/lcs/haystack" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Adenine" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Haystack Core" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java/edu/mit/lcs/haystack" />
-          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java/edu/mit/lcs/haystack/core" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -342,6 +714,40 @@
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java/edu/mit/lcs/haystack/adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Core" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java/edu/mit/lcs/haystack" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java/edu/mit/lcs/haystack/adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/core/src/java/edu/mit/lcs/haystack/adenine/interpreter" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -445,29 +851,26 @@
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="false" />
-    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="RunManagerConfig.showSettingsBeforeRunnig" value="false" />
+    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="GenerateAntBuildDialog.backupFiles" value="false" />
   </component>
   <component name="RunManager" selected="Application.Adenine Console">
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
+    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
       <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-    </configuration>
-    <configuration default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method>
+        <option name="Make" value="true" />
+      </method>
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
       <module name="" />
@@ -488,21 +891,24 @@
       </option>
       <envs />
     </configuration>
-    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
       <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="" />
-      <envs />
-      <method>
-        <option name="Make" value="true" />
-      </method>
     </configuration>
     <configuration default="false" name="Adenine Console" type="Application" factoryName="Application" enabled="false" merge="false">
       <option name="MAIN_CLASS_NAME" value="edu.mit.lcs.haystack.adenine.Console" />
@@ -579,15 +985,15 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="23" width="1919" height="1177" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="2" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="7" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.232496" order="0" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="1" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20577231" order="7" />
-      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" order="8" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" order="1" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20791021" order="7" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" order="6" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="4" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="8" />
@@ -774,18 +1180,14 @@
     <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="193" column="38" selection-start="6554" selection-end="6554" vertical-scroll-proportion="0.3511811">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="130" column="22" selection-start="5250" selection-end="5250" vertical-scroll-proportion="0.68818897">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -799,34 +1201,56 @@
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrame.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="27" column="0" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.018461538">
-          <folding />
+          <folding>
+            <marker date="1221422137000" expanded="false" signature="1347:2105" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="168" column="37" selection-start="6426" selection-end="6426" vertical-scroll-proportion="0.018897638">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="23" selection-start="1779" selection-end="1779" vertical-scroll-proportion="0.018897638">
-          <folding />
+        <state line="170" column="37" selection-start="6563" selection-end="6563" vertical-scroll-proportion="0.018897638">
+          <folding>
+            <marker date="1221422138000" expanded="false" signature="1324:2556" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="204" column="0" selection-start="7444" selection-end="7444" vertical-scroll-proportion="1.3354331">
-          <folding />
+        <state line="212" column="0" selection-start="7885" selection-end="7885" vertical-scroll-proportion="1.3354331">
+          <folding>
+            <marker date="1221422135000" expanded="false" signature="1324:2193" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="36" column="1" selection-start="1595" selection-end="1595" vertical-scroll-proportion="0.018461538">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="0" selection-start="1668" selection-end="1668" vertical-scroll-proportion="0.20787401">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaByteCodeUtilities.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="62" selection-start="1941" selection-end="1941" vertical-scroll-proportion="0.3023622">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Interpreter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="776" column="19" selection-start="26646" selection-end="26646" vertical-scroll-proportion="0.33228347">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

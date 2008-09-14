@@ -1,11 +1,11 @@
 package edu.mit.lcs.haystack.server.standard.melatonin;
 
-import java.io.Serializable;
-
 import edu.mit.lcs.haystack.proxy.IServiceAccessor;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.Utilities;
+
+import java.io.Serializable;
 
 /**
  * @author Dennis Quan

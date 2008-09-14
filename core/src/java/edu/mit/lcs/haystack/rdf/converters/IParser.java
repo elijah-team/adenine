@@ -25,10 +25,15 @@
 
 package edu.mit.lcs.haystack.rdf.converters;
 
-import java.io.*;
-import java.net.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.IURIGenerator;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
 
-import edu.mit.lcs.haystack.rdf.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URL;
 
 /**
  * <p>An IParser object parses an InputStream, Reader, or other stream

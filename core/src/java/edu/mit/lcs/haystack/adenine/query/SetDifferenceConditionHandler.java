@@ -25,16 +25,16 @@
 
 package edu.mit.lcs.haystack.adenine.query;
 
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.rdf.RDFNode;
+import edu.mit.lcs.haystack.rdf.Resource;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import edu.mit.lcs.haystack.adenine.AdenineException;
-import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
-import edu.mit.lcs.haystack.rdf.RDFNode;
-import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * Moved from adenine to here, to improve performance

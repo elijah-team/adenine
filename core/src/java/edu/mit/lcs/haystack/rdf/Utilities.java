@@ -25,25 +25,50 @@
 
 package edu.mit.lcs.haystack.rdf;
 
-import java.io.*;
-import java.net.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.security.*;
-
+import com.hp.hpl.jena.rdf.arp.ALiteral;
+import com.hp.hpl.jena.rdf.arp.ARP;
+import com.hp.hpl.jena.rdf.arp.AResource;
+import com.hp.hpl.jena.rdf.arp.StatementHandler;
+import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.core.CoreLoader;
+import edu.mit.lcs.haystack.rdf.n3.IN3Engine;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.hp.hpl.jena.rdf.arp.*;
-
-import edu.mit.lcs.haystack.core.CoreLoader;
-import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.rdf.n3.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Provides commonly-used RDF helper functions.

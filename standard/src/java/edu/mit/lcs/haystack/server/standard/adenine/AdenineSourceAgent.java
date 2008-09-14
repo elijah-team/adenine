@@ -25,11 +25,6 @@
 
 package edu.mit.lcs.haystack.server.standard.adenine;
 
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Date;
-
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
 import edu.mit.lcs.haystack.adenine.compilers.javaByteCode.JavaByteCodeCompiler;
@@ -44,6 +39,11 @@ import edu.mit.lcs.haystack.server.core.service.IService;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
 import edu.mit.lcs.haystack.server.standard.scheduler.IScheduledTask;
+
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
 
 /**
  * @version 	1.0

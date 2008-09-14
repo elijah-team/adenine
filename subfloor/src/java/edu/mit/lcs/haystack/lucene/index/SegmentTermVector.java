@@ -1,5 +1,6 @@
 package edu.mit.lcs.haystack.lucene.index;
-import java.util.*;
+
+import java.util.Arrays;
 
 /**
  */

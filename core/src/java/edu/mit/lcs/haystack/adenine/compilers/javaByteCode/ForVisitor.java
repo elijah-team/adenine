@@ -25,12 +25,22 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import edu.mit.lcs.haystack.adenine.constructs.*;
+import edu.mit.lcs.haystack.adenine.constructs.IForVisitor;
 import edu.mit.lcs.haystack.adenine.instructions.ForInInstruction;
 import edu.mit.lcs.haystack.adenine.parser2.ICodeBlockVisitor;
 import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
-import org.apache.bcel.generic.*;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.BranchHandle;
+import org.apache.bcel.generic.IFEQ;
+import org.apache.bcel.generic.InstructionConstants;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.LocalVariableGen;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
 
 /**
  * @author David Huynh

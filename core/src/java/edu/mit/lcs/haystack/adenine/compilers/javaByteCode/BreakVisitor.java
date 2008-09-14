@@ -26,8 +26,8 @@
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
 import edu.mit.lcs.haystack.adenine.AdenineException;
-import edu.mit.lcs.haystack.adenine.constructs.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.constructs.IBreakVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
 
 /**
  * @author David Huynh

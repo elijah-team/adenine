@@ -25,8 +25,16 @@
 
 package edu.mit.lcs.haystack;
 
-import edu.mit.lcs.haystack.rdf.*;
-import java.io.*;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Utilities;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 /**
  * @version 	1.0

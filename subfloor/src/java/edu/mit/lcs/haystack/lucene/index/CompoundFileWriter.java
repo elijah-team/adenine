@@ -17,12 +17,13 @@ package edu.mit.lcs.haystack.lucene.index;
  */
 
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.OutputStream;
 import org.apache.lucene.store.InputStream;
-import java.util.LinkedList;
+import org.apache.lucene.store.OutputStream;
+
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.io.IOException;
+import java.util.LinkedList;
 
 
 /**

@@ -25,10 +25,13 @@
 
 package edu.mit.lcs.haystack.adenine.functions;
 
-import edu.mit.lcs.haystack.HaystackException;
 import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
+import edu.mit.lcs.haystack.HaystackException;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.SyntaxException;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.ICallable;
+import edu.mit.lcs.haystack.adenine.interpreter.Message;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.RDFNode;
 import edu.mit.lcs.haystack.rdf.Resource;

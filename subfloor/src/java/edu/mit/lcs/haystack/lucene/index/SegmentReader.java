@@ -16,6 +16,12 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
+import edu.mit.lcs.haystack.lucene.document.Document;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.InputStream;
+import org.apache.lucene.store.OutputStream;
+import org.apache.lucene.util.BitVector;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -23,13 +29,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
-
-import edu.mit.lcs.haystack.lucene.document.Document;
-
-import org.apache.lucene.store.InputStream;
-import org.apache.lucene.store.OutputStream;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.BitVector;
 
 /**
  * @version $Id: SegmentReader.java,v 1.7 2004/07/10 00:41:40 yks Exp $

@@ -25,12 +25,14 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.rdfCode;
 
-import edu.mit.lcs.haystack.rdf.*;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
-import edu.mit.lcs.haystack.adenine.constructs.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.constructs.IVarVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * @author David Huynh

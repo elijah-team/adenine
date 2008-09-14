@@ -25,11 +25,11 @@
 
 package edu.mit.lcs.haystack.security;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
 import edu.mit.lcs.haystack.proxy.DefaultMarshaller;
 import edu.mit.lcs.haystack.rdf.Resource;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * Represents an authenticated identity.

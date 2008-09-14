@@ -16,15 +16,18 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
-import java.util.*;
-import java.io.IOException;
-
 import edu.mit.lcs.haystack.lucene.document.Document;
 import edu.mit.lcs.haystack.lucene.document.Field;
-
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.OutputStream;
 import org.apache.lucene.store.InputStream;
+import org.apache.lucene.store.OutputStream;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
 /** Access to the Field Info file that describes document fields and whether or
  *  not they are indexed. Each segment has a separate Field Info file. Objects

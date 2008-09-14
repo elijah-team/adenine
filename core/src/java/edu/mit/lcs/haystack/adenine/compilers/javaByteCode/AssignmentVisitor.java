@@ -25,9 +25,11 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import edu.mit.lcs.haystack.adenine.constructs.*;
+import edu.mit.lcs.haystack.adenine.constructs.IAssignmentVisitor;
 import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
 
 /**
  * @author David Huynh

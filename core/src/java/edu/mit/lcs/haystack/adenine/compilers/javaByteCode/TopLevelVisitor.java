@@ -25,13 +25,30 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import java.util.*;
 import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.rdf.*;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
-import edu.mit.lcs.haystack.adenine.compilers.utils.*;
+import edu.mit.lcs.haystack.adenine.compilers.utils.TopLevelVisitorBase;
+import edu.mit.lcs.haystack.adenine.parser2.IConstructVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IParserVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullConstructVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.SyntaxException;
+import edu.mit.lcs.haystack.adenine.tokenizer.FloatToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IndentToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IntegerToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.ResourceToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.StringToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * @author David Huynh

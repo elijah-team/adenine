@@ -16,20 +16,20 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
-import java.io.IOException;
-import java.io.File;
-import java.io.PrintStream;
-import java.util.Vector;
-
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.Lock;
-import org.apache.lucene.store.InputStream;
-import org.apache.lucene.store.OutputStream;
-import org.apache.lucene.search.Similarity;
 import edu.mit.lcs.haystack.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.search.Similarity;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.InputStream;
+import org.apache.lucene.store.Lock;
+import org.apache.lucene.store.OutputStream;
+import org.apache.lucene.store.RAMDirectory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Vector;
 
 /**
  * An IndexWriter creates and maintains an index.

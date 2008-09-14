@@ -16,10 +16,10 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
-import java.io.IOException;
-
-import org.apache.lucene.util.BitVector;
 import org.apache.lucene.store.InputStream;
+import org.apache.lucene.util.BitVector;
+
+import java.io.IOException;
 
 class SegmentTermDocs implements TermDocs {
   protected SegmentReader parent;

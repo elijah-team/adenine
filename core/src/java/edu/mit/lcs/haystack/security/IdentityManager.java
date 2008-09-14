@@ -25,14 +25,17 @@
 
 package edu.mit.lcs.haystack.security;
 
-import java.io.*;
-import java.security.*;
+import edu.mit.lcs.haystack.rdf.Resource;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-
-import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * @version 	1.0

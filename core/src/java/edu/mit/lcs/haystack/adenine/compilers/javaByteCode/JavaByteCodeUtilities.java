@@ -25,16 +25,45 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.*;
-
 import edu.mit.lcs.haystack.adenine.AdenineException;
 import edu.mit.lcs.haystack.adenine.interpreter.AdenineClassLoaderManager;
 import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
 import edu.mit.lcs.haystack.adenine.tokenizer.Location;
 import edu.mit.lcs.haystack.rdf.Resource;
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.AALOAD;
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ARETURN;
+import org.apache.bcel.generic.ARRAYLENGTH;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.ArrayType;
+import org.apache.bcel.generic.BranchHandle;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.GOTO;
+import org.apache.bcel.generic.ICONST;
+import org.apache.bcel.generic.IF_ICMPGE;
+import org.apache.bcel.generic.IINC;
+import org.apache.bcel.generic.ILOAD;
+import org.apache.bcel.generic.ISTORE;
+import org.apache.bcel.generic.InstructionConstants;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.JSR;
+import org.apache.bcel.generic.LocalVariableGen;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NOP;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.PUSH;
+import org.apache.bcel.generic.RET;
+import org.apache.bcel.generic.RETURN;
+import org.apache.bcel.generic.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author David Huynh

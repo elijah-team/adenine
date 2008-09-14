@@ -25,37 +25,39 @@
 
 package edu.mit.lcs.haystack.content;
 
+import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.ReaderInputStream;
+import edu.mit.lcs.haystack.core.CoreLoader;
+import edu.mit.lcs.haystack.proxy.IServiceAccessor;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Utilities;
+import edu.mit.lcs.haystack.server.core.content.IContentService;
+import edu.mit.lcs.haystack.server.core.rdfstore.RemoteRDFContainer;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.io.File;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.Date;
-
-import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.core.CoreLoader;
-import edu.mit.lcs.haystack.ReaderInputStream;
-import edu.mit.lcs.haystack.proxy.IServiceAccessor;
-import edu.mit.lcs.haystack.rdf.*;
-import edu.mit.lcs.haystack.server.core.content.IContentService;
-import edu.mit.lcs.haystack.server.core.rdfstore.RemoteRDFContainer;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 
 //TODO: Recreate lsid capability, which was removed from smallHaystack
 //import com.ibm.lsid.LSID;

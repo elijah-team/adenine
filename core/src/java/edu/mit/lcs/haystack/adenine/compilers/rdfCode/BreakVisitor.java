@@ -26,9 +26,10 @@
 package edu.mit.lcs.haystack.adenine.compilers.rdfCode;
 
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
-import edu.mit.lcs.haystack.adenine.constructs.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
-import java.util.*;
+import edu.mit.lcs.haystack.adenine.constructs.IBreakVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+
+import java.util.List;
 
 /**
  * @author David Huynh

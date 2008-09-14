@@ -16,15 +16,15 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.OutputStream;
 import org.apache.lucene.store.RAMOutputStream;
 import org.apache.lucene.util.BitVector;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Vector;
 /* END HAYSTACK */
 
 /**

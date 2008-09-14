@@ -33,7 +33,6 @@ import edu.mit.lcs.haystack.adenine.interpreter.IDereferenceable;
 import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
 import edu.mit.lcs.haystack.adenine.interpreter.InvalidMemberException;
 import edu.mit.lcs.haystack.adenine.interpreter.Message;
-//import edu.mit.lcs.haystack.ozone.core.Context;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.RDFNode;
 import edu.mit.lcs.haystack.rdf.Resource;
@@ -41,8 +40,8 @@ import edu.mit.lcs.haystack.rdf.Statement;
 import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.server.core.rdfstore.IRDFListener;
 import edu.mit.lcs.haystack.server.core.service.GenericService;
-import edu.mit.lcs.haystack.server.core.service.ServiceManager;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
+import edu.mit.lcs.haystack.server.core.service.ServiceManager;
 
 /**
  * @version 	1.0

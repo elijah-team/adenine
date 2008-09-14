@@ -16,14 +16,13 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
-import java.io.IOException;
-
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.InputStream;
 import edu.mit.lcs.haystack.lucene.document.Document;
 import edu.mit.lcs.haystack.lucene.document.Field;
-/* HAYSTACK */
 import edu.mit.lcs.haystack.lucene.document.ForwardDocument;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.InputStream;
+
+import java.io.IOException;
 /* HAYSTACK END */
 /**
  * Class responsible for access to stored document fields.

@@ -25,17 +25,24 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
+import edu.mit.lcs.haystack.HaystackException;
+import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
+import edu.mit.lcs.haystack.adenine.parser2.IParserVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.Parser;
+import edu.mit.lcs.haystack.adenine.parser2.SyntaxException;
+import edu.mit.lcs.haystack.adenine.tokenizer.ErrorToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IScannerVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
+import edu.mit.lcs.haystack.content.ContentClient;
+import edu.mit.lcs.haystack.proxy.IServiceAccessor;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
+
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.*;
-
-import edu.mit.lcs.haystack.HaystackException;
-import edu.mit.lcs.haystack.proxy.IServiceAccessor;
-import edu.mit.lcs.haystack.rdf.*;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
-import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
-import edu.mit.lcs.haystack.content.ContentClient;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author David Huynh

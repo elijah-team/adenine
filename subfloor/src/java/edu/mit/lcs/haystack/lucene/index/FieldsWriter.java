@@ -16,13 +16,13 @@ package edu.mit.lcs.haystack.lucene.index;
  * the License.
  */
 
-import java.io.IOException;
-import java.util.Enumeration;
-
 import edu.mit.lcs.haystack.lucene.document.Document;
 import edu.mit.lcs.haystack.lucene.document.Field;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.OutputStream;
+
+import java.io.IOException;
+import java.util.Enumeration;
 
 final class FieldsWriter {
 	private FieldInfos fieldInfos;

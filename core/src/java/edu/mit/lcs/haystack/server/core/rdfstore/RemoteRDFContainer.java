@@ -25,10 +25,6 @@
 
 package edu.mit.lcs.haystack.server.core.rdfstore;
 
-import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Set;
-
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.IRDFEventSource;
 import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
@@ -40,6 +36,10 @@ import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.security.Identity;
 import edu.mit.lcs.haystack.server.core.service.IPersistent;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
+
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Abstracts access to a remote RDF store as an RDF container object.

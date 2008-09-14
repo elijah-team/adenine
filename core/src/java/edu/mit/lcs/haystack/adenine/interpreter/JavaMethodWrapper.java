@@ -25,10 +25,15 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
-import java.lang.reflect.*;
-import java.util.*;
+import edu.mit.lcs.haystack.adenine.AdenineException;
 
-import edu.mit.lcs.haystack.adenine.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @version 	1.0

@@ -25,7 +25,8 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import edu.mit.lcs.haystack.adenine.parser2.*;
+import edu.mit.lcs.haystack.adenine.parser2.IAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
 import edu.mit.lcs.haystack.adenine.tokenizer.Location;
 
 /**

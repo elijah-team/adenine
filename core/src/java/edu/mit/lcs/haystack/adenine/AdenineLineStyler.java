@@ -25,12 +25,18 @@
 
 package edu.mit.lcs.haystack.adenine;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import java.util.*;
-import java.io.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.LineStyleEvent;
+import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+
+import java.io.StringReader;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * Formats Adenine source code. Based on SWT sample code.

@@ -25,11 +25,11 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
+import edu.mit.lcs.haystack.adenine.AdenineException;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import edu.mit.lcs.haystack.adenine.AdenineException;
 
 /**
  * @version 	1.0

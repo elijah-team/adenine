@@ -25,13 +25,25 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import edu.mit.lcs.haystack.rdf.*;
 import edu.mit.lcs.haystack.adenine.AdenineException;
-import edu.mit.lcs.haystack.adenine.parser2.*;
 import edu.mit.lcs.haystack.adenine.instructions.ModelInstruction;
 import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
-import org.apache.bcel.generic.*;
+import edu.mit.lcs.haystack.adenine.parser2.IAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IModelVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.InstructionConstants;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
 
 
 /**

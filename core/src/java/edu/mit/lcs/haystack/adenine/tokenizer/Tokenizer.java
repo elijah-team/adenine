@@ -26,8 +26,10 @@
 package edu.mit.lcs.haystack.adenine.tokenizer;
 
 import edu.mit.lcs.haystack.Constants;
-import java.io.*;
-import java.util.*;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.LinkedList;
 
 /**
  * @author David Huynh

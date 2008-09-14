@@ -16,8 +16,9 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
-import java.io.IOException;
 import org.apache.lucene.util.PriorityQueue;
+
+import java.io.IOException;
 
 final class SegmentMergeQueue extends PriorityQueue {
   SegmentMergeQueue(int size) {

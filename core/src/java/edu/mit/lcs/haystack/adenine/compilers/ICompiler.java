@@ -25,11 +25,11 @@
 
 package edu.mit.lcs.haystack.adenine.compilers;
 
-import java.io.Reader;
-
 import edu.mit.lcs.haystack.proxy.IServiceAccessor;
-import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
+
+import java.io.Reader;
 
 /**
  * @author David Huynh

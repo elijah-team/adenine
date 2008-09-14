@@ -25,7 +25,10 @@
 
 package edu.mit.lcs.haystack;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * @author David Huynh

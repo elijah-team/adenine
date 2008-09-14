@@ -25,9 +25,9 @@
 
 package edu.mit.lcs.haystack.rdf;
 
-import java.util.Iterator;
-
 import edu.mit.lcs.haystack.Constants;
+
+import java.util.Iterator;
 
 /**
  * @version 	1.0

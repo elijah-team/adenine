@@ -25,11 +25,6 @@
 
 package edu.mit.lcs.haystack.server.standard.mercury;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.proxy.IServiceAccessor;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
@@ -42,6 +37,11 @@ import edu.mit.lcs.haystack.rdf.Statement;
 import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.server.core.service.GenericService;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author Dennis Quan

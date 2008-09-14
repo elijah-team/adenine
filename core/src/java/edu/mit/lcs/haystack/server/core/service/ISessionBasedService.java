@@ -25,9 +25,9 @@
 
 package edu.mit.lcs.haystack.server.core.service;
 
-import java.rmi.RemoteException;
-
 import edu.mit.lcs.haystack.security.Identity;
+
+import java.rmi.RemoteException;
 
 /**
  * @version 	1.0

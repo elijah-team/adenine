@@ -25,12 +25,12 @@
 
 package edu.mit.lcs.haystack.adenine.query;
 
+import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.rdf.Resource;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * @author Dennis Quan

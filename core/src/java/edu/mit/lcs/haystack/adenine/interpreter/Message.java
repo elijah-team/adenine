@@ -25,11 +25,11 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
+import edu.mit.lcs.haystack.rdf.Resource;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * @version 	1.0

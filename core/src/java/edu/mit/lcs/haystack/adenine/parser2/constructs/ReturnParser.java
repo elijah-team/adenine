@@ -25,9 +25,25 @@
 
 package edu.mit.lcs.haystack.adenine.parser2.constructs;
 
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.constructs.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.constructs.IReturnVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IConstructParser;
+import edu.mit.lcs.haystack.adenine.parser2.IConstructVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.ParserUtilities;
+import edu.mit.lcs.haystack.adenine.parser2.SyntaxException;
+import edu.mit.lcs.haystack.adenine.tokenizer.CommentToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.ITokenIterator;
+import edu.mit.lcs.haystack.adenine.tokenizer.IndentToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.NewLineToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.ResourceToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
+import edu.mit.lcs.haystack.adenine.tokenizer.WhitespaceToken;
 
 /**
  * @author David Huynh

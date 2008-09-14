@@ -26,12 +26,24 @@
 package edu.mit.lcs.haystack.adenine.functions;
 
 import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.ICallable;
+import edu.mit.lcs.haystack.adenine.interpreter.JavaMethodWrapper;
+import edu.mit.lcs.haystack.adenine.interpreter.Message;
 import edu.mit.lcs.haystack.adenine.query.ConditionSet;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.RDFNode;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+import edu.mit.lcs.haystack.rdf.Utilities;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @version 	1.0

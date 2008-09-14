@@ -25,8 +25,31 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.utils;
 
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.IAnonymousModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IApplyVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IAskModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IListVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IParserVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.ISubExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullAnonymousModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullApplyVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullAskModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullListVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullSubExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.SyntaxException;
+import edu.mit.lcs.haystack.adenine.tokenizer.FloatToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IntegerToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.LiteralToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.ResourceToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.StringToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
 
 /**
  * @author David Huynh

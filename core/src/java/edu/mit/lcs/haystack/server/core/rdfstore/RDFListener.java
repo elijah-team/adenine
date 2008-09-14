@@ -25,10 +25,6 @@
 
 package edu.mit.lcs.haystack.server.core.rdfstore;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import edu.mit.lcs.haystack.rdf.IRDFEventSource;
 import edu.mit.lcs.haystack.rdf.RDFException;
 import edu.mit.lcs.haystack.rdf.RDFNode;
@@ -37,6 +33,10 @@ import edu.mit.lcs.haystack.rdf.Statement;
 import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.server.core.service.EventListenerService;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Convenience base class for RDF event listeners.

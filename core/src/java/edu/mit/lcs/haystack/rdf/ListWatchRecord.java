@@ -25,9 +25,10 @@
 
 package edu.mit.lcs.haystack.rdf;
 
-import java.util.*;
-
 import edu.mit.lcs.haystack.server.core.rdfstore.RDFListener;
+
+import java.util.Hashtable;
+import java.util.LinkedList;
 
 /**
  * @author David Huynh

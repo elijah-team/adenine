@@ -25,11 +25,25 @@
 
 package edu.mit.lcs.haystack.adenine.instructions;
 
-import edu.mit.lcs.haystack.adenine.*;
-import edu.mit.lcs.haystack.adenine.interpreter.*;
-import edu.mit.lcs.haystack.rdf.*;
-import java.lang.reflect.*;
-import java.util.*;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.interpreter.ConstantTable;
+import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
+import edu.mit.lcs.haystack.adenine.interpreter.Environment;
+import edu.mit.lcs.haystack.adenine.interpreter.IDereferenceable;
+import edu.mit.lcs.haystack.adenine.interpreter.IExpression;
+import edu.mit.lcs.haystack.adenine.interpreter.IInstructionHandler;
+import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
+import edu.mit.lcs.haystack.adenine.interpreter.InvalidMemberException;
+import edu.mit.lcs.haystack.adenine.interpreter.JavaMethodWrapper;
+import edu.mit.lcs.haystack.adenine.interpreter.VariableFrame;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Utilities;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * @version 	1.0

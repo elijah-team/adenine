@@ -25,12 +25,12 @@
 
 package edu.mit.lcs.haystack.server.core.content;
 
+import edu.mit.lcs.haystack.content.ContentAndMimeType;
+import edu.mit.lcs.haystack.rdf.Resource;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import edu.mit.lcs.haystack.content.ContentAndMimeType;
-import edu.mit.lcs.haystack.rdf.Resource;
 
 /**
  * @version 	1.0

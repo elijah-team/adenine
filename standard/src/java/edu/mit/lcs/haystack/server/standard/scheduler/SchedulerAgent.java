@@ -25,9 +25,6 @@
 
 package edu.mit.lcs.haystack.server.standard.scheduler;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.Resource;
@@ -38,6 +35,9 @@ import edu.mit.lcs.haystack.server.core.service.IService;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
 import edu.mit.lcs.haystack.server.standard.melatonin.MelatoninAgent;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @version 	1.0

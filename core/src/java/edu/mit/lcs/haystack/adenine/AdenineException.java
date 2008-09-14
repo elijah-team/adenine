@@ -25,11 +25,6 @@
 
 package edu.mit.lcs.haystack.adenine;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.HaystackException;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
@@ -37,6 +32,11 @@ import edu.mit.lcs.haystack.rdf.Literal;
 import edu.mit.lcs.haystack.rdf.RDFNode;
 import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.Utilities;
+
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @version 	1.0

@@ -26,9 +26,16 @@
 package edu.mit.lcs.haystack.rdf;
 
 import edu.mit.lcs.haystack.server.core.service.IPersistent;
-import edu.mit.lcs.haystack.server.core.service.ServiceManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Dennis Quan

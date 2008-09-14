@@ -17,11 +17,11 @@ package edu.mit.lcs.haystack.lucene.index;
  */
 
 
-import java.io.IOException;
-
-import org.apache.lucene.store.OutputStream;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.OutputStream;
 import org.apache.lucene.util.StringHelper;
+
+import java.io.IOException;
 
 /** This stores a monotonically increasing set of <Term, TermInfo> pairs in a
   Directory.  A TermInfos can be written once, in order.  */

@@ -25,10 +25,6 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
-
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.AdenineException;
 import edu.mit.lcs.haystack.adenine.SWTConsole;
@@ -36,7 +32,6 @@ import edu.mit.lcs.haystack.content.ContentClient;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.Utilities;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
@@ -47,7 +42,15 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 /**
  * Adenine interactive debugger display.

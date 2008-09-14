@@ -16,16 +16,15 @@ package edu.mit.lcs.haystack.lucene.index;
  * the License.
  */
 
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
-
-import java.io.FileNotFoundException;
-
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.InputStream;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public final class ForwardReader {
 	InputStream fwd;

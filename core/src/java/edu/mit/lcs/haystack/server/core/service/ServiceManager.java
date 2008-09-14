@@ -25,12 +25,6 @@
 
 package edu.mit.lcs.haystack.server.core.service;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.core.CoreLoader;
 import edu.mit.lcs.haystack.proxy.ProxyManager;
@@ -43,6 +37,12 @@ import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.security.Identity;
 import edu.mit.lcs.haystack.security.IdentityManager;
 import edu.mit.lcs.haystack.server.core.rdfstore.RDFListener;
+
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * Manages services in the Haystack server.

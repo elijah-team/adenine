@@ -25,9 +25,6 @@
 
 package edu.mit.lcs.haystack.server.core.rdfstore;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.rdf.FederationRDFContainer;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
@@ -38,6 +35,9 @@ import edu.mit.lcs.haystack.rdf.Statement;
 import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
+
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author Dennis Quan

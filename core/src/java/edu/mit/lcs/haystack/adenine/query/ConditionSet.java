@@ -25,24 +25,24 @@
 
 package edu.mit.lcs.haystack.adenine.query;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.AdenineException;
 import edu.mit.lcs.haystack.adenine.functions.DeserializeFunction;
 import edu.mit.lcs.haystack.adenine.interpreter.ISerializable;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.ListUtilities;
 import edu.mit.lcs.haystack.rdf.Literal;
 import edu.mit.lcs.haystack.rdf.RDFException;
 import edu.mit.lcs.haystack.rdf.RDFNode;
 import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.Statement;
-import edu.mit.lcs.haystack.rdf.ListUtilities;
 import edu.mit.lcs.haystack.rdf.Utilities;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Dennis Quan

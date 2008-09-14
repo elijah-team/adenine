@@ -26,7 +26,10 @@
 package edu.mit.lcs.haystack.rdf;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * An implementation of a local RDF container.

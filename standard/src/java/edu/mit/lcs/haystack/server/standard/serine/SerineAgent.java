@@ -25,24 +25,14 @@
 
 package edu.mit.lcs.haystack.server.standard.serine;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import edu.mit.lcs.haystack.HaystackException;
 import edu.mit.lcs.haystack.Constants;
+import edu.mit.lcs.haystack.HaystackException;
 import edu.mit.lcs.haystack.adenine.AdenineException;
 import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
 import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
 import edu.mit.lcs.haystack.adenine.interpreter.Message;
 import edu.mit.lcs.haystack.adenine.query.ConditionSet;
 import edu.mit.lcs.haystack.adenine.query.DefaultQueryEngine;
-//import edu.mit.lcs.haystack.ozone.core.Ozone;
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.IRDFEventSource;
 import edu.mit.lcs.haystack.rdf.ListUtilities;
@@ -56,8 +46,16 @@ import edu.mit.lcs.haystack.server.core.service.GenericService;
 import edu.mit.lcs.haystack.server.core.service.IService;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
-//import edu.mit.lcs.haystack.server.standard.melatonin.MelatoninAgent;
 import edu.mit.lcs.haystack.server.standard.scheduler.IScheduledTask;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Serine Agent.

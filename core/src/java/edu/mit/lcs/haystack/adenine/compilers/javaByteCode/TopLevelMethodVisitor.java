@@ -26,17 +26,36 @@
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
 import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.rdf.*;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.AdenineException;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
-import edu.mit.lcs.haystack.adenine.constructs.*;
-import edu.mit.lcs.haystack.adenine.compilers.utils.*;
+import edu.mit.lcs.haystack.adenine.compilers.utils.ParserVisitorBase;
+import edu.mit.lcs.haystack.adenine.compilers.utils.TopLevelAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.compilers.utils.TopLevelExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.constructs.IMethodVisitor;
 import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
+import edu.mit.lcs.haystack.adenine.parser2.IAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.ICodeBlockVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullAttributeVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.NullCodeBlockVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.ResourceToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.ListUtilities;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
 
-import java.util.*;
-import org.apache.bcel.generic.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author David Huynh

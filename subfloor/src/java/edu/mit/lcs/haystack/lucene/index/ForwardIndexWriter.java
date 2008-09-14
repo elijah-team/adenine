@@ -16,13 +16,13 @@ package edu.mit.lcs.haystack.lucene.index;
  * the License.
  */
 
-import java.io.IOException;
-import java.io.File;
-
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import edu.mit.lcs.haystack.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ForwardIndexWriter extends IndexWriter {
 	protected String primaryField;

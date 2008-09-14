@@ -25,9 +25,25 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import org.apache.bcel.generic.*;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.IAnonymousModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IApplyVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IAskModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IListVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.IModelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.ISubExpressionVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.FloatToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.GenericToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.IntegerToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.LiteralToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Location;
+import edu.mit.lcs.haystack.adenine.tokenizer.StringToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import org.apache.bcel.generic.InstructionConstants;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUSH;
+import org.apache.bcel.generic.Type;
 
 /**
  * @author David Huynh

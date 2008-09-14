@@ -25,21 +25,57 @@
 
 package edu.mit.lcs.haystack.adenine.compiler;
 
-import edu.mit.lcs.haystack.HaystackException;
 import edu.mit.lcs.haystack.Constants;
-import edu.mit.lcs.haystack.adenine.*;
+import edu.mit.lcs.haystack.HaystackException;
+import edu.mit.lcs.haystack.adenine.AdenineConstants;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.SyntaxException;
 import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
 import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
-import edu.mit.lcs.haystack.adenine.parser.*;
+import edu.mit.lcs.haystack.adenine.parser.BackQuoteToken;
+import edu.mit.lcs.haystack.adenine.parser.Block;
+import edu.mit.lcs.haystack.adenine.parser.BracedToken;
+import edu.mit.lcs.haystack.adenine.parser.DereferencementToken;
+import edu.mit.lcs.haystack.adenine.parser.IdentifierToken;
+import edu.mit.lcs.haystack.adenine.parser.IndexToken;
+import edu.mit.lcs.haystack.adenine.parser.Line;
+import edu.mit.lcs.haystack.adenine.parser.LiteralToken;
+import edu.mit.lcs.haystack.adenine.parser.ParenthesizedToken;
+import edu.mit.lcs.haystack.adenine.parser.Parser;
+import edu.mit.lcs.haystack.adenine.parser.SemicolonToken;
+import edu.mit.lcs.haystack.adenine.parser.StringToken;
+import edu.mit.lcs.haystack.adenine.parser.Token;
+import edu.mit.lcs.haystack.adenine.parser.URIToken;
 import edu.mit.lcs.haystack.content.ContentClient;
 import edu.mit.lcs.haystack.core.CoreLoader;
 import edu.mit.lcs.haystack.proxy.IServiceAccessor;
-import edu.mit.lcs.haystack.rdf.*;
-
-import java.io.*;
-import java.util.*;
-
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+import edu.mit.lcs.haystack.rdf.URIGenerator;
+import edu.mit.lcs.haystack.rdf.Utilities;
 import org.apache.log4j.Category;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Adenine compiler

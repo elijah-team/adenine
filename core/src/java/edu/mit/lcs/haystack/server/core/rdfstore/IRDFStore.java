@@ -24,8 +24,6 @@
  */
 
 package edu.mit.lcs.haystack.server.core.rdfstore;
-import java.rmi.RemoteException;
-import java.util.Set;
 
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.RDFNode;
@@ -33,7 +31,11 @@ import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.Statement;
 import edu.mit.lcs.haystack.server.core.service.ISessionBasedService;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
-/**
+
+import java.rmi.RemoteException;
+import java.util.Set;
+
+/**
  * Haystack RDF store interface.
  * @author Dennis Quan
  */

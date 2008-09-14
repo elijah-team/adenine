@@ -28,8 +28,15 @@ package edu.mit.lcs.haystack.adenine.compiler;
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.AdenineException;
-import edu.mit.lcs.haystack.rdf.*;
-import java.util.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.RDFNode;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.Statement;
+import edu.mit.lcs.haystack.rdf.URIGenerator;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @version 	1.0

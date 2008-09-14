@@ -16,8 +16,8 @@ package edu.mit.lcs.haystack.lucene.index;
  * the License.
  */
 
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
 
 public class FrequencyMap {
 	protected Map m;

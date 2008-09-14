@@ -16,12 +16,13 @@ package edu.mit.lcs.haystack.lucene.document;
  * limitations under the License.
  */
 
-import java.io.Reader;
-import java.util.Date;
 import org.apache.lucene.document.DateField;
-import org.apache.lucene.index.IndexReader;       // for javadoc
-import org.apache.lucene.search.Similarity;       // for javadoc
-import org.apache.lucene.search.Hits;             // for javadoc
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.Similarity;
+
+import java.io.Reader;
+import java.util.Date;             // for javadoc
 
 /**
   A field is a section of a Document.  Each field has two parts, a name and a

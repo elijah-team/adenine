@@ -16,9 +16,9 @@ package edu.mit.lcs.haystack.lucene.index;
  * limitations under the License.
  */
 
-import java.io.IOException;
-
 import org.apache.lucene.store.InputStream;
+
+import java.io.IOException;
 
 final class SegmentTermPositions
 extends SegmentTermDocs implements TermPositions {

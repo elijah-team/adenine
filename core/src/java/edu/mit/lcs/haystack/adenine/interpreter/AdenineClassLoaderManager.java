@@ -25,8 +25,12 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Manages precompiled Adenine code

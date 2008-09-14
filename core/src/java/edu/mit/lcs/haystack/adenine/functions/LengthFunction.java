@@ -25,13 +25,13 @@
 
 package edu.mit.lcs.haystack.adenine.functions;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-
 import edu.mit.lcs.haystack.adenine.AdenineException;
 import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
 import edu.mit.lcs.haystack.adenine.interpreter.ICallable;
 import edu.mit.lcs.haystack.adenine.interpreter.Message;
+
+import java.lang.reflect.Array;
+import java.util.Collection;
 
 /**
  * @version 	1.0

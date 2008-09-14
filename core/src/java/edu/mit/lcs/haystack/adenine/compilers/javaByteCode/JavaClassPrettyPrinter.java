@@ -25,14 +25,22 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import org.apache.bcel.*;
-import org.apache.bcel.generic.*;
-import org.apache.bcel.classfile.*;
-
 import edu.mit.lcs.haystack.HaystackException;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.LineNumberGen;
+import org.apache.bcel.generic.MethodGen;
 
-import java.util.*;
-import java.text.*;
+import java.text.MessageFormat;
+import java.util.Iterator;
 
 /**
  * @author David Huynh

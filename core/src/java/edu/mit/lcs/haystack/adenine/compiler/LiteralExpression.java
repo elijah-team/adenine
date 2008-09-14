@@ -27,7 +27,11 @@ package edu.mit.lcs.haystack.adenine.compiler;
 
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Literal;
+import edu.mit.lcs.haystack.rdf.RDFException;
+import edu.mit.lcs.haystack.rdf.RDFNode;
+import edu.mit.lcs.haystack.rdf.URIGenerator;
 
 /**
  * @version 	1.0

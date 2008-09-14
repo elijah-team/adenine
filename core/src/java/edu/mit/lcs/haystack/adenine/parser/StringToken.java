@@ -25,7 +25,8 @@
 
 package edu.mit.lcs.haystack.adenine.parser;
 
-import edu.mit.lcs.haystack.adenine.*;
+import edu.mit.lcs.haystack.adenine.AdenineException;
+import edu.mit.lcs.haystack.adenine.SyntaxException;
 
 /**
  * @version 	1.0

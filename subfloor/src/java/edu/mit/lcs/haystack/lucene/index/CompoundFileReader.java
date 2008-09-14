@@ -18,10 +18,11 @@ package edu.mit.lcs.haystack.lucene.index;
 
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.InputStream;
-import org.apache.lucene.store.OutputStream;
 import org.apache.lucene.store.Lock;
-import java.util.HashMap;
+import org.apache.lucene.store.OutputStream;
+
 import java.io.IOException;
+import java.util.HashMap;
 
 
 /**

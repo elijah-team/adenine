@@ -25,7 +25,10 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.javaByteCode;
 
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.BranchHandle;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * @author David Huynh

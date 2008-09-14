@@ -25,16 +25,15 @@
 
 package edu.mit.lcs.haystack.rdf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.Serializable;
 import edu.mit.lcs.haystack.Constants;
-
-import java.security.*;
-
 import org.apache.xml.serialize.XMLSerializer;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.security.MessageDigest;
 
 /**
  * Represents an RDF statement.

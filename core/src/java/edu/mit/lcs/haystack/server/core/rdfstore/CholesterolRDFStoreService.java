@@ -25,12 +25,6 @@
 
 package edu.mit.lcs.haystack.server.core.rdfstore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import edu.mit.lcs.haystack.rdf.IRDFContainer;
 import edu.mit.lcs.haystack.rdf.Literal;
 import edu.mit.lcs.haystack.rdf.LocalRDFContainer;
@@ -42,6 +36,12 @@ import edu.mit.lcs.haystack.security.Identity;
 import edu.mit.lcs.haystack.server.core.service.IService;
 import edu.mit.lcs.haystack.server.core.service.ServiceException;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Cholesterol RDF store.

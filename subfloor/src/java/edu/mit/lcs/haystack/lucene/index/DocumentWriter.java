@@ -16,21 +16,21 @@ package edu.mit.lcs.haystack.lucene.index;
  * the License.
  */
 
+import edu.mit.lcs.haystack.lucene.document.Document;
+import edu.mit.lcs.haystack.lucene.document.Field;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.Token;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.search.Similarity;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.OutputStream;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
-import edu.mit.lcs.haystack.lucene.document.Document;
-import edu.mit.lcs.haystack.lucene.document.Field;
-import org.apache.lucene.search.Similarity;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.OutputStream;
 
 final class DocumentWriter {
     private Analyzer analyzer;

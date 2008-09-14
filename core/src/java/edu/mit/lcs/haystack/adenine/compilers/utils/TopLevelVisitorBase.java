@@ -25,13 +25,20 @@
 
 package edu.mit.lcs.haystack.adenine.compilers.utils;
 
-import edu.mit.lcs.haystack.*;
-import edu.mit.lcs.haystack.rdf.*;
+import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.IParserVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.ITopLevelVisitor;
+import edu.mit.lcs.haystack.adenine.parser2.SyntaxException;
+import edu.mit.lcs.haystack.adenine.tokenizer.ResourceToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.SymbolToken;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
+import edu.mit.lcs.haystack.rdf.IRDFContainer;
+import edu.mit.lcs.haystack.rdf.Resource;
+import edu.mit.lcs.haystack.rdf.URIGenerator;
+import edu.mit.lcs.haystack.rdf.Utilities;
 
-import java.util.*;
+import java.util.HashMap;
 
 /**
  * @author David Huynh

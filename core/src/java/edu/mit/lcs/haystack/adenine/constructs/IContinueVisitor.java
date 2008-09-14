@@ -25,8 +25,8 @@
 
 package edu.mit.lcs.haystack.adenine.constructs;
 
-import edu.mit.lcs.haystack.adenine.parser2.*;
-import edu.mit.lcs.haystack.adenine.tokenizer.*;
+import edu.mit.lcs.haystack.adenine.parser2.IConstructVisitor;
+import edu.mit.lcs.haystack.adenine.tokenizer.Token;
 
 /**
  * @author David Huynh

@@ -25,7 +25,7 @@
 
 package edu.mit.lcs.haystack.adenine.interpreter;
 
-import java.util.*;
+import java.util.HashSet;
 
 /**
  * Loads precompiled Adenine code

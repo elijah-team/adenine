@@ -28,14 +28,6 @@
  */
 package edu.mit.lcs.haystack.server.core.content;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.log4j.Category;
-
 import edu.mit.lcs.haystack.Constants;
 import edu.mit.lcs.haystack.adenine.interpreter.Interpreter;
 import edu.mit.lcs.haystack.content.ContentAndMimeType;
@@ -45,6 +37,13 @@ import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.Statement;
 import edu.mit.lcs.haystack.rdf.Utilities;
 import edu.mit.lcs.haystack.server.core.service.GenericService;
+import org.apache.log4j.Category;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Dennis Quan

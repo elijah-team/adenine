@@ -25,14 +25,14 @@
 
 package edu.mit.lcs.haystack.adenine.query;
 
-import java.util.Set;
-
 import edu.mit.lcs.haystack.adenine.AdenineException;
 import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
 import edu.mit.lcs.haystack.rdf.RDFException;
 import edu.mit.lcs.haystack.rdf.RDFNode;
 import edu.mit.lcs.haystack.rdf.Resource;
 import edu.mit.lcs.haystack.rdf.Statement;
+
+import java.util.Set;
 
 /**
  * @author Dennis Quan
