@@ -16,19 +16,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/Haystack.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/Haystack.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/.classpath" afterPath="$PROJECT_DIR$/core/.classpath" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/subfloor/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/.classpath" afterPath="$PROJECT_DIR$/web/.classpath" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/.classpath" afterPath="$PROJECT_DIR$/subfloor/.classpath" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fs/.classpath" afterPath="$PROJECT_DIR$/fs/.classpath" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/standard/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/.classpath" afterPath="$PROJECT_DIR$/standard/.classpath" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/build.properties" afterPath="$PROJECT_DIR$/web/build.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/plugin.xml" afterPath="$PROJECT_DIR$/web/plugin.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Adenine.iws" afterPath="$PROJECT_DIR$/Adenine.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java" />
     </list>
     <ignored path="Adenine.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -94,7 +83,7 @@
       <file leaf-file-name="CodeFrame.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrame.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="0" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.011952192">
+            <state line="27" column="0" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.018461538">
               <folding />
             </state>
           </provider>
@@ -103,7 +92,7 @@
       <file leaf-file-name="ContentClient.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="168" column="37" selection-start="6426" selection-end="6426" vertical-scroll-proportion="0.012133468">
+            <state line="168" column="37" selection-start="6426" selection-end="6426" vertical-scroll-proportion="0.018897638">
               <folding />
             </state>
           </provider>
@@ -112,7 +101,7 @@
       <file leaf-file-name="DebugDisplay.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="23" selection-start="1779" selection-end="1779" vertical-scroll-proportion="0.012133468">
+            <state line="39" column="23" selection-start="1779" selection-end="1779" vertical-scroll-proportion="0.018897638">
               <folding />
             </state>
           </provider>
@@ -121,7 +110,7 @@
       <file leaf-file-name="Console.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="204" column="0" selection-start="7444" selection-end="7444" vertical-scroll-proportion="0.85743177">
+            <state line="204" column="0" selection-start="7444" selection-end="7444" vertical-scroll-proportion="1.3354331">
               <folding />
             </state>
           </provider>
@@ -130,7 +119,7 @@
       <file leaf-file-name="CoreLoader.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="142" column="0" selection-start="5215" selection-end="5220" vertical-scroll-proportion="0.8565737">
+            <state line="36" column="1" selection-start="1595" selection-end="1595" vertical-scroll-proportion="0.24">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -449,17 +438,21 @@
     <property name="RunManagerConfig.showSettingsBeforeRunnig" value="true" />
   </component>
   <component name="RunManager" selected="Application.Adenine Console">
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
+    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
       <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method>
+        <option name="Make" value="true" />
+      </method>
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
       <module name="" />
@@ -480,28 +473,24 @@
       </option>
       <envs />
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+    </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
-    </configuration>
-    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="" />
-      <envs />
-      <method>
-        <option name="Make" value="true" />
-      </method>
     </configuration>
     <configuration default="false" name="Adenine Console" type="Application" factoryName="Application" enabled="false" merge="false">
       <option name="MAIN_CLASS_NAME" value="edu.mit.lcs.haystack.adenine.Console" />
@@ -578,7 +567,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="23" width="1919" height="1177" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
@@ -586,14 +575,14 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37700534" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" order="1" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="8" />
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" order="6" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="8" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" order="1" />
       <window_info id="Maven projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="8" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30929792" order="8" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" order="2" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" order="0" />
@@ -797,35 +786,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrame.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="0" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.011952192">
+        <state line="27" column="0" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.018461538">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="168" column="37" selection-start="6426" selection-end="6426" vertical-scroll-proportion="0.012133468">
+        <state line="168" column="37" selection-start="6426" selection-end="6426" vertical-scroll-proportion="0.018897638">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="23" selection-start="1779" selection-end="1779" vertical-scroll-proportion="0.012133468">
+        <state line="39" column="23" selection-start="1779" selection-end="1779" vertical-scroll-proportion="0.018897638">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="204" column="0" selection-start="7444" selection-end="7444" vertical-scroll-proportion="0.85743177">
+        <state line="204" column="0" selection-start="7444" selection-end="7444" vertical-scroll-proportion="1.3354331">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="0" selection-start="5215" selection-end="5220" vertical-scroll-proportion="0.8565737">
+        <state line="36" column="1" selection-start="1595" selection-end="1595" vertical-scroll-proportion="0.24">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
