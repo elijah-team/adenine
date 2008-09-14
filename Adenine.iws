@@ -18,14 +18,14 @@
     <list default="true" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build.properties" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/adenine.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/Haystack Subfloor.iml" afterPath="$PROJECT_DIR$/subfloor/Haystack Subfloor.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/.classpath" afterPath="$PROJECT_DIR$/standard/.classpath" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/Haystack Subfloor.iml" afterPath="$PROJECT_DIR$/subfloor/Haystack Subfloor.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Adenine.iws" afterPath="$PROJECT_DIR$/Adenine.iws" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Adenine.ipr" afterPath="$PROJECT_DIR$/Adenine.ipr" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/Haystack Standard Functionality.iml" afterPath="$PROJECT_DIR$/standard/Haystack Standard Functionality.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/Haystack Core.iml" afterPath="$PROJECT_DIR$/core/Haystack Core.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/run.sh" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build.xml" />
     </list>
     <ignored path="Adenine.iws" />
     <ignored path=".idea/workspace.xml" />
