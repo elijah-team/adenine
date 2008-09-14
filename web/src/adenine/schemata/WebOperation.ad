@@ -1,0 +1,214 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Web Operation schema
+# Written by Ryan Manuel
+
+@base			<http://haystack.lcs.mit.edu/schemata/WebOperation>
+
+@prefix	:		<http://haystack.lcs.mit.edu/schemata/WebOperation#>
+@prefix vowl:	<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix wrap:		<http://haystack.lcs.mit.edu/schemata/wrapperinduction#>
+@prefix	web:	<http://haystack.lcs.mit.edu/schemata/web#>
+@prefix	op:		<http://haystack.lcs.mit.edu/schemata/operation#>
+
+add { :WebOperation
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:subClassOf	op:Operation ;
+	rdfs:label		"Web Operation" ;
+	rdfs:isDefinedBy ^
+}
+
+add { :actionURL
+	rdf:type		daml:DatatypeProperty ;
+	rdf:type		daml:UniqueProperty ;
+	rdfs:label		"Action URL" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOperation ;
+	rdfs:range		xsd:string ;
+}
+
+add { :headers
+	rdf:type 		daml:DatatypeProperty ;
+	rdf:type		daml:UniqueProperty ;
+	rdfs:label		"Headers" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOperation ;
+	rdfs:range		xsd:string ;
+}
+
+add { :operType
+	rdf:type		daml:DatatypeProperty ;
+	rdf:type		daml:UniqueProperty ;
+	rdfs:label		"Operation Type" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOperation ;
+	rdfs:range		xsd:string ;
+}
+
+add { :pattern
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Pattern" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOperation ;
+	rdfs:range		wrap:Pattern ;
+}
+
+add { :WebOpParameter
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:subClassOf	op:Parameter ;
+	rdfs:label		"Web Operation Parameter" ;
+	rdfs:isDefinedBy ^ ;
+	vowl:titleSourcePredicate :dispName
+}
+
+add { :origName
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Original Name" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		xsd:string ;
+}
+
+add { :dispName
+	rdf:type		daml:DatatypeProperty ;
+	rdf:type		daml:UniqueProperty ;
+	rdfs:label		"Display Name" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		xsd:string ;
+}
+
+add { :leftText
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Left Text" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		xsd:string ;
+}
+
+add { :rightText
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Right Text" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		xsd:string ;
+}
+
+add { :initPage
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Initiating Page" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		web:WebPage ; 
+}
+
+add { :origValue
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Original Value" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		xsd:string ;
+}
+
+add { :paramType
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Parameter Type" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		xsd:string ;
+}
+
+add { :paramRange
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Parameter Range" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:WebOpParameter ;
+	rdfs:range		:paramRangeValue ;
+}
+
+add { :paramRangeValue
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Parameter Range" ;
+	rdfs:isDefinedBy ^ ;
+	vowl:titleSourcePredicate :paramRangeDisplay ;
+}
+
+add { :paramRangeDisplay
+	rdf:type 		daml:DatatypeProperty ;
+	rdfs:label		"Parameter Range Display Name" ;
+	rdfs:isDefinedBy		^ ;
+	rdfs:domain		:paramRangeValue ;
+	rdfs:range		xsd:string ;
+}
+
+add { :paramRangeSubmit
+	rdf:type 		daml:DatatypeProperty ;
+	rdfs:label		"Parameter Range Submit Name" ;
+	rdfs:isDefinedBy		^ ;
+	rdfs:domain		:paramRangeValue ;
+	rdfs:range		xsd:string ;
+}
+
+add { :VisibleWebOperation
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:subClassOf	op:Operation ;
+	rdfs:label		"Web Operation" ;
+	rdfs:isDefinedBy ^
+}
+
+add { :visibleURL
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"URL" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:VisibleWebOperation ;
+	rdfs:range		xsd:string ;
+}
+
+add { :visibleHeaders
+	rdf:type 		daml:DatatypeProperty ;
+	rdfs:label		"Headers" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:VisibleWebOperation ;
+	rdfs:range		xsd:string ;
+}
+
+add { :visiblePostData
+	rdf:type 		daml:DatatypeProperty ;
+	rdfs:label		"Post Data" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:VisibleWebOperation ;
+	rdfs:range		xsd:string ;
+}
+
+
+
+
+
+
+

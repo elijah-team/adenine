@@ -1,0 +1,248 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# The Navigation Service
+# Written by Vineet Sinha
+
+@base <http://haystack.lcs.mit.edu/agents/navigation>
+
+@prefix frame:	<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix nav: 	<http://haystack.lcs.mit.edu/agents/navigation#>
+@prefix navView:<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix util:	<http://haystack.lcs.mit.edu/programs/utilities#>
+@prefix op:		<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix dc:		<http://purl.org/dc/elements/1.1/>
+@prefix ozone:	<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix navigator:	<http://haystack.lcs.mit.edu/ui/viewNavigator#>
+@prefix navPane:	<http://haystack.lcs.mit.edu/ui/navigationPane#>
+@prefix hs:	<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix config:	<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix setupui:	<http://haystack.lcs.mit.edu/ui/setup#>
+#@prefix	data:	<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+#@prefix	layout:	<http://haystack.lcs.mit.edu/schemata/layout#>
+#@prefix	cv:		<http://haystack.lcs.mit.edu/ui/collectionView#> 
+
+
+#############################################################################################
+# TODO[vineet]: figure out why they are needed (and put them in the right files)
+
+add {
+	^ config:includes		<http://haystack.lcs.mit.edu/agents/information>
+	^ config:includes		<http://haystack.lcs.mit.edu/agents/mercury>
+	^ config:includes		<http://haystack.lcs.mit.edu/agents/xml>
+	^ config:includes		<http://haystack.lcs.mit.edu/agents/lucene>
+	^ config:includes		<http://haystack.lcs.mit.edu/agents/text>
+	
+	^ config:dependsOn		<http://haystack.lcs.mit.edu/agents/lucene>
+}
+
+# TODO[vineet] clean up this code
+method <navStudy:log>
+
+########################################################
+# support utilities
+
+
+method nav:addNavPaneToStartCollection
+	for navPane in (query { ?x rdf:type navView:NavigationPane })
+		frame:addToStartPaneCollection navPane[0]
+
+method nav:addNavPane ;
+rdf:type		op:Operation ;
+dc:title		"Add NavPane"
+
+	= nm (__context__.getProperty ozone:navigationMaster)
+	for navPane in (query { ?x rdf:type navView:NavigationPane })
+		# see which ones are valid
+		= vnId (extract ?x navigator:navigatePane navPane[0])
+		if (!= null (nm.getViewNavigator vnId))
+			frame:addToStartPaneCollection navPane[0]
+
+method <navRefreshNavPane>
+	nav:refreshNavPane
+	
+method nav:refreshNavPane ;
+rdf:type		op:Operation ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/annotate.gif> ;
+dc:title		"Refresh NavPane"
+
+	= nm (__context__.getProperty ozone:navigationMaster)
+	= vn (nm.getViewNavigator null)
+	= curRes (vn.getCurrentResource)
+	= navPaneUI (extract ?x navPane:navigationPaneUIOf curRes)
+	= navAgents (extract navPaneUI navPane:navigationAgents ?x)
+
+	print 'Refreshing navigation pane data: ' navAgents
+	remove navAgents hs:member ?x
+	remove navAgents navPane:initializedAdvisor ?x
+
+	navPane:setNavAgents curRes navAgents
+
+
+method nav:removeNavPaneFromStartCollection
+	for navigatePane in (query { ?x rdf:type navView:NavigationPane })
+		frame:removeFromStartPaneCollection navigatePane[0]
+
+method nav:removeNavButtonFromTopBar
+	= user (__identity__.getResource)
+	= topBar (extract user frame:topList ?x)
+	util:removeFromHSList topBar frame:browseToOperation
+
+method nav:addNavButtonToTopBar
+	= user (__identity__.getResource)
+	= topBar (extract user frame:topList ?x)
+	util:appendToHSList topBar frame:browseToOperation
+
+
+method :createXColl
+	add { <xColl>
+		rdf:type	hs:Collection ;
+		dc:title	"xCollection" ;
+		hs:view ${	rdf:type	setupui:CollectionView	} ;
+	}
+	= xColl <xColl>
+	:recurseXColl xColl <http://haystack.lcs.mit.edu/data/operations#startingPoints>
+
+method :recurseXColl xCollRes res
+	if (contains res rdf:type hs:Collection)
+		= xCollMem (query {res hs:member ?x})
+		for x in xCollMem
+			:recurseXColl xCollRes x[0]
+	else
+		add { xCollRes hs:member res }
+	
+main
+	= user (__identity__.getResource)
+	= server (__serviceaccessor__.getResource)
+
+	#:createXColl
+
+	add { 
+	server	config:hostsService random:navigationService
+
+	random:navigationService dc:title "Navigation Service" ;
+			rdf:type config:Service ;
+			rdf:type nav:NavigationService ;
+			hs:user  user ;
+			wsdl:port ${
+				rdf:type wsdl:Port ;
+				wsdl:binding ${
+					rdf:type	wsdl:Binding ;
+					rdf:type	config:JavaBinding ;
+					wsdl:type ${
+						rdf:type wsdl:PortType ;
+						config:javaInterface ${
+							rdf:type hs:JavaClass ;
+							hs:className "edu.mit.lcs.haystack.server.extensions.navigation.NavigationService"
+						}
+					}
+				}
+			} ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:className "edu.mit.lcs.haystack.server.extensions.navigation.NavigationService" 
+			}
+	}
+	
+	add {	nav:NavigationService rdfs:label "Navigation Service"	}
+	
+	# make the collection
+	= advisors (query { ?x rdf:type adenine:Method ; navView:NavAgentDomain ?y } @(?x) )
+	for a in advisors
+		add { random:navigationService hs:member a[0] }
+		
+	#also disable all the advisors
+	for a in advisors
+		replace a[0] nav:enabled ?x "false"
+
+	# really need a check-box aspect before this is enabled
+	#[
+	= layoutConstraint (UniqueResource)
+	= sortBy ${
+		rdf:type				data:SortingListSource ;
+		data:sortOrder			"ascending" ;
+		data:sortDataSource		${ rdf:type data:LiteralPropertySource ; data:predicate vra:title ; data:default "" } ;
+		layout:sortCriterionFor	layoutConstraint
+	}
+	add { layoutConstraint
+		rdf:type				layout:ListViewConstraint ;
+		ozone:viewPartClass		ozone:FieldSetViewPart ;
+		layout:sortBy			sortBy ;
+		layout:fields ${
+			rdf:type			data:DAMLListSource ;
+			data:damlList		@(
+				${	rdf:type					layout:Field ;
+					layout:fieldID				vra:title ;
+					layout:fieldDimension		"30%" ;
+					layout:layoutConstraint		layoutConstraint ;
+					layout:fieldSorted			"ascending" ;
+					layout:sortBy				sortBy
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				vra:typeAAT ;
+					layout:fieldDimension		"10%" ;
+					layout:layoutConstraint		layoutConstraint
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				vra:subject ;
+					layout:fieldDimension		"20%" ;
+					layout:layoutConstraint		layoutConstraint
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				vra:period ;
+					layout:fieldDimension		"10%" ;
+					layout:layoutConstraint		layoutConstraint
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				vra:creation ;
+					layout:fieldDimension		"10%" ;
+					layout:layoutConstraint		layoutConstraint
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				art:topic ;
+					layout:fieldDimension		"10%" ;
+					layout:layoutConstraint		layoutConstraint
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				art:geographic ;
+					layout:fieldDimension		"10%" ;
+					layout:layoutConstraint		layoutConstraint
+				}
+			)
+		} ;
+		layout:headers							layout:defaultHeaders
+	}
+	]#
+	add {
+		random:navigationService
+			rdf:type hs:Collection ;
+			#[
+			hs:view ${
+				rdf:type					ozone:CollectionView ;
+				cv:initialLayoutConstraint	layoutConstraint ;
+			}
+			]#
+	}
+

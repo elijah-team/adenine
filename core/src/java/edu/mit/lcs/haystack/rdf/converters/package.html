@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+</head>
+<body>
+
+<p><b>matsakis:</b>Converters between RDF and other file formats (VCARD, etc.)
+
+<p>
+<b>Owner:</b> <a href="mailto:matsakis@mit.edu">matsakis</a><br>
+<b>Status:</b> <em>on hold</em><br>
+<b>Date:</b> 3/2/04
+</p>
+<!--
+Please replace the package status with one of the following descriptions:
+    core        = central to active haystack application
+    depricated  = still in use but on its way out
+    abandoned   = not in use; no further interest in development
+    on hold     = not in use; interested in developing further
+    in progress = not in use but actively being developed
+-->
+
+<p>This is a skeleton of a framework for converting between different
+file formats, text or otherwise, and RDF.  The basic idea is that for
+each format we need to define a 'parser' and a 'generator'.  The hope
+is that we can maintain a mapping between MIME types and this code, so
+that when the user wants to import/export data the appropriate
+converter can be found dynamically.
+
+<p>This package should depend on no other part of Haystack besides the
+RDF framework and java core libraries. Further references are listed
+below.
+
+<!-- replace with actual references -->
+@see edu.mit.lcs.haystack.rdf
+
+</body>
+</html>

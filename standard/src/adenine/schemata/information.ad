@@ -1,0 +1,306 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Information Ontology
+# Written by Dennis Quan
+# $Header: 
+
+@base <http://haystack.lcs.mit.edu/schemata/information>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix	serine:		<http://haystack.lcs.mit.edu/agents/serine#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	:			<http://haystack.lcs.mit.edu/schemata/information#>
+ 
+add { ^
+	rdf:type	daml:Ontology ;
+	dc:title	"Haystack Information Ontology"
+}
+
+#############################################################################################
+# Information sources
+
+add { info:InformationSource
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Information Source"
+}
+
+add { info:RDFStore
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		config:Service ;
+	rdfs:subClassOf		info:InformationSource ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"RDF Store"
+}
+
+add { info:knowsAbout
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Knows About" ;
+	rdfs:isDefinedBy	^
+}
+
+#############################################################################################
+# Information extractor
+
+add { info:InformationExtractor
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		adenine:Method ;
+	rdfs:label			"Information extractor" ;
+	rdfs:isDefinedBy	^
+}
+
+method :extractInformationHelper collabAgent subject nodes ; adenine:precompile "true" ; adenine:preload "true"
+	# Check to see if this node has already been hit
+	if (nodes.contains subject)
+		return
+
+	# Add appropriate information
+	var data
+	with __source__ __infosource__
+		= data (query { subject ?x ?y } @(?x ?y))
+	for x in data
+		= predicate x[0]
+		= object x[1]
+		if (instanceOf object Resource)
+			var b
+			with __source__ __infosource__
+				= b (or (contains predicate rdf:type hs:ProprietalProperty) (contains predicate rdf:type hs:ContainmentProperty))
+			if b
+				:extractInformationHelper collabAgent object nodes
+			with __source__ __infosource__
+				= b (contains predicate rdf:type hs:RelationalProperty)
+			if b
+				if (! (nodes.contains object))
+					if (!= collabAgent null)
+						add { collabAgent info:knowsAbout object }
+		add { subject predicate object }
+	
+	nodes.add subject
+
+
+method info:organizationalExtractor subject contact ; 
+adenine:preload		"true" ; 
+rdfs:comment		"Extracts organizational information from the given resource and returns an RDF container." ;
+dc:title			"Organizational information" ;
+rdf:type			info:InformationExtractor
+	= membership (query { ?x hs:member subject })
+	for x in membership
+		add { x[0] hs:member subject }
+		if (!= null contact)
+			add { contact info:knowsAbout x[0] }
+
+#############################################################################################
+# Information document
+
+add { info:Information
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Information" ;
+	rdfs:isDefinedBy	^
+}
+
+add { info:highlight
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Highlighted Item" ;
+	rdfs:comment		"Indicates an item of importance in the information corpus." ;
+	rdfs:domain			info:Information
+}
+
+add { info:InformationReader
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		adenine:Method ;
+	rdfs:label			"RDF Information Extractor" ;
+	rdfs:isDefinedBy	^
+}
+
+method :adenineInformationExtractor res ; 
+dc:title			"RDF Information Extractor for Adenine files" ;
+rdf:type			info:InformationReader ;
+info:targetFormat	"application/x-adenine" ;
+info:targetFormat	"text/plain" ;
+adenine:precompile	"true" ;
+adenine:preload		"true"
+	importjava "edu.mit.lcs.haystack.content" ContentClient
+#[	importjava "edu.mit.lcs.haystack.eclipse" EclipseUtilities
+	
+	EclipseUtilities.compileAdenine ((ContentClient.getContentClient res __source__ __serviceaccessor__).getContent) __target__ __context__
+]#	
+	importjava "edu.mit.lcs.haystack.rdf" URIGenerator
+	importjava "edu.mit.lcs.haystack.rdf.converters" AdenineConverter
+	
+	(AdenineConverter).parse res ((ContentClient.getContentClient res __source__ __serviceaccessor__).getContent) __target__ (URIGenerator)
+
+add { info:rdfInformationDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"application/rdf+xml"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		info:Information
+	}
+}
+
+add { info:adenineInformationDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"application/x-adenine"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		info:Information
+	}
+}
+
+add { info:adenineInformationDetectorHackForText
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"text/plain"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		info:Information
+	}
+}
+
+add { info:n3InformationDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"application/n3"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		info:Information
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		info:AdenineFile
+	}
+}
+
+add { info:rssInformationDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"application/rss+xml"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		info:Information
+	}
+}
+
+add { info:wsdlInformationDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"application/wsdl+xml"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		info:Information
+	}
+}
+
+method info:createInformationResource source ; adenine:precompile "true" ; adenine:preload "true" ; rdfs:comment "Creates an Information resource from the given RDF container."
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	= rdf (Utilities.generateRDF source)
+	return ${
+		rdf:type		content:LiteralContent ;
+		rdf:type		info:Information ;
+		dc:format		"application/rdf+xml" ;
+		content:content	rdf
+	}
+

@@ -1,0 +1,1598 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone Lens UI
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/lens.ad,v 1.1 2004/05/15 15:18:57 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/lens>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	create:		<http://haystack.lcs.mit.edu/programs/create#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix opui:		<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	chooser:	<http://haystack.lcs.mit.edu/ui/chooser#> 
+@prefix	vc:			<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#> 
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/lens#> 
+
+#############################################################################################
+# Aspect view part
+
+add { vowl:Lens
+	hs:classView	:LensView
+}
+
+add { :expanded
+	rdf:type	daml:DatatypeProperty ;
+	rdfs:label	"Expanded" ;
+	rdfs:domain	vowl:Lens ;
+	rdfs:range	xsd:boolean
+}
+
+add { :appletAspectViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	vc:toolbarCaption		"All information" ;
+	ozone:viewDomain		:LensView ;
+	ozone:template ${
+		rdf:type		ozone:MultiplexPartContainer ;
+		ozone:children @(
+			:singleAspectPane
+			:multipleAspectsPane
+		) ;
+		ozone:dataSource ${
+			rdf:type			data:MappingSource ;
+			data:domain			@( "1" ) ;
+			data:range			@( :singleAspectPane ) ;
+			data:default		:multipleAspectsPane ;
+			ozone:dataSource ${
+				rdf:type			data:SetSizeSource ;
+				ozone:dataSource	:applicableAppletAspectsDataSource
+			}
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { :singleAspectPane
+	rdf:type				:SingleAspectContainer ;
+	:aspectDataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?type ) ;
+		data:extract			"true" ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subjectDataSource	:underlyingSource ;
+			data:predicate		rdf:type ;
+			data:object			?type
+		} ;
+		data:statement ${
+			data:subject	?type ;
+			data:predicate	:appletAspect ;
+			data:object		?x
+		}
+	} ;
+	ozone:viewPartClass		:EmbeddedIndividualAspectViewPart
+}
+
+add { :applicableAppletAspectsDataSource
+	rdf:type				data:RDFQuerySetSource ;
+	data:existentials		@( ?x ?type ) ;
+	data:targetExistential	?x ;
+	data:statement ${
+		data:subjectDataSource	data:underlyingSource ;
+		data:predicate		rdf:type ;
+		data:object			?type
+	} ;
+	data:statement ${
+		data:subject	?type ;
+		data:predicate	:appletAspect ;
+		data:object		?x
+	}
+}
+
+add { :multipleAspectsPane
+	rdf:type	:MultipleAspectContainer ;
+	:aspectDataSource ${
+		rdf:type			data:SortingListSource ;
+		data:sortDataSource ${ rdf:type summary:TitleSource } ;
+		ozone:dataSource ${
+			rdf:type				data:RDFQuerySetSource ;
+			data:existentials		@( ?x ?type ) ;
+			data:targetExistential	?x ;
+			data:statement ${
+				data:subjectDataSource	:underlyingSource ;
+				data:predicate		rdf:type ;
+				data:object			?type
+			} ;
+			data:statement ${
+				data:subject	?type ;
+				data:predicate	:appletAspect ;
+				data:object		?x
+			}
+		}
+	} ;
+	:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		:EmbeddedIndividualAspectViewPart
+	}
+}
+
+add { :lensViewPart
+	rdf:type						ozone:SWTPart ;
+	rdf:type						ozone:Part ;
+	rdf:type						ozone:InteractiveViewPart ;
+	rdf:type						ozone:ViewPart ;
+	ozone:viewDomain				:LensView ;
+#	ozone:partDataGenerator			:presentAspectView ;
+	vc:toolbarCaption				"All information" ;
+#	hs:javaImplementation			${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } ;
+#	ozone:cachePartData				"true" ;
+	ozone:cacheStyle				ozone:cacheDisabled ;
+	hs:javaImplementation			${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:Slide ;
+		slide:bgcolor			"#fffef9" ;
+		slide:cropChildWidth	"true" ;
+		slide:child ${
+			rdf:type		slide:RowSet ;
+			slide:children @(
+				:titleHeader
+				${	rdf:type				slide:Block ;
+					slide:cropChildWidth	"true" ;
+					slide:child ${
+						rdf:type					ozone:DataProviderHost ;
+						ozone:hostedDataProvider	data:underlyingSource ;
+						ozone:propertyName			:underlyingSource ;
+						slide:child ${
+							rdf:type			layout:Layout ;
+							ozone:dataSource ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${
+									rdf:type		data:LiteralPropertySource ;
+									data:predicate	vowl:priority ;
+									data:default	"x"
+								} ;
+								ozone:dataSource	:aspectsDataSource
+							} ;
+							layout:layoutConstraint :layoutConstraint
+						}
+					}
+				}
+			)
+		}
+	}
+}
+
+add { daml:Thing 
+	hs:possibleClassView	:LensView
+}
+
+add { vowl:allProperties
+	:expanded			"false" ;
+	:spansAllColumns	"true"
+}
+
+add { vowl:standardProperties
+	:expanded			"false" ;
+	:spansAllColumns	"true"
+}
+
+method :createDefaultAspect type ; adenine:preload "true"
+	# Construct a default aspect
+	= typeName (extract type rdfs:label ?x)
+	if (== typeName null)
+		= typeName (type.getURI)
+
+	= x ${
+		rdf:type	metadata:MetadataAspect ;
+		dc:title	typeName ;
+		metadata:propertiesToDisplay ${
+			rdf:type	data:OrderedSetSource ;
+			ozone:dataSource ${
+				rdf:type		data:PredicateSetSource ;
+				data:predicate	rdfs:domain ;
+				data:object		type
+			}
+		}
+	}
+	add { type vowl:hasLens x }
+	return x
+
+add { :layoutConstraint
+	rdf:type				layout:VerticalFlowConstraint ;
+	layout:minColumnWidth	"230" ;
+	slide:maxWidth			"640" ;
+	ozone:viewPartClass		:IndividualAspectViewPart ;
+	layout:spansAllColumnsDataSource ${
+		rdf:type		data:StatementExistenceSource ;
+		data:predicate	:spansAllColumns ;
+		data:object		"true"
+	}
+}
+
+add { :titleHeader
+	rdf:type				slide:RowSet ;
+	slide:children @(
+		${	rdf:type				slide:Block ;
+			slide:background		<http://haystack.lcs.mit.edu/data/ozone/frame/horizontalBlocks.png> ;
+			slide:backgroundRepeat	"both" ;
+			slide:height			"15" ;
+			slide:cropChildWidth	"true" ;
+			slide:child				slide:null
+		}
+		${	rdf:type				slide:Block ;
+			slide:color				"#274683" ;
+			slide:fontSize			"200%" ;
+			slide:fontBold			"true" ;
+			slide:marginX			"13" ;
+			slide:marginTop			"13" ;
+			slide:marginBottom		"13" ;
+			slide:cropChildWidth	"true" ;
+			slide:bgcolor			"#fffef9" ;
+			slide:child ${
+				rdf:type	slide:ColumnSet ;
+				slide:children @(
+					${	rdf:type	summary:LargeIcon
+					}
+					${	rdf:type			slide:Block ;
+						slide:marginLeft	"10" ;
+						slide:marginTop		"20" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type			ozone:ViewContainer ;
+									ozone:dataSource	data:underlyingSource ;
+									ozone:viewPartClass	ozone:InactiveInlineViewPart
+								}
+							)
+						}
+					}
+				)
+			}
+		}
+	)
+}
+
+method :presentAspectView res ; adenine:precompile "true" ; adenine:preload "true"
+	= aspects @()
+
+	= oldsource __source__
+	with __source__ __infosource__
+		# Iterate through known types
+		= types (query { res rdf:type ?x })
+
+		for x in types
+			# See if this type has aspects defined
+			= typeAspects (query { x[0] vowl:hasLens ?x })
+			if (== (length typeAspects) 0)
+				if (contains x[0] hs:classView :LensView)
+					aspects.add (:createDefaultAspect x[0])
+			else
+				for y in typeAspects
+					aspects.add y[0]
+
+	# Add All Properties
+	for x in (query { daml:Thing vowl:hasLens ?x })
+		aspects.add x[0]
+
+	# Construct the UI
+	return ${
+		rdf:type				slide:Slide ;
+		slide:bgcolor			"#fffef9" ;
+		slide:cropChildWidth	"true" ;
+		slide:child ${
+			rdf:type		slide:RowSet ;
+			slide:children @(
+				:titleHeader
+				${	rdf:type				slide:Block ;
+					slide:cropChildWidth	"true" ;
+					slide:child ${
+						rdf:type					ozone:DataProviderHost ;
+						ozone:hostedDataProvider	data:underlyingSource ;
+						ozone:propertyName			:underlyingSource ;
+						slide:child ${
+							rdf:type			layout:Layout ;
+							ozone:dataSource ${
+								rdf:type			data:OrderedSetSource ;
+								data:damlList		aspects ;
+								ozone:dataSource	:aspectsDataSource
+							} ;
+							layout:layoutConstraint :layoutConstraint
+						}
+					}
+				}
+			)
+		}
+	}
+	
+add { :aspectsDataSource
+	rdf:type	data:MergeSetSource ;
+	data:onAdd	:onAddAspect ;
+	ozone:dataSource ${
+		rdf:type		data:PredicateSetSource ;
+		data:subject	daml:Thing ;
+		data:predicate	vowl:hasLens
+	} ;
+	ozone:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		ozone:dataSource	:underlyingSource ;
+		data:predicate		:objectSpecificAspect
+	} ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?type ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subjectDataSource	:underlyingSource ;
+			data:predicate		rdf:type ;
+			data:object			?type
+		} ;
+		data:statement ${
+			data:subject	?type ;
+			data:predicate	vowl:hasLens ;
+			data:object		?x
+		}
+	} ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?type ?task ?context ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subjectDataSource	data:currentUserSource ;
+			data:predicate			task:activeTask ;
+			data:object				?task
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	vowl:forContext ;
+			data:object		?context
+		} ;
+		data:statement ${
+			data:subject	?task ;
+			data:predicate	task:context ;
+			data:object		?context
+		} ;
+		data:statement ${
+			data:subjectDataSource	:underlyingSource ;
+			data:predicate			rdf:type ;
+			data:object				?type
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	vowl:domain ;
+			data:object		?type
+		}
+	}
+}
+
+method :onAddAspect x
+	var closure
+	with __target__ __infosource__
+		= closure ${
+			dc:title				"Add aspect" ;
+			rdf:type				:AddAspectClosure ;
+			:underlyingAspectTarget	(:getUnderlying) ;
+			op:operation			:addAspect
+		}
+
+		for y in x
+			add { closure :aspectToAdd y }
+						
+	opui:startOperationWithClosure closure
+
+add { :IndividualAspectViewPart	ozone:defaultViewClass	:IndividualAspectView }
+
+add { :individualAspectViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+
+	rdf:type				:IndividualAspectViewPart ;
+	ozone:viewDomain		:IndividualAspectView ;
+
+	ozone:cacheStyle		ozone:cachePerResource ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:color		"#3B5377" ;
+		slide:clearance	"10" ;
+		slide:child ${
+			rdf:type			ozone:MultiplexPartContainer ;
+			ozone:children		@( :expandedPane :collapsedPane ) ;
+			ozone:dataSource ${
+				rdf:type		data:MappingSource ;
+				data:domain		@( "true" "false" ) ;
+				data:range		@( :expandedPane :collapsedPane ) ;
+				data:default	:expandedPane ;
+				ozone:dataSource ${
+					rdf:type			data:LiteralPropertySource ;
+					ozone:dataSource	data:underlyingSource ;
+					data:predicate		:expanded
+				}
+			}
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { :EmbeddedIndividualAspectViewPart	ozone:defaultViewClass	:EmbeddedIndividualAspectView }
+
+add { :embeddedIndividualAspectViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+
+	rdf:type				:EmbeddedIndividualAspectViewPart ;
+	ozone:viewDomain		:EmbeddedIndividualAspectView ;
+
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:child ${
+			rdf:type		slide:RowSet ;
+			slide:color		"#3B5377" ;
+			slide:children @(
+				${	rdf:type		slide:Block ;
+					slide:marginX	"3" ;
+					slide:child ${
+						rdf:type				slide:Block ;
+						slide:color				"black" ;
+						slide:borderBottomColor	"black" ;
+						slide:marginY			"3" ;
+						slide:marginX			"0" ;
+						slide:borderBottomWidth	"1" ;
+						slide:child 			:titleBar
+					}
+				}
+				${	rdf:type		slide:Block ;
+					slide:margin	"0" ;
+					slide:child ${
+						rdf:type			:LensContainer ;
+						ozone:dataSource	data:underlyingSource
+					}
+				}
+			)
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { :titleBar
+	rdf:type			ozone:ViewContainer ;
+	ozone:viewPartClass	ozone:InactiveInlineViewPart ;
+	ozone:dataSource	data:underlyingSource
+}
+
+add { :spanAllButton
+	rdf:type		slide:Image ;
+	ozone:onClick	:spanAll ;
+	ozone:tooltip	"Span all columns" ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/spanAll.gif>
+}
+
+add { :spanOneButton
+	rdf:type		slide:Image ;
+	ozone:onClick	:spanOne ;
+	ozone:tooltip	"Span one column" ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/spanAll.gif>
+}
+
+method :spanAll
+	with __target__ __infosource__
+		replace (data:getUnderlying) :spansAllColumns ?x "true"
+
+method :spanOne
+	with __target__ __infosource__
+		replace (data:getUnderlying) :spansAllColumns ?x "false"
+
+add { :dockButton
+	rdf:type	slide:Block ;
+	slide:child ${
+		rdf:type	slide:Train ;
+		slide:children @(
+			${	rdf:type		slide:Block ;
+				slide:margin	"3" 
+			}
+			${	rdf:type		slide:Image ;
+				ozone:onClick	:dock ;
+				ozone:tooltip	"Dock to the tool pane" ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/pin.gif>
+			}
+		)
+	}
+}
+
+method :dock
+	with __source__ __infosource__
+		with __target__ __infosource__
+			add { (extract (__identity__.getResource) frame:toolCollection ?x) hs:member (data:getUnderlying) }
+
+add { :spanControls
+	rdf:type			ozone:MultiplexPartContainer ;
+	ozone:children		@( :spanAllButton :spanOneButton ) ;
+	ozone:dataSource ${
+		rdf:type		data:MappingSource ;
+		data:domain		@( "true" "false" ) ;
+		data:range		@( :spanOneButton :spanAllButton ) ;
+		data:default	:spanAllButton ;
+		ozone:dataSource ${
+			rdf:type			data:LiteralPropertySource ;
+			ozone:dataSource	data:underlyingSource ;
+			data:predicate		:spansAllColumns
+		}
+	}
+}
+
+add { :dockControls
+	rdf:type			ozone:MultiplexPartContainer ;
+	ozone:children		@( :dockButton slide:space ) ;
+	ozone:dataSource ${
+		rdf:type		data:MappingSource ;
+		data:domain		@( "true" "false" ) ;
+		data:range		@( slide:space :dockButton ) ;
+		data:default	:dockButton ;
+		ozone:dataSource ${
+			rdf:type			data:StatementExistenceSource ;
+			data:subjectDataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:currentUserSource ;
+				data:predicate		frame:toolCollection
+			} ;
+			data:predicate			hs:member ;
+			data:objectDataSource	data:underlyingSource
+		}
+	}
+}
+
+add { :collapsedPane
+	rdf:type				slide:Block ;
+	slide:fillParentWidth	"true" ;
+	slide:child	${
+		rdf:type				slide:ColumnSet ;
+		slide:children @(
+			:expandControl
+			${	rdf:type				slide:Block ;
+				slide:color				"#274683" ;
+				slide:borderBottomColor	"#c3bfb3" ;
+				slide:fontSize			"9" ;
+				slide:marginY			"3" ;
+				slide:marginX			"0" ;
+				slide:borderBottomWidth	"1" ;
+				ozone:onClick			ozone:showMultiplexPart1 ;
+				slide:fontBold			"true" ;
+				slide:fontFamily		"Verdana" ;
+				slide:child				:titleBar
+			}
+		)
+	}
+}
+
+add { :collapseControl
+	rdf:type	slide:Block ;
+	slide:child ${
+		rdf:type	slide:Train ;
+		slide:children @(
+			${	rdf:type		slide:Image ;
+				ozone:onClick	ozone:showMultiplexPart1 ;
+				ozone:tooltip	"Collapse" ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/minus.gif>
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"2" 
+			}
+		)
+	}
+}
+	
+add { :expandControl
+	rdf:type	slide:Block ;
+	slide:child ${
+		rdf:type	slide:Train ;
+		slide:children @(
+			${	rdf:type		slide:Image ;
+				ozone:onClick	ozone:showMultiplexPart0 ;
+				ozone:tooltip	"Expand" ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/plus.gif>
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"2" 
+			}
+		)
+	}
+}
+	
+add { :expandedPane
+	rdf:type			ozone:ResizablePartContainer ;
+	ozone:minDimension	"40" ;
+	ozone:child ${
+		rdf:type				slide:ColumnSet ;
+		slide:children @(
+			:collapseControl
+			${	rdf:type		slide:RowSet ;
+				slide:pack		"bottom" ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:fillParentWidth	"true" ;
+						slide:fillParentHeight	"true" ;
+						slide:child		${
+							rdf:type		slide:RowSet ;
+							slide:children	@(
+								${	rdf:type				slide:Block ;
+									slide:color				"#274683" ;
+									slide:borderBottomColor	"#c3bfb3" ;
+									slide:fontSize			"9" ;
+									slide:marginY			"3" ;
+									slide:marginX			"0" ;
+									slide:borderBottomWidth	"1" ;
+									slide:fontFamily		"Verdana" ;
+									slide:fontBold			"true" ;
+									slide:child				:titleBar
+								}
+								${	rdf:type				slide:Block ;
+									slide:color				"black" ;
+									slide:margin			"0" ;
+									slide:fillParentWidth	"true" ;
+									slide:child ${
+										rdf:type			:LensContainer ;
+										ozone:dataSource	data:underlyingSource
+									}
+								}
+							)
+						}
+					}
+					${	rdf:type		slide:Block ;
+						slide:color		"darkGray" ;
+						slide:fontSize	"3" ;
+						slide:height	"7" ;
+						ozone:tooltip	"Drag here to resize this pane or click to reset size" ;
+#[						slide:child ${
+							rdf:type		slide:Paragraph ;
+							slide:alignX	"center" ;
+							slide:children	@(
+								${	rdf:type		slide:Image ;
+									slide:textAlign	"bottom" ;
+									ozone:tooltip	"Drag here to resize this pane or click to reset size" ;
+									slide:source	<http://haystack.lcs.mit.edu/data/ozone/frame/horzResizeBars.gif>
+								}
+							)
+						}]#
+						slide:child		slide:space
+					} 
+				)
+			}
+		)
+	}
+}
+
+#############################################################################################
+# Single aspect container
+
+add { :singleAspectContainerPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	ozone:dataDomain			:SingleAspectContainer ;
+	ozone:partDataGenerator		:singleAspectContainerGenerator ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :singleAspectContainerGenerator data ; adenine:preload "true"
+	= statusPane ${
+		rdf:type			ozone:ViewContainer ;
+		ozone:viewPartClass	(extract data ozone:viewPartClass ?x) ;
+		ozone:dataSource	(extract data :aspectDataSource ?x) ;
+		:underlying			(data:getUnderlying)
+	}
+
+	return ${
+		rdf:type			slide:Block ;
+		slide:child ${
+			rdf:type					ozone:DataProviderHost ;
+			ozone:hostedDataProvider	data:underlyingSource ;
+			ozone:propertyName			:underlyingSource ;
+			slide:child					statusPane
+		}
+	}
+
+#############################################################################################
+# Aspect container
+
+add { :multipleAspectContainerPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	ozone:dataDomain			:MultipleAspectContainer ;
+	ozone:partDataGenerator		:aspectContainerGenerator ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+add { :defaultLayoutConstraint
+	rdf:type				layout:RowStackerConstraint ;
+	ozone:viewPartClass		:IndividualAspectViewPart
+}
+
+method :aspectContainerGenerator data ; adenine:preload "true"
+	= layoutConstraint (extract data :layoutConstraint ?x)
+	if (== null layoutConstraint)
+		= layoutConstraint :defaultLayoutConstraint
+
+	= statusPane (UniqueResource)
+
+	add { statusPane
+		rdf:type				layout:Layout ;
+		ozone:dataSource		(extract data :aspectDataSource ?x) ;
+		layout:layoutConstraint	layoutConstraint ;
+		:underlying				(data:getUnderlying)
+	}
+
+	return ${
+		rdf:type			slide:Block ;
+		slide:child ${
+			rdf:type					ozone:DataProviderHost ;
+			ozone:hostedDataProvider	data:underlyingSource ;
+			ozone:propertyName			:underlyingSource ;
+			slide:child					statusPane
+		}
+	}
+
+#############################################################################################
+# Support for adding aspects
+
+add { :addAspectClosureAppletViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+	ozone:viewDomain		:AddAspectClosureTaskAppletView ;
+	ozone:partDataGenerator	:presentAddAspectClosureTaskAppletView ;
+	ozone:cachePartData		"true" ;
+	ozone:synchronous		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :addAspect :aspectToAdd = aspectsToAdd :underlyingAspectTarget = underlyings :showForObject = showForObjects :showForClass = showForClasses :showForAll = showForAll
+	for newAspect in aspectsToAdd
+		for x in showForObjects
+			add { x :objectSpecificAspect newAspect }
+
+		for x in showForClasses
+			add { x vowl:hasLens newAspect }
+
+		if (!= null showForAll)
+			if (== 1 (length showForAll))
+				if (== "true" showForAll[0])
+					add { daml:Thing vowl:hasLens newAspect }
+	return
+
+add { :AddAspectClosure 
+	hs:classView	:AddAspectClosureTaskAppletView ;
+	rdfs:subClassOf	op:OperationClosure ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Add aspect"
+}
+
+add { :aspectToAdd
+	rdf:type	op:Parameter ;
+	rdfs:domain	:AddAspectClosure
+}
+
+add { :underlyingAspectTarget
+	rdf:type	op:Parameter ;
+	rdfs:domain	:AddAspectClosure
+}
+
+add { :showForObject
+	rdf:type	op:Parameter ;
+	rdfs:domain	:AddAspectClosure
+}
+
+add { :showForClass
+	rdf:type	op:Parameter ;
+	rdfs:domain	:AddAspectClosure
+}
+
+add { :showForAll
+	rdf:type	op:Parameter ;
+	rdfs:domain	:AddAspectClosure
+}
+
+method :presentAddAspectClosureTaskAppletView closure
+	= underlying (extract closure :underlyingAspectTarget ?x adenine:source = __infosource__)
+	= aspect (extract closure :aspectToAdd ?x adenine:source = __infosource__)
+
+	print closure underlying aspect
+
+	= children @(
+		${	rdf:type	slide:Text ;
+			slide:text	"The aspect you have just added,"
+		}
+		slide:space
+		${	rdf:type				ozone:ViewContainer ;
+			ozone:viewPartClass		ozone:InactiveInlineViewPart ;
+			ozone:initialResource	aspect
+		}
+		${	rdf:type	slide:Text ;
+			slide:text	", should be shown:"
+		}
+		slide:break
+		${	rdf:type			slide:Checkbox ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"when viewing"
+				}
+				slide:space
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:viewPartClass		ozone:InlineViewPart ;
+					ozone:initialResource	underlying
+				}
+			) ;
+			ozone:dataSource	${
+				rdf:type			data:StatementExistenceSource ;
+				data:subject		closure ;
+				data:predicate		:showForObject ;
+				data:object			underlying
+			}
+		}
+		slide:newLine
+	)
+
+	for x in (query { underlying rdf:type ?x } adenine:source = __infosource__)
+		children.addAll @(
+			${	rdf:type			slide:Checkbox ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						slide:text	"when viewing items of type"
+					}
+					slide:space
+					${	rdf:type				ozone:ViewContainer ;
+						ozone:viewPartClass		ozone:InlineViewPart ;
+						ozone:initialResource	x[0]
+					}
+				) ;
+				ozone:dataSource	${
+					rdf:type			data:StatementExistenceSource ;
+					data:subject		closure ;
+					data:predicate		:showForClass ;
+					data:object			x[0]
+				}
+			}
+			slide:newLine
+		)
+
+	children.addAll @(
+		${	rdf:type			slide:Checkbox ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"when viewing any object"
+				}
+			) ;
+			ozone:dataSource	${
+				rdf:type			data:StatementExistenceSource ;
+				data:subject		closure ;
+				data:predicate		:showForAll ;
+				data:object			"true"
+			}
+		}
+		slide:break
+		${	rdf:type					slide:Button ;
+			slide:backgroundHighlight	"90%" ;
+			slide:borderWidth			"1" ;
+			slide:clearance				"5" ;
+			ozone:onClick ${ 
+				rdf:type 			ozone:AdenineCall ;
+				ozone:method		opui:finishOperation ;
+				ozone:parameters 	@( closure )
+			} ;
+			slide:child ${
+				rdf:type		slide:Text ;
+				slide:text		"Add"
+			}
+		}
+	)
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children	children
+		}
+	}
+
+add { :addNewAspectControlViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				vc:ToolbarViewPart ;
+	ozone:viewDomain		:AddNewAspectControlToolbarView ;
+	ozone:template ${
+		rdf:type				slide:Train ;
+		ozone:onClick			:addNewAspect ;
+		slide:children @(
+			${	rdf:type	slide:Text ;
+				slide:text	"Add a new aspect"
+			}
+			slide:space
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+method :addNewAspect
+	= res (extract (data:getUnderlying) :underlying0 ?x)
+
+	uniqueMethod next x
+		var closure
+		with __target__ __infosource__
+			= closure ${
+				dc:title				"Add aspect" ;
+				rdf:type				:AddAspectClosure ;
+				:aspectToAdd			x ;
+				:underlyingAspectTarget	`res ;
+				op:operation			:addAspect
+			}
+
+		opui:startOperationWithClosure closure
+
+	uniqueMethod first x
+		var closure
+		with __target__ __infosource__
+			= closure ${
+				dc:title		"Create new aspect" ;
+				rdf:type		op:OperationClosure ;
+				op:operation	x ;
+				op:continuation	`next
+			}
+
+		opui:startOperationWithClosure closure
+
+	chooser:showChooser chooser:continuation = first chooser:selectionsDataSource = :aspectConstructorsDataSource
+
+add { :aspectConstructorsDataSource
+	rdf:type		data:PredicateSetSource ;
+	data:predicate	construct:targetType ;
+	data:reverse	"true" ;
+	data:object		:Lens
+}	
+
+add { :AddNewAspectControl hs:classView :AddNewAspectControlToolbarView }
+
+#############################################################################################
+# Data set aspect part
+
+add { :dataSetAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				:LensPart ;
+	ozone:dataDomain		:DataSetAspect ;
+	
+	ozone:partDataGenerator	:presentDataSetAspect ;
+	ozone:cachePartData		"true" ;
+	ozone:cacheStyle		ozone:cacheDisabled ;
+	ozone:synchronous		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentDataSetAspect aspect ; adenine:preload "true"
+	= dataSource (extract aspect :dataSource ?x)
+
+	= constraint (extract aspect :layoutConstraint ?x)
+	if (== null constraint)
+		= constraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		ozone:PhraseViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+
+	= children @()
+	= description (extract aspect dc:description ?x)
+	if (!= null description)
+		children.add ${
+			rdf:type		slide:Block ;
+			slide:margin	5 ;
+			slide:child ${
+				rdf:type	slide:Paragraph ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						slide:text	description
+					}
+				)
+			}
+		}
+		children.add slide:break
+
+	children.add ${
+		rdf:type		slide:Block ;
+		slide:margin	5 ;
+		slide:child ${
+			rdf:type				layout:Layout ;
+			ozone:dataSource		dataSource ;
+			layout:layoutConstraint	constraint
+		}
+	}
+
+	= constructor (extract aspect :constructor ?x)
+	if (!= null constructor)
+		= lvc (UniqueResource)
+
+		with __target__ __infosource__
+			add { lvc :closure ${ rdf:type op:OperationClosure ; op:operation constructor } }
+
+		uniqueMethod doCreate res
+			# Construct destination data source
+			importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+			= dataProvider (DataUtilities.createDataProvider `dataSource __context__ __source__)
+
+			# Perform add
+			dataProvider.requestChange data:setAddition (Set res)
+			dataProvider.dispose
+
+			var closure
+			with __source__ __infosource__
+				= closure (extract `lvc :closure ?x)
+			with __target__ __infosource__
+				replace `lvc :closure ?x ${ rdf:type op:OperationClosure ; op:operation (extract closure op:operation ?x) }
+
+		= typeDataSource ${
+			rdf:type		data:ResourcePropertySource ;
+			ozone:dataSource ${
+				rdf:type		data:ResourcePropertySource ;
+				data:subject	lvc ;
+				data:predicate	:closure
+			} ;
+			data:predicate	op:operation
+		}
+
+		= constructorsDataSource (extract aspect :constructorsDataSource ?x)
+		if (== null constructorsDataSource)
+			= constructorsDataSource create:asynchronousConstructorsDataSource
+
+#[		= typesPane ${
+			rdf:type	slide:Block ;
+			slide:child ${
+				rdf:type	slide:Paragraph ;
+				ozone:onClick ${
+					rdf:type 			ozone:AdenineCall ;
+					ozone:method		:changeType ;
+					ozone:parameters 	@( typeDataSource constructorsDataSource )
+				} ;
+				slide:children @(
+					${	rdf:type				ozone:ViewContainer ;
+						slide:inline			"true" ;
+						ozone:viewPartClass		ozone:InactiveInlineViewPart ;
+						ozone:dataSource		typeDataSource
+					}
+					slide:space
+					${	rdf:type			slide:Image ;
+						ozone:tooltip		"Select another template" ;
+						slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+					}
+				)
+			}
+		}
+
+		= createPane ${
+			rdf:type		slide:Block ;
+			slide:margin	"5" ;
+			slide:child ${
+				rdf:type			ozone:ViewContainer ;
+				ozone:dataSource ${
+					rdf:type		data:ResourcePropertySource ;
+					data:subject	lvc ;
+					data:predicate	:closure
+				} ;
+				ozone:registerService lvc ;
+				ozone:viewPartClass	opui:InlineClosureViewPart ;
+				ozone:putProperty	${ ozone:name op:continuation ; ozone:value doCreate }
+			}
+		}
+]#
+
+		= expandedPane ${
+			rdf:type		slide:Block ;
+			slide:margin	"4" ;
+			slide:child ${
+				rdf:type		slide:Paragraph ;
+				slide:children @(
+					${	rdf:type			ozone:ViewContainer ;
+						ozone:dataSource ${
+							rdf:type		data:ResourcePropertySource ;
+							data:subject	lvc ;
+							data:predicate	:closure
+						} ;
+						ozone:registerService lvc ;
+						ozone:viewPartClass	opui:InlineClosureViewPart ;
+						ozone:putProperty	${ ozone:name op:continuation ; ozone:value doCreate }
+					}
+					slide:space
+					${	rdf:type					slide:Button ;
+						slide:backgroundHighlight	"90%" ;
+						slide:borderWidth			"1" ;
+						slide:clearance				"5" ;
+						ozone:onClick ${
+							rdf:type 			ozone:AdenineCall ;
+							ozone:method		:changeType ;
+							ozone:parameters 	@( typeDataSource constructorsDataSource )
+						} ;
+						slide:child ${
+							rdf:type	slide:Train ;
+							slide:children @(
+								${	rdf:type		slide:Text ;
+									slide:text		"Other choices"
+								}
+								slide:space
+								${	rdf:type			slide:Image ;
+									ozone:tooltip		"Select another template" ;
+									slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+								}
+							)
+						}
+					}
+				)
+			}
+		}
+
+#[		= expandedPane ${
+			rdf:type	slide:RowSet ;
+			slide:children @(
+				${	rdf:type		slide:Block ;
+					slide:bgcolor	"#7e969c" ;
+					slide:margin	"4" ;
+					slide:child ${
+						rdf:type		slide:ColumnSet ;
+						slide:color		"white" ;
+						slide:pack		"right" ;
+						slide:children @(
+							typesPane
+							${	rdf:type		slide:Block ;
+								slide:margin	"3" 
+							}
+							${	rdf:type		slide:Image ;
+								ozone:tooltip	"Collapse" ;
+								ozone:onClick	ozone:showMultiplexPart1 ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif>
+							}
+						)
+					}
+				}
+				createPane
+			)
+		}
+
+		= collapsedPane ${
+			rdf:type		slide:Block ;
+			slide:bgcolor	"#7e969c" ;
+			slide:margin	"4" ;
+			slide:child ${
+				rdf:type		slide:ColumnSet ;
+				slide:color		"white" ;
+				slide:pack		"right" ;
+				slide:children @(
+					typesPane
+					${	rdf:type		slide:Block ;
+						slide:margin	"3" 
+					}
+					${	rdf:type		slide:Image ;
+						ozone:tooltip	"Expand" ;
+						ozone:onClick	ozone:showMultiplexPart0 ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif>
+					}
+				)
+			}
+		}
+]#
+		children.addAll @(
+			slide:break
+#[			${	rdf:type			ozone:MultiplexPartContainer ;
+				ozone:children		@( expandedPane collapsedPane ) ;
+				ozone:dataSource ${
+					rdf:type		data:MappingSource ;
+					data:domain		@( "true" "false" ) ;
+					data:range		@( expandedPane collapsedPane ) ;
+					data:default	expandedPane ;
+					ozone:dataSource ${
+						rdf:type			data:LiteralPropertySource ;
+						data:subject		aspect ;
+						data:predicate		:constructorPaneExpanded
+					}
+				}
+			}
+#]
+			expandedPane
+		)
+
+	return ${
+		rdf:type		slide:Paragraph ;
+		slide:children	children
+	}
+
+method :changeType typeDataSource constructorsDataSource; adenine:preload "true"
+	chooser:showChooser chooser:destinationDataSource = typeDataSource chooser:selectionsDataSource = constructorsDataSource
+
+add { :rdfQueryAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				:LensPart ;
+	ozone:dataDomain		data:RDFQueryAspect ;
+	
+	ozone:partDataGenerator	:presentRDFQueryAspect ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentRDFQueryAspect aspect ; adenine:preload "true"
+	= dataSource aspect
+
+	= constraint (extract aspect :layoutConstraint ?x)
+	if (== null constraint)
+		= constraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		ozone:PhraseViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+
+	= children @()
+	= description (extract aspect dc:description ?x)
+	if (!= null description)
+		children.add ${
+			rdf:type		slide:Block ;
+			slide:margin	5 ;
+			slide:child ${
+				rdf:type	slide:Paragraph ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						slide:text	description
+					}
+				)
+			}
+		}
+		children.add slide:break
+
+	children.add ${
+		rdf:type		slide:Block ;
+		slide:margin	5 ;
+		slide:child ${
+			rdf:type				layout:Layout ;
+			ozone:dataSource		dataSource ;
+			layout:layoutConstraint	constraint
+		}
+	}
+
+	= constructor (extract aspect :constructor ?x)
+	if (!= null constructor)
+		= lvc (UniqueResource)
+
+		with __target__ __infosource__
+			add { lvc :closure ${ rdf:type op:OperationClosure ; op:operation constructor } }
+
+		uniqueMethod doCreate res
+			# Construct destination data source
+			importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+			= dataProvider (DataUtilities.createDataProvider `dataSource __context__ __source__)
+
+			# Perform add
+			dataProvider.requestChange data:setAddition (Set res)
+			dataProvider.dispose
+
+			var closure
+			with __source__ __infosource__
+				= closure (extract `lvc :closure ?x)
+			with __target__ __infosource__
+				replace `lvc :closure ?x ${ rdf:type op:OperationClosure ; op:operation (extract closure op:operation ?x) }
+
+		= typeDataSource ${
+			rdf:type		data:ResourcePropertySource ;
+			ozone:dataSource ${
+				rdf:type		data:ResourcePropertySource ;
+				data:subject	lvc ;
+				data:predicate	:closure
+			} ;
+			data:predicate	op:operation
+		}
+
+		= constructorsDataSource (extract aspect :constructorsDataSource ?x)
+		if (== null constructorsDataSource)
+			= constructorsDataSource create:asynchronousConstructorsDataSource
+
+#[		= typesPane ${
+			rdf:type	slide:Block ;
+			slide:child ${
+				rdf:type	slide:Paragraph ;
+				ozone:onClick ${
+					rdf:type 			ozone:AdenineCall ;
+					ozone:method		:changeType ;
+					ozone:parameters 	@( typeDataSource constructorsDataSource )
+				} ;
+				slide:children @(
+					${	rdf:type				ozone:ViewContainer ;
+						slide:inline			"true" ;
+						ozone:viewPartClass		ozone:InactiveInlineViewPart ;
+						ozone:dataSource		typeDataSource
+					}
+					slide:space
+					${	rdf:type			slide:Image ;
+						ozone:tooltip		"Select another template" ;
+						slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+					}
+				)
+			}
+		}
+
+		= createPane ${
+			rdf:type		slide:Block ;
+			slide:margin	"5" ;
+			slide:child ${
+				rdf:type			ozone:ViewContainer ;
+				ozone:dataSource ${
+					rdf:type		data:ResourcePropertySource ;
+					data:subject	lvc ;
+					data:predicate	:closure
+				} ;
+				ozone:registerService lvc ;
+				ozone:viewPartClass	opui:InlineClosureViewPart ;
+				ozone:putProperty	${ ozone:name op:continuation ; ozone:value doCreate }
+			}
+		}
+]#
+
+		= expandedPane ${
+			rdf:type		slide:Block ;
+			slide:margin	"4" ;
+			slide:child ${
+				rdf:type		slide:Paragraph ;
+				slide:children @(
+					${	rdf:type			ozone:ViewContainer ;
+						ozone:dataSource ${
+							rdf:type		data:ResourcePropertySource ;
+							data:subject	lvc ;
+							data:predicate	:closure
+						} ;
+						ozone:registerService lvc ;
+						ozone:viewPartClass	opui:InlineClosureViewPart ;
+						ozone:putProperty	${ ozone:name op:continuation ; ozone:value doCreate }
+					}
+					slide:space
+					${	rdf:type					slide:Button ;
+						slide:backgroundHighlight	"90%" ;
+						slide:borderWidth			"1" ;
+						slide:clearance				"5" ;
+						ozone:onClick ${
+							rdf:type 			ozone:AdenineCall ;
+							ozone:method		:changeType ;
+							ozone:parameters 	@( typeDataSource constructorsDataSource )
+						} ;
+						slide:child ${
+							rdf:type	slide:Train ;
+							slide:children @(
+								${	rdf:type		slide:Text ;
+									slide:text		"Other choices"
+								}
+								slide:space
+								${	rdf:type			slide:Image ;
+									ozone:tooltip		"Select another template" ;
+									slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+								}
+							)
+						}
+					}
+				)
+			}
+		}
+
+#[		= expandedPane ${
+			rdf:type	slide:RowSet ;
+			slide:children @(
+				${	rdf:type		slide:Block ;
+					slide:bgcolor	"#7e969c" ;
+					slide:margin	"4" ;
+					slide:child ${
+						rdf:type		slide:ColumnSet ;
+						slide:color		"white" ;
+						slide:pack		"right" ;
+						slide:children @(
+							typesPane
+							${	rdf:type		slide:Block ;
+								slide:margin	"3" 
+							}
+							${	rdf:type		slide:Image ;
+								ozone:tooltip	"Collapse" ;
+								ozone:onClick	ozone:showMultiplexPart1 ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif>
+							}
+						)
+					}
+				}
+				createPane
+			)
+		}
+
+		= collapsedPane ${
+			rdf:type		slide:Block ;
+			slide:bgcolor	"#7e969c" ;
+			slide:margin	"4" ;
+			slide:child ${
+				rdf:type		slide:ColumnSet ;
+				slide:color		"white" ;
+				slide:pack		"right" ;
+				slide:children @(
+					typesPane
+					${	rdf:type		slide:Block ;
+						slide:margin	"3" 
+					}
+					${	rdf:type		slide:Image ;
+						ozone:tooltip	"Expand" ;
+						ozone:onClick	ozone:showMultiplexPart0 ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif>
+					}
+				)
+			}
+		}
+]#
+		children.addAll @(
+			slide:break
+#[			${	rdf:type			ozone:MultiplexPartContainer ;
+				ozone:children		@( expandedPane collapsedPane ) ;
+				ozone:dataSource ${
+					rdf:type		data:MappingSource ;
+					data:domain		@( "true" "false" ) ;
+					data:range		@( expandedPane collapsedPane ) ;
+					data:default	expandedPane ;
+					ozone:dataSource ${
+						rdf:type			data:LiteralPropertySource ;
+						data:subject		aspect ;
+						data:predicate		:constructorPaneExpanded
+					}
+				}
+			}
+#]
+			expandedPane
+		)
+
+	return ${
+		rdf:type		slide:Paragraph ;
+		slide:children	children
+	}
+
+#############################################################################################
+# Summary aspect part
+
+add { :summaryAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				:LensPart ;
+	ozone:cacheStyle		ozone:cachePerResource ;
+	ozone:dataDomain		:SummaryAspect ;
+	ozone:template ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:dataSource		:underlyingSource ;
+		ozone:viewPartClass		ozone:SummaryViewPart
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Slide aspect part
+
+add { :slideAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				:LensPart ;
+	ozone:dataDomain		:SlideAspect ;
+	ozone:cacheStyle		ozone:cachePerResource ;
+	ozone:template ${
+		rdf:type			ozone:PartContainer ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			ozone:dataSource	:currentAspectSource ;
+			data:predicate		:slide
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Single datum aspect part
+
+add { :singleDatumAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				:LensPart ;
+	ozone:dataDomain		:SingleDatumAspect ;
+	
+	ozone:partDataGenerator	:presentSingleDatumAspect ;
+#	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentSingleDatumAspect aspect ; adenine:preload "true"
+	= dataSource (extract aspect :dataSource ?x)
+	= viewPartClass (extract aspect :viewPartClass ?x)
+	if (== null viewPartClass)
+		= viewPartClass ozone:AppletViewPart
+
+	return ${
+		rdf:type			ozone:ViewContainer ;
+		ozone:viewPartClass	viewPartClass ;
+		ozone:dataSource	dataSource
+	}
+
+#############################################################################################
+# Utilities
+
+method :getUnderlying ; adenine:preload "true"
+	return ((__context__.getProperty :underlyingSource).getData data:resource null)
+
+method :getAspect ; adenine:preload "true"
+	return (__context__.getDescendantLocalProperty ozone:aspect)
+
+add { :underlyingSource
+	rdf:type		data:ContextHostedResourceSource ;
+	data:property	:underlyingSource
+}
+
+add { :currentAspectSource
+	rdf:type		:CurrentAspectSource
+}
+
+add { :currentAspectDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ResourceDataProvider ;
+	ozone:dataDomain		:CurrentAspectSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.CurrentAspectDataProvider" }
+}
+
+add { :aspectContainerPart
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		:LensContainer ;
+	dc:title				"Aspect Container Part" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AspectContainerPart" }
+}

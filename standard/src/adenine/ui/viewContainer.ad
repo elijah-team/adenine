@@ -1,0 +1,1078 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Standard view containers
+# Written by David Huynh and Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/viewContainer.ad,v 1.80 2004/05/15 15:18:56 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/viewContainer>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	viewContainer: <http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	modeless:	<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix	chooser:	<http://haystack.lcs.mit.edu/ui/chooser#> 
+@prefix	style:		<http://haystack.lcs.mit.edu/ui/style#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	rdfstore:	<http://haystack.lcs.mit.edu/agents/rdfstore#> 
+@prefix	:			<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#>
+
+#############################################################################################
+# View container parts
+
+add {
+	ozone:scrollableViewContainerPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		ozone:ScrollableViewContainer ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.ScrollableViewContainerPart" }
+
+	ozone:viewContainerPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		ozone:ViewContainer ;
+		dc:title				"View container" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.ViewContainerPart" }
+
+	ozone:viewContainerWithTitleBarPart
+		ozone:dataDomain		ozone:ViewContainerWithTitleBar ;
+		ozone:partDataGenerator	:presentViewContainerWithTitleBar ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	ozone:dynamicViewContainerPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		ozone:DynamicViewContainer ;
+		dc:title				"Dynamic view container" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.parts.DynamicViewContainerPart" }
+
+	ozone:topLevelViewContainerWithTitleBarPart
+		ozone:dataDomain		ozone:TopLevelViewContainerWithTitleBar ;
+		ozone:partDataGenerator	:presentTopLevelViewContainerWithTitleBar ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentViewContainerWithTitleBar data
+	return (viewContainer:createViewContainerWithTitleBar (extract data ozone:dataSource ?x) false)
+
+method :presentTopLevelViewContainerWithTitleBar data
+	return (viewContainer:createTopLevelViewContainerWithTitleBar (extract data ozone:dataSource ?x) false)
+
+#############################################################################################
+# Utilities to create a view container with a title bar hooked onto it
+
+method viewContainer:createViewContainerWithTitleBar dataSource defaultViewContainer infoSourceSpec ; adenine:precompile "true" ; adenine:preload "true"
+	if (== null infoSourceSpec)
+		= infoSourceSpec ${
+			rdf:type		:InformationSourceSpecification
+		}
+
+	= viewContainer ${ 
+		rdf:type						ozone:ScrollableViewContainer ;
+		ozone:dataSource				dataSource ;
+		:informationSourceSpecification	infoSourceSpec
+	}
+	add { viewContainer ozone:registerService viewContainer }
+
+	if defaultViewContainer
+		add { viewContainer
+			ozone:routeNavigationNotifications	"true" ;
+			ozone:registerService				ozone:defaultViewContainer
+		}
+
+	= toolbarItemSetSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		hs:member ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			data:autoCreate		"true" ;
+			data:predicate		viewContainer:toolbarCollection ;
+			ozone:dataSource ${
+				rdf:type		data:ResourcePropertySource ;
+				data:subject	viewContainer ;
+				data:predicate	ozone:hostedViewInstance
+			}
+		}
+	}
+
+	= viewSelector (:createViewSelectorControl viewContainer infoSourceSpec)
+#	= infoSourceSelector (:createInfoSourceSelectorControl viewContainer)
+
+	= titleBar ${
+		rdf:type					slide:Block ;
+		slide:marginX				"10" ;
+		slide:marginY				"7" ;
+		slide:bgcolor				"#003366" ;
+		slide:color					"white" ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type				slide:Block ;
+					slide:fontSize			"14" ;
+					slide:fontFamily		"Franklin Gothic Medium, Tahoma, Arial, Swiss" ;
+					slide:fontBold			"true" ;
+					slide:child ${
+						rdf:type						ozone:ViewContainer ;
+						ozone:viewPartClass				ozone:InactiveInlineViewPart ;
+						:informationSourceSpecification	infoSourceSpec ;
+						ozone:dataSource				dataSource
+					} ;
+					ozone:onClick ${
+						rdf:type			ozone:AdenineCall ;
+						ozone:method		:select ;
+						ozone:parameters	@( dataSource )
+					}
+				}
+				slide:newLine
+				viewSelector
+				slide:doubleSpace
+#				infoSourceSelector
+#				slide:doubleSpace
+				${	rdf:type					layout:Layout ;
+					layout:layoutConstraint		${
+						rdf:type				layout:InlineConstraint ;
+						ozone:viewPartClass		viewContainer:ToolbarViewPart ;
+						layout:separator		style:pipe ;
+						layout:lastSeparator	style:pipe ;
+						layout:noItems			slide:doubleSpace ;
+						layout:moreItems ${
+							rdf:type		slide:Text ;
+							slide:text		"..." ;
+							ozone:onClick	layout:browseToSource ;
+						} ;
+						layout:sortBy ${
+							rdf:type				data:SortingListSource ;
+							data:sortOrder			"ascending" ;
+							data:sortDataSource		${ rdf:type summary:TitleSource }
+						}
+					} ;
+					ozone:dataSource		toolbarItemSetSource
+				}
+			)
+		}
+	}
+
+	return ${
+		rdf:type			slide:RowSet ;
+		ozone:putProperty	${ ozone:name viewContainer:toolbarItemSetSource ; ozone:value toolbarItemSetSource } ;
+		slide:children		@( titleBar viewContainer )
+	}
+
+method viewContainer:createTopLevelViewContainerWithTitleBar dataSource defaultViewContainer infoSourceSpec ; adenine:precompile "true" ; adenine:preload "true"
+	if (== null infoSourceSpec)
+		= infoSourceSpec ${
+			rdf:type		:InformationSourceSpecification
+		}
+
+	= viewContainer ${ 
+		rdf:type						ozone:ScrollableViewContainer ;
+		ozone:dataSource				dataSource ;
+		:informationSourceSpecification	infoSourceSpec
+	}
+	add { viewContainer ozone:registerService viewContainer }
+
+	if defaultViewContainer
+		add { viewContainer
+			ozone:routeNavigationNotifications	"true" ;
+			ozone:registerService				ozone:defaultViewContainer
+		}
+
+	= toolbarItemSetSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		hs:member ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			data:autoCreate		"true" ;
+			data:predicate		viewContainer:toolbarCollection ;
+			ozone:dataSource ${
+				rdf:type		data:ResourcePropertySource ;
+				data:subject	viewContainer ;
+				data:predicate	ozone:hostedViewInstance
+			}
+		}
+	}
+
+	= viewSelector (:createViewSelectorControl viewContainer infoSourceSpec)
+#	= infoSourceSelector (:createInfoSourceSelectorControl viewContainer)
+
+	= titleBar ${
+		rdf:type					slide:Block ;
+		slide:marginX				"10" ;
+		slide:marginY				"7" ;
+		slide:height				"60" ;
+		slide:bgcolor				"#333333" ;
+		slide:background			<http://haystack.lcs.mit.edu/data/ozone/frame/vc.jpg> ;
+		slide:backgroundRepeat		"none" ;
+		slide:backgroundAlignX		"right" ;
+		slide:borderTopWidth		"1" ;
+		slide:borderTopColor		"gray" ;
+		slide:color					"white" ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type				slide:Block ;
+					slide:fontSize			"20" ;
+					slide:fontFamily		"Franklin Gothic Medium, Tahoma, Arial, Swiss" ;
+					slide:fontBold			"true" ;
+					slide:child ${
+						rdf:type						ozone:ViewContainer ;
+						ozone:viewPartClass				ozone:InactiveInlineViewPart ;
+						:informationSourceSpecification	infoSourceSpec ;
+						ozone:dataSource				dataSource
+					} ;
+					ozone:onClick ${
+						rdf:type			ozone:AdenineCall ;
+						ozone:method		:select ;
+						ozone:parameters	@( dataSource )
+					}
+				}
+				slide:newLine
+				viewSelector
+				slide:doubleSpace
+#				infoSourceSelector
+#				slide:doubleSpace
+				${	rdf:type					layout:Layout ;
+					layout:layoutConstraint		${
+						rdf:type				layout:InlineConstraint ;
+						ozone:viewPartClass		viewContainer:ToolbarViewPart ;
+						layout:separator		style:pipe ;
+						layout:lastSeparator	style:pipe ;
+						layout:noItems			slide:doubleSpace ;
+						layout:moreItems ${
+							rdf:type		slide:Text ;
+							slide:text		"..." ;
+							ozone:onClick	layout:browseToSource ;
+						} ;
+						layout:sortBy ${
+							rdf:type				data:SortingListSource ;
+							data:sortOrder			"ascending" ;
+							data:sortDataSource		${ rdf:type summary:TitleSource }
+						}
+					} ;
+					ozone:dataSource		toolbarItemSetSource
+				}
+			)
+		}
+	}
+
+	return ${
+		rdf:type			slide:RowSet ;
+		ozone:putProperty	${ ozone:name viewContainer:toolbarItemSetSource ; ozone:value toolbarItemSetSource } ;
+		slide:children		@( titleBar viewContainer )
+	}
+
+method :select dataSource ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider dataSource __context__ __source__)
+	= selection (dataProvider.getData data:resource null)
+	dataProvider.dispose
+
+	if (!= null selection)
+		frame:select selection
+	#	ozone:navigate selection
+
+#############################################################################################
+# Default toolbar view
+
+add {
+	:DefaultToolbarView	rdfs:label "Default Toolbar View"
+
+	:defaultToolbarViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+
+		rdf:type				viewContainer:ToolbarViewPart ;
+		ozone:viewDomain		:DefaultToolbarView ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		ozone:template ${
+			rdf:type		summary:Title ;
+			ozone:onClick	ozone:underlyingHyperlink
+		}
+
+	daml:Thing hs:classView :DefaultToolbarView
+}
+
+#############################################################################################
+# View selector control
+
+method :createViewSelectorControl viewContainer infoSourceSpec ; adenine:preload "true"
+	= source1 ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?r ?t ?vc ?vp ) ;
+		data:targetExistential	?vp ;
+		data:statement ${
+			data:subject	viewContainer ;
+			data:predicate	ozone:hostedResource ;
+			data:object		?r
+		} ;
+		data:statement ${
+			data:subject	?r ;
+			data:predicate	rdf:type ;
+			data:object		?t
+		} ;
+		data:statement ${
+			data:subject	?t ;
+			data:predicate	hs:classView ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	ozone:viewDomain ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	rdf:type ;
+			data:object		ozone:InteractiveViewPart
+		}
+	}
+
+	= source1a ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?r ?t ?vc ?vp ) ;
+		data:targetExistential	?vp ;
+		data:statement ${
+			data:subject	viewContainer ;
+			data:predicate	ozone:hostedResource ;
+			data:object		?r
+		} ;
+		data:statement ${
+			data:subject	?r ;
+			data:predicate	rdf:type ;
+			data:object		?t
+		} ;
+		data:statement ${
+			data:subject	?t ;
+			data:predicate	hs:possibleClassView ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	ozone:viewDomain ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	rdf:type ;
+			data:object		ozone:InteractiveViewPart
+		}
+	}
+
+	= source2 ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?r ?v ?vc ?vp ) ;
+		data:targetExistential	?vp ;
+		data:statement ${
+			data:subject	viewContainer ;
+			data:predicate	ozone:hostedResource ;
+			data:object		?r
+		} ;
+		data:statement ${
+			data:subject	?r ;
+			data:predicate	hs:view ;
+			data:object		?v
+		} ;
+		data:statement ${
+			data:subject	?v ;
+			data:predicate	rdf:type ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	ozone:viewDomain ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	rdf:type ;
+			data:object		ozone:InteractiveViewPart
+		}
+	}
+
+	= source3 ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?vc ?vp ) ;
+		data:targetExistential	?vp ;
+		data:statement ${
+			data:subject	daml:Thing ;
+			data:predicate	hs:classView ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	ozone:viewDomain ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	rdf:type ;
+			data:object		ozone:InteractiveViewPart
+		}
+	}
+
+	= source4 ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?vc ?vp ) ;
+		data:targetExistential	?vp ;
+		data:statement ${
+			data:subject	daml:Thing ;
+			data:predicate	hs:possibleClassView ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	ozone:viewDomain ;
+			data:object		?vc
+		} ;
+		data:statement ${
+			data:subject	?vp ;
+			data:predicate	rdf:type ;
+			data:object		ozone:InteractiveViewPart
+		}
+	}
+
+	= source ${
+		rdf:type			data:MergeSetSource ;
+		ozone:dataSource	source1 ;
+		ozone:dataSource	source1a ;
+		ozone:dataSource	source2 ;
+		ozone:dataSource	source3 ;
+		ozone:dataSource	source4
+	}
+
+	= menu ${
+		rdf:type		modeless:Modeless ;
+		modeless:child ${
+			rdf:type			slide:Block ;
+			slide:alignX		"left" ;
+			slide:fontBold		"false" ;
+			slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+			slide:fontSize		"8" ;
+			slide:bgcolor		"white" ;
+			slide:color			"#3B5377" ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"lightGray" ;
+			slide:margin		"2" ;
+			slide:width			"200" ;
+			slide:child	${
+				rdf:type			layout:Layout ;
+				ozone:dataSource	source ;
+				layout:layoutConstraint ${
+					rdf:type			layout:RowStackerConstraint ;
+					ozone:viewPartClass	viewContainer:ViewSelectorMenuItemViewPart ;
+					layout:sortBy ${
+						rdf:type				data:SortingListSource ;
+						data:sortOrder			"ascending" ;
+						data:sortDataSource		${ rdf:type data:LiteralPropertySource ; data:predicate viewContainer:toolbarCaption }
+					}
+				}
+			}
+		}
+	}
+
+	= control (UniqueResource)
+
+	uniqueMethod dropMenu
+		= controlPart (__context__.getProperty `control)
+		(__context__.getProperty modeless:modelessCreator).createModelessPart `menu (controlPart.getBounds) true false __context__
+
+	add { control
+		rdf:type					slide:Train ;
+		ozone:onClick				dropMenu ;
+		ozone:registerService		control ;
+		ozone:putProperty			${ ozone:name viewContainer:containingViewContainer ; ozone:value viewContainer } ;
+		ozone:putProperty			${ ozone:name viewContainer:viewSelectionContinuation ; ozone:value :changeView } ;
+		slide:children @(
+			${	rdf:type	slide:Text ;
+				slide:text	"Change view"
+#[
+				ozone:dataSource ${
+					rdf:type		data:LiteralPropertySource ;
+					data:predicate	viewContainer:toolbarCaption ;
+					data:default	"Show custom view" ;
+					ozone:dataSource ${
+						rdf:type				data:RDFQuerySetSource ;
+						data:extract			"true" ;
+						data:existentials		@( ?part ?view ?type ) ;
+						data:targetExistential	?part ;
+						data:statement ${
+							data:subject	viewContainer ;
+							data:predicate	ozone:hostedViewInstance ;
+							data:object		?view
+						} ;
+						data:statement ${
+							data:subject	?part ;
+							data:predicate	ozone:viewDomain ;
+							data:object		?type
+						} ;
+						data:statement ${
+							data:subject	?view ;
+							data:predicate	rdf:type ;
+							data:object		?type
+						}
+					}
+				}
+
+]#
+			}
+			slide:space
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+			}
+		)
+	}
+
+	return ${
+		rdf:type										ozone:InformationSourceManagedContainer ;
+		viewContainer:informationSourceSpecification	infoSourceSpec ;
+		ozone:child										control
+	}
+
+add { :viewContainerPartDataSource
+	rdf:type			data:ResourcePropertySource ;
+	ozone:dataSource	data:viewInstanceSource ;
+	data:predicate		viewContainer:viewContainerPrescription
+}
+
+add { :viewContainerCurrentResourceDataSource
+	rdf:type			data:ResourcePropertySource ;
+	ozone:dataSource	data:viewInstanceSource ;
+	data:predicate		viewContainer:currentResource
+}
+
+add { :viewPartClassDataSource
+	rdf:type			data:ResourcePropertySource ;
+	ozone:dataSource	data:viewInstanceSource ;
+	data:predicate		viewContainer:viewPartClass
+}
+
+add { :changeViewContextMenuItemViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					contextMenu:ContextMenuItemViewPart ;
+	ozone:viewDomain			viewContainer:ChangeViewContextMenuItemView ;
+	hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type			slide:ColumnSet ;
+			slide:pack			"right" ;
+			slide:children @(
+				${	rdf:type			slide:Train ;
+					ozone:onClick		contextMenu:startOperation ;
+					slide:children		@(
+						${	rdf:type			summary:IconBlank ;
+						}
+						slide:space
+						${	rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type			summary:Title
+								}
+							)
+						}
+					)
+				}
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+				}
+			)
+		} ;
+		slide:submenu ${
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type			slide:Block ;
+				slide:bgcolor		"white" ;
+				slide:borderWidth	"1" ;
+				slide:width			"200" ;
+				slide:borderColor	"lightGray" ;
+				slide:margin		"1" ;
+				slide:child ${
+					rdf:type					ozone:DataProviderHost ;
+					ozone:hostedDataProvider ${
+						rdf:type	data:ProviderConstructorSource ;
+						ozone:dataSource ${
+							rdf:type			data:ResourcePropertySource ;
+							ozone:dataSource	data:viewInstanceSource ;
+							data:predicate		viewContainer:viewInstanceDataSource 
+						}
+					} ;
+					ozone:propertyName			:viewInstanceDataProvider ;
+					slide:child ${
+						rdf:type					ozone:DataProviderHost ;
+						ozone:hostedDataProvider	:viewContainerCurrentResourceDataSource ;
+						ozone:propertyName			:underlyingDataProvider ;
+						slide:child ${
+							rdf:type			layout:Layout ;
+							ozone:putProperty	${ ozone:name viewContainer:viewSelectionContinuation ; ozone:value :changeView2 } ;
+							ozone:dataSource ${
+								rdf:type			data:MergeSetSource ;
+								ozone:dataSource ${
+									rdf:type				data:RDFQuerySetSource ;
+									data:existentials		@( ?t ?vc ?vp ) ;
+									data:targetExistential	?vp ;
+									data:statement ${
+										data:subjectDataSource	:viewContainerCurrentResourceDataSource ;
+										data:predicate			rdf:type ;
+										data:object				?t
+									} ;
+									data:statement ${
+										data:subject	?t ;
+										data:predicate	hs:classView ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject	?vp ;
+										data:predicate	ozone:viewDomain ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject			?vp ;
+										data:predicate			rdf:type ;
+										data:objectDataSource	:viewPartClassDataSource
+									}
+								} ;
+								ozone:dataSource ${
+									rdf:type				data:RDFQuerySetSource ;
+									data:existentials		@( ?t ?vc ?vp ) ;
+									data:targetExistential	?vp ;
+									data:statement ${
+										data:subjectDataSource	:viewContainerCurrentResourceDataSource ;
+										data:predicate	rdf:type ;
+										data:object		?t
+									} ;
+									data:statement ${
+										data:subject	?t ;
+										data:predicate	hs:possibleClassView ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject	?vp ;
+										data:predicate	ozone:viewDomain ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject			?vp ;
+										data:predicate			rdf:type ;
+										data:objectDataSource	:viewPartClassDataSource
+									}
+								} ;
+								ozone:dataSource ${
+									rdf:type				data:RDFQuerySetSource ;
+									data:existentials		@( ?v ?vc ?vp ) ;
+									data:targetExistential	?vp ;
+									data:statement ${
+										data:subjectDataSource	:viewContainerCurrentResourceDataSource ;
+										data:predicate	hs:view ;
+										data:object		?v
+									} ;
+									data:statement ${
+										data:subject	?v ;
+										data:predicate	rdf:type ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject	?vp ;
+										data:predicate	ozone:viewDomain ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject			?vp ;
+										data:predicate			rdf:type ;
+										data:objectDataSource	:viewPartClassDataSource
+									}
+								} ;
+								ozone:dataSource ${
+									rdf:type				data:RDFQuerySetSource ;
+									data:existentials		@( ?vc ?vp ) ;
+									data:targetExistential	?vp ;
+									data:statement ${
+										data:subject	daml:Thing ;
+										data:predicate	hs:classView ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject	?vp ;
+										data:predicate	ozone:viewDomain ;
+										data:object		?vc
+									} ;
+									data:statement ${
+										data:subject			?vp ;
+										data:predicate			rdf:type ;
+										data:objectDataSource	:viewPartClassDataSource
+									}
+								}
+							} ;
+							layout:layoutConstraint ${
+								rdf:type			layout:RowStackerConstraint ;
+								ozone:viewPartClass	viewContainer:ViewSelectorMenuItemViewPart ;
+								layout:sortBy ${
+									rdf:type				data:SortingListSource ;
+									data:sortOrder			"ascending" ;
+									data:sortDataSource		${ rdf:type data:LiteralPropertySource ; data:predicate viewContainer:toolbarCaption }
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+method :changeView2 viewPart
+	= underlying ((__context__.getProperty :underlyingDataProvider).getData data:resource null)
+
+	= view (queryExtract { underlying hs:view ?x ?x rdf:type ?y viewPart ozone:viewDomain ?y } @( ?x ))
+	if (!= null view)
+		= view view[0]
+	else
+		= viewDomain (extract viewPart ozone:viewDomain ?x)
+		= view ${ rdf:type viewDomain }
+
+	(__context__.getProperty :viewInstanceDataProvider).requestChange data:resourceChange view
+
+	contextMenu:closeContextMenu
+		
+#############################################################################################
+# View selection menu item view part
+
+add {
+	:viewSelectorMenuItemViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				viewContainer:ViewSelectorMenuItemViewPart ;
+		ozone:viewDomain		:ViewSelectorMenuItemView ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		ozone:template ${
+			rdf:type					slide:MenuItem ;
+			slide:marginX				"3" ;
+			slide:marginY				"2" ;
+			slide:backgroundHighlight	"lightestGray" ;
+			slide:child ${
+				rdf:type	slide:Paragraph ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						ozone:dataSource ${
+							rdf:type			data:LiteralPropertySource ;
+							ozone:dataSource	data:underlyingSource ;
+							data:predicate		viewContainer:toolbarCaption
+						}
+					}
+				)
+			} ;
+			ozone:onClick	:onSelectView
+		}
+
+	daml:Thing hs:classView :ViewSelectorMenuItemView
+}
+
+method :onSelectView
+	(__context__.getProperty viewContainer:viewSelectionContinuation) (data:getUnderlying)
+
+method :changeView viewPart ; adenine:preload "true"
+	(__context__.getProperty modeless:modelessParent).dispose
+
+	= viewContainerID (__context__.getProperty viewContainer:containingViewContainer)
+	= viewContainer (__context__.getProperty viewContainerID)
+
+	= underlying (extract viewContainerID ozone:hostedResource ?x)
+	if (!= null underlying)
+		= view (queryExtract { underlying hs:view ?x ?x rdf:type ?y viewPart ozone:viewDomain ?y } @( ?x ))
+		if (!= null view)
+			= view view[0]
+		else
+			= viewDomain (extract viewPart ozone:viewDomain ?x)
+			= view ${ rdf:type viewDomain }
+			add { underlying hs:view view }
+
+		viewContainer.navigate underlying view
+
+#############################################################################################
+# Information source specification
+
+add { :InformationSourceSpecification
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Information Source Specification" ;
+	hs:classView		lensui:AspectView ;
+	lensui:appletAspect	:informationSourcesAspect ;
+	vowl:hasLens		:informationSourcesAspect
+}
+
+add { :primaryInformationSource
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Primary Information Source" ;
+	rdfs:domain			:InformationSourceSpecification ;
+	rdfs:range			info:InformationSource
+}
+
+add { :informationSource
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Information Source" ;
+	rdfs:domain			:InformationSourceSpecification ;
+	rdfs:range			info:InformationSource
+}
+
+add { :detectedInformationSource
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Detected Information Source" ;
+	rdfs:domain			:InformationSourceSpecification ;
+	rdfs:range			info:InformationSource
+}
+
+add { :informationSourceSpecification
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Information Source Specification" ;
+	rdfs:domain			ozone:ScrollableViewContainer ;
+	rdfs:domain			ozone:ViewContainer ;
+	rdfs:range			:InformationSourceSpecification
+}
+
+#############################################################################################
+# Information source selector control
+
+add { :informationSourcesAspect
+	rdf:type			lensui:DataSetAspect ;
+	dc:title			"Information sources" ;
+	lensui:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		:informationSource ;
+		ozone:dataSource	lensui:underlyingSource
+	} ;
+	lensui:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	} ;
+	lensui:constructor	rdfstore:rdfStoreConstructor ;
+	lensui:constructorsDataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	rdf:type ;
+			data:object		construct:Constructor
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	construct:targetType ;
+			data:object		info:RDFStore
+		}
+	}
+}
+
+method :createInfoSourceSelectorControl viewContainer ; adenine:preload "true"
+	= layoutChangeControlID (UniqueResource)
+	return ${
+		rdf:type				slide:Train ;
+		ozone:registerService	layoutChangeControlID ;
+		ozone:putProperty		${ ozone:name :layoutChangeControlID ; ozone:value layoutChangeControlID } ;
+		ozone:putProperty		${ ozone:name :infoSourceSpec ; ozone:value (extract viewContainer :informationSourceSpecification ?x) } ;
+		ozone:onClick			:showInfoSourceDropdownMenu ;
+		slide:children @(
+			${	rdf:type	slide:Text ;
+				slide:text	"Select information sources"
+			}
+			slide:space
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+			}
+		)
+	}
+
+add { :possibleSourcesDataSource 
+	rdf:type		data:PredicateSetSource ;
+	data:object		info:RDFStore ;
+	data:predicate	rdf:type
+}
+
+method :changePrimary ; adenine:preload "true"
+	= infoSourceSpec (__context__.getProperty :infoSourceSpec)
+	= primarySourceDataSource ${
+		rdf:type		data:ResourcePropertySource ;
+		data:subject	infoSourceSpec ;
+		data:predicate	:primaryInformationSource
+	}
+
+	chooser:showChooser chooser:destinationDataSource = primarySourceDataSource chooser:selectionsDataSource = :possibleSourcesDataSource chooser:none = "Use default"
+
+method :showInfoSourceDropdownMenu ; adenine:preload "true"
+	= layoutChangeControlID (__context__.getProperty :layoutChangeControlID)
+	= layoutChangeControl (__context__.getProperty layoutChangeControlID)
+	= infoSourceSpec (__context__.getProperty :infoSourceSpec)
+
+	= primarySourceDataSource ${
+		rdf:type		data:ResourcePropertySource ;
+		data:subject	infoSourceSpec ;
+		data:predicate	:primaryInformationSource
+	}
+
+	= menu ${
+		rdf:type		modeless:Modeless ;
+		modeless:child ${
+			rdf:type			slide:Block ;
+			slide:alignX		"left" ;
+			slide:fontBold		"false" ;
+			slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+			slide:fontSize		"8" ;
+			slide:bgcolor		"white" ;
+			slide:color			"#3B5377" ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"lightGray" ;
+			slide:margin		"2" ;
+			slide:width			"200" ;
+			slide:child	${
+				rdf:type		slide:Paragraph ;
+				slide:children	@(
+					${	rdf:type	slide:Text ;
+						slide:text	"Primary source:"
+					}
+					slide:newLine
+					${	rdf:type			ozone:ViewContainer ;
+						ozone:dataSource	primarySourceDataSource ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+					slide:space
+					${	rdf:type			slide:Image ;
+						slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif> ;
+						ozone:onClick		${
+							rdf:type 			ozone:AdenineCall ;
+							ozone:method		:changePrimary
+						}
+					}
+					slide:break
+					
+					${	rdf:type	slide:Text ;
+						slide:text	"Detected sources:"
+					}
+					slide:newLine
+					${	rdf:type				layout:Layout ;
+						ozone:putProperty		${ ozone:name :predicate ; ozone:value :detectedInformationSource } ;
+						ozone:dataSource		:possibleSourcesDataSource ;
+						layout:layoutConstraint ${
+							rdf:type			layout:RowStackerConstraint ;
+							ozone:viewPartClass	:InfoSourcePaneItemViewPart ;
+							layout:sortBy ${
+								rdf:type				data:SortingListSource ;
+								data:sortOrder			"ascending" ;
+								data:sortDataSource		${ rdf:type summary:TitleSource }
+							}
+						}
+					}
+
+					slide:break
+					
+					${	rdf:type	slide:Text ;
+						slide:text	"Other sources:"
+					}
+					slide:newLine
+					${	rdf:type				layout:Layout ;
+						ozone:dataSource		:possibleSourcesDataSource ;
+						ozone:putProperty		${ ozone:name :predicate ; ozone:value :informationSource } ;
+						layout:layoutConstraint ${
+							rdf:type			layout:RowStackerConstraint ;
+							ozone:viewPartClass	:InfoSourcePaneItemViewPart ;
+							layout:sortBy ${
+								rdf:type				data:SortingListSource ;
+								data:sortOrder			"ascending" ;
+								data:sortDataSource		${ rdf:type summary:TitleSource }
+							}
+						}
+					}
+				)
+			}
+		}
+	}
+
+	(__context__.getProperty modeless:modelessCreator).createModelessPart menu (layoutChangeControl.getBounds) true false __context__
+
+#############################################################################################
+# Information source view part for use on info source selector pane
+
+add {
+	:infoSourcePaneItemViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				:InfoSourcePaneItemViewPart ;
+		ozone:viewDomain		:InfoSourcePaneItemView ;
+		ozone:partDataGenerator	:presentInfoSourcePaneItemView ;
+		ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	info:RDFStore hs:classView :InfoSourcePaneItemView
+}
+
+method :presentInfoSourcePaneItemView underlying ; adenine:precompile "true" ; adenine:preload "true"
+	= infoSourceSpec (__context__.getProperty :infoSourceSpec)
+	return ${
+		rdf:type	slide:Block ;
+		slide:child	${
+			rdf:type		slide:Paragraph ;
+			slide:children	@(
+				${	rdf:type			slide:Checkbox ;
+					slide:children		@(
+						${	rdf:type			summary:Title
+						}
+					) ;
+					ozone:dataSource	${
+						rdf:type			data:StatementExistenceSource ;
+						data:subject		infoSourceSpec ;
+						data:predicate		(__context__.getProperty :predicate) ;
+						data:object			underlying
+					}
+				}
+			)
+		}
+	}
+

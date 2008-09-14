@@ -1,0 +1,89 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Web Page Ontology
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/schemata/web>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	web:		<http://haystack.lcs.mit.edu/schemata/web#>
+@prefix	serine:		<http://haystack.lcs.mit.edu/agents/serine#>
+
+add { ^
+	rdf:type	daml:Ontology ;
+	dc:title	"Haystack Web Page Ontology"
+}
+
+#############################################################################################
+# Web Page
+
+add { web:WebPage
+	rdf:type				rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Web Page" ;
+	rdfs:isDefinedBy ^
+}
+
+add { web:webPageDetector1
+	rdf:type				serine:Transformation ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"application/xhtml+xml"
+		}
+	} ;
+	serine:priority			"true" ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		web:WebPage
+	}
+}
+
+add { web:webPageDetector2
+	rdf:type				serine:Transformation ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"text/html"
+		}
+	} ;
+	serine:priority			"true" ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		web:WebPage
+	}
+}

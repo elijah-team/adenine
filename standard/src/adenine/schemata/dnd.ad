@@ -1,0 +1,188 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Drag and drop ontology
+# Written by David Huynh
+
+@base <http://haystack.lcs.mit.edu/schemata/operation>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix op:			<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix dnd:		<http://haystack.lcs.mit.edu/schemata/dnd#>
+
+add { ^
+	rdf:type		daml:Ontology ;
+	dc:title		"Haystack Drag and Drop Ontology"
+}
+
+#############################################################################################
+# Drag and drop operations
+
+add { dnd:DNDOperation
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		op:Operation ;
+	rdfs:label			"Drag and Drop Operation" ;
+	rdfs:isDefinedBy	^
+}
+
+add { dnd:DragParameter
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		op:Parameter ;
+	rdfs:label			"Drag Source Parameter" ;
+	rdfs:isDefinedBy	^
+}
+
+add { dnd:DropParameter
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		op:Parameter ;
+	rdfs:label			"Drop Target Parameter" ;
+	rdfs:isDefinedBy	^
+}
+
+method dnd:queryDroppable sources targets
+	print sources targets
+
+	var source target operation dragParam dropParam
+
+	function processOperations operations checkDamlThing
+		for o in operations
+			= o o[0]
+
+			= dragParam (queryExtract { o adenine:namedParameter ?np ?np adenine:parameterName ?x ?x rdf:type dnd:DragParameter } @( ?x ))
+			= dropParam (queryExtract { o adenine:namedParameter ?np ?np adenine:parameterName ?x ?x rdf:type dnd:DropParameter } @( ?x ))
+
+			if (or (== null dragParam) (== null dropParam))
+				continue
+
+			= dragParam dragParam[0]
+			= dropParam dropParam[0]
+
+			= dragRightType (!= null (queryExtract { dragParam rdfs:range ?x source rdf:type ?x }))
+			if checkDamlThing
+				= dragRightType (or dragRightType (contains dragParam rdfs:range daml:Thing))
+
+			= dropRightType (!= null (queryExtract { dropParam rdfs:range ?x target rdf:type ?x }))
+			if checkDamlThing
+				= dropRightType (or dropRightType (contains dropParam rdfs:range daml:Thing))
+
+			if (or (! dragRightType) (! dropRightType))
+				continue
+
+			= dragCondition (extract dragParam op:adenineCondition ?x)
+			= dropCondition (extract dropParam op:adenineCondition ?x)
+
+			if (!= null dragCondition)
+				if (! (dragCondition source))
+					continue
+			if (!= null dropCondition)
+				if (! (dropCondition target))
+					continue
+			
+			= operation o
+
+			return true
+
+		return false
+
+	with __source__ __infosource__
+		= operations (query { ?x rdf:type dnd:DNDOperation } @( ?x ))
+
+		for s in sources
+			for t in targets
+				= source s
+				= target t
+
+				if (processOperations operations false)
+					return dnd:operation = operation dnd:sources = @(source) dnd:target = target dnd:dragParam = dragParam dnd:dropParam = dropParam
+				if (processOperations operations true)
+					return dnd:operation = operation dnd:sources = @(source) dnd:target = target dnd:dragParam = dragParam dnd:dropParam = dropParam
+
+		return null
+
+method dnd:queryMultiDroppable sources targets
+	= target targets[0]
+
+	with __source__ __infosource__
+		= operations (query { ?x rdf:type dnd:DNDOperation } @( ?x ))
+
+		function checkMany param values
+			= condition (extract param op:adenineCondition ?x)
+			= takesDamlThing (contains param rdfs:range daml:Thing)
+
+			if (! takesDamlThing)
+				for v in values
+					if (== null (queryExtract { param rdfs:range ?x v rdf:type ?x }))
+						return false
+
+			if (!= null condition)
+				for v in values
+					if (! (condition v))
+						return false
+
+			return true
+
+		function checkOne param value
+			= condition (extract param op:adenineCondition ?x)
+			= takesDamlThing (contains param rdfs:range daml:Thing)
+			
+			if (! takesDamlThing)
+				if (== null (queryExtract { param rdfs:range ?x value rdf:type ?x }))
+					return false
+
+			if (!= null condition)
+				if (! (condition value))
+					return false
+
+			return true
+
+		for o in operations
+			= o o[0]
+
+			= dragParam (queryExtract { o adenine:namedParameter ?np ?np adenine:parameterName ?x ?x rdf:type dnd:DragParameter })
+			= dropParam (queryExtract { o adenine:namedParameter ?np ?np adenine:parameterName ?x ?x rdf:type dnd:DropParameter })
+			
+			if (and (!= dragParam null) (!= dropParam null))
+				= dragParam dragParam[0]
+				= dropParam dropParam[0]
+
+				if (and (checkMany dragParam sources) (checkOne dropParam target))
+					importjava "edu.mit.lcs.haystack.rdf" Utilities
+
+					= sources2 @()
+					for s in sources
+						sources2.add (Utilities.pathToURI s __target__)
+
+					return dnd:operation = o dnd:sources = sources2 dnd:target = target dnd:dragParam = dragParam dnd:dropParam = dropParam
+
+	return null
+
+method dnd:performDrop operation sources target dragParam dropParam
+	= msg (Message)
+	msg.setNamedValue dragParam sources
+	msg.setNamedValue dropParam @(target)
+
+	apply operation msg

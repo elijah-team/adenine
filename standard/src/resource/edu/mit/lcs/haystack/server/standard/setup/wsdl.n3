@@ -1,0 +1,54 @@
+# http://haystack.lcs.mit.edu/schemata/wsdl.n3
+# RDF-ized WSDL ontology
+# Written by Dennis Quan
+
+#############################################################################################
+# Prefixes
+
+@prefix			rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix			rdfs:			<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix			daml:			<http://www.daml.org/2001/03/daml+oil#> .
+@prefix			dc:				<http://purl.org/dc/elements/1.1/> .
+@prefix			acl:			<http://www.w3.org/2001/02/acls/ns#> .
+@prefix			wsdl:			<http://schemas.xmlsoap.org/wsdl/> .
+@prefix			xsd:			<http://www.w3.org/2001/XMLSchema#> .
+@prefix			hs:				<http://haystack.lcs.mit.edu/schemata/haystack#> .
+@prefix			mail:			<http://haystack.lcs.mit.edu/schemata/mail#> .
+@prefix			ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#> .
+@prefix			config:			<http://haystack.lcs.mit.edu/schemata/config#> .
+
+#############################################################################################
+# Service
+
+wsdl:Service	a				daml:Class .
+
+wsdl:port       a				daml:ObjectProperty ;
+				a				hs:ProprietalProperty ;
+				rdfs:domain		wsdl:Service ;
+				rdfs:range		wsdl:Port .
+
+#############################################################################################
+# Port
+
+wsdl:Port       a				daml:Class .
+
+wsdl:binding	a				daml:ObjectProperty ;
+				a				hs:ProprietalProperty ;
+				rdfs:domain		wsdl:Port ;
+				rdfs:range		wsdl:Binding .
+
+#############################################################################################
+# Binding
+
+wsdl:Binding	a				daml:Class .
+
+wsdl:type		a				daml:ObjectProperty ;
+				a				hs:ProprietalProperty ;
+				rdfs:domain		wsdl:Binding ;
+				rdfs:range		wsdl:PortType .
+
+#############################################################################################
+# Port Type
+
+wsdl:PortType	a				daml:Class .
+

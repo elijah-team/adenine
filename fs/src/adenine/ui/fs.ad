@@ -1,0 +1,635 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+
+# Haystack Filesystem UI
+# Written by David Huynh and Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/fs> 
+
+@prefix config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	dc:				<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	viewContainer:	<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	cv:				<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix	op:				<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix content:		<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	fs:				<http://haystack.lcs.mit.edu/agents/fs#> 
+@prefix	lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:			<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	fsui:			<http://haystack.lcs.mit.edu/ui/fs#> 
+@prefix	setupui:		<http://haystack.lcs.mit.edu/ui/setup#> 
+
+add {
+	fs:Directory ozone:icon <http://haystack.lcs.mit.edu/data/ozone/icons/types/folder.gif>
+}
+
+method :getChildDataSet directory ; adenine:precompile "true" ; adenine:preload "true"
+	= childDataSet (extract directory fsui:childDataSet ?x)
+	if (== childDataSet null)
+		= childDataSet ${
+			rdf:type		data:CollectionDataSet ;
+			data:dataSource	${
+				rdf:type		data:PredicateSetSource ;
+				data:subject	directory ;
+				data:predicate	fs:child
+			}
+		}
+		add { directory fsui:childDataSet childDataSet }
+
+	return childDataSet
+
+
+#############################################################################################
+# Directory content view parts
+
+add { fs:Directory
+	hs:classView			ozone:CollectionView ;
+	hs:possibleClassView	setupui:CollectionView
+}
+
+add { cv:collectionViewPart	rdf:type	fsui:DirectoryContentViewPart }
+
+add { fs:Directory
+	cv:setDataSourceSpecification ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		fs:child ;
+		ozone:dataSource	data:underlyingSource
+	} ;
+	cv:listDataSourceSpecification ${
+		rdf:type			data:SortingListSource ;
+		data:sortDataSource ${ rdf:type summary:TitleSource } ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:predicate		fs:child ;
+			ozone:dataSource	data:underlyingSource
+		}
+	} ;
+	cv:naturalDataSourceSpecification ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		fs:child ;
+		ozone:dataSource	data:underlyingSource
+	}
+}
+
+add { fs:File hs:classView lensui:AspectView }
+
+add { :directoryTreeViewPart
+	rdf:type						ozone:Part ;
+	rdf:type						ozone:ViewPart ;
+	rdf:type						ozone:InteractiveViewPart ;
+	ozone:viewDomain				fsui:DirectoryTreeView ;
+	viewContainer:toolbarCaption	"Show as directory tree" ;
+	ozone:partDataGenerator			:presentDirectoryTreeView ;
+	ozone:cachePartData				"true" ;
+	hs:javaImplementation			${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	fs:Directory hs:classView fsui:DirectoryTreeView
+}
+
+add { fsui:genericDirectoryTreeView rdf:type fsui:DirectoryTreeView }
+
+method :presentDirectoryTreeView
+	= directory (__context__.getLocalProperty ozone:underlying)
+
+	= properties (UniqueResource)
+	= focusDataSource ${
+		rdf:type		data:ResourcePropertySource ;
+		data:subject	properties ;
+		data:predicate	layout:focused
+	}
+
+	= treePane ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:SingleResourceListSource ;
+			data:resource		directory
+		} ;
+		layout:selection ${
+			rdf:type				data:PredicateSetSource ;
+			data:subject			properties ;
+			data:predicate			layout:selected
+		} ;
+		layout:focus				focusDataSource ;
+		layout:layoutConstraint		${ rdf:type layout:ListViewConstraint ; ozone:viewPartClass fsui:TreeItemViewPart }
+	}
+
+	= previewPane ${
+		rdf:type			slide:Block ;
+		slide:marginLeft	"10" ;
+		slide:bgcolor		"lighterGray" ;
+		slide:child ${
+			rdf:type			slide:RowSet ;
+			ozone:putProperty	${ ozone:name ozone:viewPartClass ; ozone:value fsui:DirectoryContentViewPart } ;
+			slide:bgcolor	"white" ;
+			slide:children @(
+				${	rdf:type		ozone:Connector ;
+					ozone:connect	properties ;
+					ozone:trigger	layout:focused ;
+					ozone:onChange	:onFocusChange
+				}
+				(viewContainer:createViewContainerWithTitleBar focusDataSource false)
+			)
+		}
+	}
+
+	return ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource	${
+			rdf:type		data:DAMLListSource ;
+			data:damlList	@( treePane previewPane )
+		} ;
+		layout:layoutConstraint ${
+			rdf:type			layout:ColumnSplitterConstraint ;
+			layout:constraint	${ layout:element treePane ; layout:dimension "30%" } ;
+		}
+	}
+
+method :onFocusChange ; adenine:precompile "true" ; adenine:preload "true"
+	with __source__ __infosource__
+		= partData (__context__.getLocalProperty ozone:partData)
+		= properties (extract partData ozone:connect ?x)
+		= focus (extract properties layout:focused ?x)
+		= resource ((__context__.getProperty ozone:viewNavigator).getCurrentResource)
+		= navigatorProperties (extract resource ozone:navigatorProperties ?x)
+		if (== focus null)
+			remove navigatorProperties ozone:preview ?x
+		else
+			replace navigatorProperties ozone:preview ?x focus
+
+#############################################################################################
+# Tree item views
+
+add { :directoryTreeItemViewPart
+	rdf:type						ozone:Part ;
+	rdf:type						ozone:ViewPart ;
+	rdf:type						fsui:TreeItemViewPart ;
+	ozone:viewDomain				fsui:DirectoryTreeItemView ;
+	hs:javaImplementation			${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		ozone:MultiplexPartContainer ;
+		ozone:children	@( :collapsed :expanded :collapsed )
+	}
+
+	fs:Directory hs:classView fsui:DirectoryTreeItemView
+}
+
+add { :openIconPlusTitle
+	rdf:type		slide:ColumnSet ;
+	slide:fontBold	"true" ;
+	slide:children @(
+		${	rdf:type			slide:Image ;
+			slide:source		<http://haystack.lcs.mit.edu/data/ozone/icons/types/folder.gif>
+		}
+		slide:space
+		${	rdf:type			slide:Paragraph ;
+			slide:children @(
+				${	rdf:type			summary:Title
+				}
+			)
+		}
+	)
+}
+
+add { :closedIconPlusTitle
+	rdf:type		slide:ColumnSet ;
+	slide:fontBold	"true" ;
+	slide:children @(
+		${	rdf:type			slide:Image ;
+			slide:source		<http://haystack.lcs.mit.edu/data/ozone/icons/types/folderClosed.gif>
+		}
+		slide:space
+		${	rdf:type			slide:Paragraph ;
+			slide:children @(
+				${	rdf:type			summary:Title
+				}
+			)
+		}
+	)
+}
+
+add { :collapsed
+	rdf:type		slide:Block ;
+	slide:margin	"3" ;
+	slide:child ${
+		rdf:type	slide:ColumnSet ;
+		slide:pack	"right" ;
+		slide:children @(
+			:closedIconPlusTitle
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif> ;
+				ozone:onClick	ozone:showMultiplexPart1 ;
+			}
+		)
+	}
+}
+
+add { :expanded
+	rdf:type			slide:Block ;
+	slide:margin		"3" ;
+	slide:borderWidth	"1" ;
+	slide:borderColor	"lighterGray" ;
+	slide:child ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type	slide:ColumnSet ;
+				slide:pack	"right" ;
+				slide:children @(
+					:openIconPlusTitle
+					${	rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif> ;
+						ozone:onClick	ozone:showMultiplexPart2 ;
+					}
+				)
+			}
+			slide:newLine
+
+			${	rdf:type			slide:Block;
+				slide:marginLeft	"16" ;
+				slide:child ${
+					rdf:type					layout:Layout ;
+					ozone:dataSource ${
+						rdf:type				data:RDFQuerySetSource ;
+						data:existentials		@( ?x ) ;
+						data:targetExistential	?x ;
+						data:statement ${
+							data:subjectDataSource	data:underlyingSource ;
+							data:predicate			fs:child ;
+							data:object				?x
+						} ;
+						data:statement ${
+							data:subject	?x ;
+							data:predicate	rdf:type ;
+							data:object		fs:Directory
+						}
+					} ;
+					layout:layoutConstraint ${
+						rdf:type		layout:RowStackerConstraint ;
+						layout:sortBy ${
+							rdf:type			data:SortingListSource ;
+							data:sortDataSource ${ rdf:type summary:TitleSource }
+						}
+					}
+				}
+			}
+		)
+	}
+}
+
+add { :filesystemContentTreeItemViewPart
+	rdf:type						ozone:Part ;
+	rdf:type						ozone:ViewPart ;
+	rdf:type						fsui:TreeItemViewPart ;
+	ozone:viewDomain				fsui:FilesystemContentTreeItemView ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:marginX	"3" ;
+		slide:marginY	"1" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${ rdf:type summary:Icon }
+				slide:space
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${ rdf:type summary:Title }
+					)
+				}
+			)
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	fs:File hs:classView fsui:FilesystemContentTreeItemView
+}
+
+#############################################################################################
+# Icons
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/bibtex.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/bibtex.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/collapse.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/expand.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/expand.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/excel.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/excel.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/folder.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/folder.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/folderClosed.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/folderClosed.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/media/music.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/media/music.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/pdf.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/pdf.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/postscript.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/postscript.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/powerpoint.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/powerpoint.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/web.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/web.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/word.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/word.gif"
+}
+
+
+
+#############################################################################################
+# Icon resolver
+
+add {
+	fs:File ozone:iconResolver :resolveFilesystemContentIcon
+
+	:imageFileIconMap
+		:format	"image/gif" ;
+		:format	"image/png" ;
+		:format	"image/x-bitmap" ;
+		:format	"image/pict" ;
+		:format	"image/pict" ;
+		:format	"image/tiff" ;
+		:format	"image/jpeg" ;
+		:format	"image/jpeg" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/picture.gif>
+
+#	:textFileIconMap
+#		:format	"text/plain" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+#	:xmlFileIconMap
+#		:format	"text/xml" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+	:htmlFileIconMap
+		:format	"text/html" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/web.gif>
+
+#	:cssFileIconMap
+#		:format	"text/css" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+	:bibtexFileIconMap
+		:format	"application/x-bibtex" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/bibtex.gif>
+
+#	:adenineFileIconMap
+#		:format	"text/x-adenine" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+#	:n3FileIconMap
+#		:format	"application/n3" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+#	:compressFileIconMap
+#		:format	"application/x-compress" ;
+#		:format	"application/x-zip-compressed" ;
+#		:format	"application/x-tar" ;
+#		:format	"application/java-archive" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+#	:javascriptFileIconMap
+#		:format	"application/x-javascript" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+	:postscriptFileIconMap
+		:format	"application/postscript" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/postscript.gif>
+
+	:pdfFileIconMap
+		:format	"application/pdf" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/pdf.gif>
+
+#	:rtfFileIconMap
+#		:format	"application/rtf" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+#	:mpegFileIconMap
+#		:format	"application/x-mpeg" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+#	:flashFileIconMap
+#		:format	"application/x-shockwave-flash" ;
+#		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/.gif>
+
+	:wordFileIconMap
+		:format	"application/msword" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/word.gif>
+
+	:excelFileIconMap
+		:format	"application/vnd.ms-excel" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/excel.gif>
+
+	:powerPointFileIconMap
+		:format	"application/vnd.ms-powerpoint" ;
+		:icon	<http://haystack.lcs.mit.edu/data/ozone/icons/types/powerpoint.gif>
+
+	:audioFileIconMap
+		:format	"audio/x-ms-wma" ;
+		:format	"audio/midi" ;
+		:format	"audio/x-wav" ;
+		:format	"audio/basic" ;
+		:icon	<http://haystack.lcs.mit.edu/data/media/music.gif>
+
+}
+
+method :resolveFilesystemContentIcon item
+	var format
+	with __source__ __infosource__
+		= format (extract item dc:format ?x)
+
+	if (!= format null)
+		= icon (queryExtract { ?x :format format ; :icon ?y } @( ?y ))
+		if (!= icon null)
+			return icon[0]
+
+	return null
+
+#############################################################################################
+# Launch document
+
+add { :document
+	rdfs:label	"Document to open" ;
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	rdfs:range	fs:File ;
+	op:required	"true"
+}
+
+method :launchDocument :document = documents ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:document ;
+adenine:preload		"true" ;
+dc:title			"Open document"
+	importjava "org.eclipse.swt.program" Program
+	importjava "java.net" URI
+	importjava "java.io" File
+	with __source__ __infosource__
+		= path (extract documents[0] fs:underlyingPath ?x)
+		= file (File (path.getContent))
+		Program.launch (file.getAbsolutePath)
+
+#############################################################################################
+# Refresh directory
+
+add { :directory
+	rdfs:label	"Directory to refresh" ;
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	rdfs:range	fs:Directory ;
+	op:required	"true"
+}
+
+method :refreshDirectory :directory = directories ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:directory ;
+adenine:preload		"true" ;
+dc:title			"Refresh directory"
+	with __source__ __infosource__
+		for x in directories
+			= agent (extract x content:service ?x)
+			= y (connect agent)
+
+#############################################################################################
+# Filesystem agent aspects
+
+add { fs:FilesystemAgent
+	vowl:hasLens		:mountedPathsAspect ;
+	lensui:appletAspect	:mountedPathsAspect
+}
+
+add { :mountedPathsAspect
+	rdf:type	:MountedPathsAspect ;
+	dc:title	"Filesystem directories to scan"
+}
+
+add { :mountedPathsAspectPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:SWTPart ;
+	rdf:type				lensui:LensPart ;
+	ozone:dataDomain		:MountedPathsAspect ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type		slide:RowSet ;
+			slide:pack		"bottom" ;
+			slide:children @(
+				${	rdf:type				layout:Layout ;
+					ozone:dataSource ${
+						rdf:type			data:PredicateSetSource ;
+						ozone:dataSource	lensui:underlyingSource ;
+						data:predicate		fs:mountedDirectory
+					} ;
+					layout:layoutConstraint ${ 
+						rdf:type				layout:RowStackerConstraint ;
+						ozone:viewPartClass		ozone:PhraseViewPart ;
+						layout:sortBy ${
+							rdf:type			data:SortingListSource ;
+							data:sortDataSource ${ rdf:type summary:TitleSource }
+						}
+					}
+				}
+				${	rdf:type		slide:Block ;
+					slide:marginY	"5" ;
+					slide:child ${
+						rdf:type	slide:Paragraph ;
+						slide:children @(
+							${	rdf:type					slide:Button ;
+								ozone:onClick				:addDirectory ;
+								slide:backgroundHighlight	"90%" ;
+								slide:borderWidth			"1" ;
+								slide:child ${
+									rdf:type			slide:Train ;
+									slide:children			@(
+										${	rdf:type		slide:Text ;
+											slide:text		"Add a directory..."
+										}
+									)
+								}
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+method :addDirectory
+	importjava "edu.mit.lcs.haystack.ozone.core" Ozone
+	importjava "org.eclipse.swt.widgets" DirectoryDialog
+
+	= x (DirectoryDialog (Ozone.s_display.getActiveShell))
+	= y (x.open)
+	if (!= null y)
+		add { (lensui:getUnderlying) fs:mountedPath y }

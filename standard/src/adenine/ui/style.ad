@@ -1,0 +1,72 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Common Ozone style
+# Written by David Huynh and Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/style.ad,v 1.14 2003/12/17 17:34:22 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/style>
+
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	:			<http://haystack.lcs.mit.edu/ui/style#> 
+
+add { :tick
+	rdf:type		slide:Image ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/frame/tick.gif> ;
+	slide:wrap		"false" ;
+	slide:textAlign	"top"
+}
+
+add { :pipe
+	rdf:type		slide:Text ;
+	slide:text		"\b|\b"
+}
+
+add { :leftBracket
+	rdf:type		slide:Text ;
+	slide:text		"["
+}
+
+add { :rightBracket
+	rdf:type		slide:Text ;
+	slide:text		"]"
+}
+
+add { :buttonStyle
+	slide:styleDomain		slide:Button
+}
+
+add { :slideStyle
+	slide:styleDomain	slide:Slide ;
+#	slide:bgcolor		"#426496" ;
+#	slide:color			"lightestGray" ;
+	slide:fontFamily	"Tahoma" ;
+	slide:fontSize		"8"
+}
+
+add { :editStyle
+	slide:styleDomain	ozone:Edit ;
+	slide:color			"#426496"
+}

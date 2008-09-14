@@ -1,0 +1,79 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Information Agent
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/agents/information.ad,v 1.7 2003/12/17 17:34:26 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/agents/information>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	adenine:	<http://haystack.lcs.mit.edu/schemata/adenine#> 
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix	infoint:	<http://haystack.lcs.mit.edu/interfaces/information#>
+@prefix	:			<http://haystack.lcs.mit.edu/agents/information#>
+
+add { random:informationAgent
+	rdf:type config:AdenineService ;
+	rdf:type infoint:InformationRetrievalAgent ;
+	dc:title "Information Retrieval Agent" ;
+	wsdl:port ${
+		rdf:type wsdl:Port ;
+		wsdl:binding ${
+			rdf:type wsdl:Binding ;
+			wsdl:type :informationRetrievalAgentInterface ;
+		}
+	} ;
+	hs:javaImplementation ${
+		rdf:type hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.server.standard.adenine.AdenineService"
+	} ;
+	config:method ${
+		rdf:type config:Method ;
+		config:operation infoint:recommendSources ;
+		config:adenineMethod :doRecommendSources
+	}
+} 
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	add { 
+		server config:hostsService random:informationAgent 
+		random:informationAgent hs:user user 
+	}
+
+method :doRecommendSources input config:service = agent ; adenine:preload "true"
+	= user (extract agent hs:user ?x)
+	= preferredSources (query { user info:preferredServer ?x })
+
+	= sources @()
+	for x in preferredSources
+		sources.add x[0]
+
+	return sources

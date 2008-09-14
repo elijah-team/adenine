@@ -1,0 +1,242 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone Slide Ontology
+# Written by Dennis Quan and David Huynh
+# $Header: /home/stefano/haystack/src/adenine/schemata/slide.ad,v 1.18 2004/01/04 04:40:45 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/schemata/slide>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	viewContainer:	<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+
+add { ^
+	rdf:type		daml:Ontology ;
+	dc:title		"Ozone Slide Ontology"
+}
+
+#############################################################################################
+# Slide parts
+
+add { 
+	slide:slidePart
+						rdf:type				ozone:Part ;
+						rdf:type				ozone:ViewPart ;
+						rdf:type				ozone:AppletViewPart ;
+						rdf:type				ozone:InteractiveViewPart ;
+						ozone:dataDomain		slide:Slide ;
+						ozone:viewDomain		slide:SlideView ;
+						dc:title				"Slide" ;
+						viewContainer:toolbarCaption "Show as a slide" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.SlidePart" }
+
+	slide:Slide
+						hs:classView			slide:SlideView ;
+						rdfs:isDefinedBy		^ ;
+						rdf:type				rdfs:Class ;
+						rdf:type				daml:Class ;
+						rdfs:label				"Slide"
+
+	#
+	# Elementary slide parts
+	#
+
+	slide:textElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Text ;
+						dc:title				"Text" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.TextElement" }
+
+	slide:lineElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Line ;
+						dc:title				"Line" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.LineElement" }
+
+	slide:imageElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Image ;
+						dc:title				"Image" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.ImageElement" }
+
+	slide:breakElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Break ;
+						dc:title				"Line Break" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.BreakElement" }
+
+	#
+	# Slide parts that can be parents
+	#
+
+	slide:paragraphElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Paragraph ;
+						dc:title				"Paragraph" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.ParagraphElement" }
+
+	slide:spanElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Span ;
+						dc:title				"Span" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.SpanElement" }
+
+	slide:blockElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Block ;
+						dc:title				"Block" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.BlockElement" }
+
+	slide:trainElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Train ;
+						dc:title				"Train" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.TrainElement" }
+
+	slide:columnSetElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:ColumnSet ;
+						dc:title				"Column Set" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.ColumnSetElement" }
+
+	slide:rowSetElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:RowSet ;
+						dc:title				"Row Set" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.RowSetElement" }
+
+	#
+	# Custom parent slide parts
+	#
+
+	slide:highlightableBlockElement			
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:HighlightableBlock ;
+						dc:title				"Highlightable Block" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.HighlightableBlockElement" }
+
+	slide:menuItemElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:MenuItem ;
+						dc:title				"Menu Item" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.MenuItemElement" }
+
+	slide:buttonElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Button ;
+						dc:title				"Button" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.ButtonElement" }
+
+
+	slide:slideRangeSelectorElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:RangeSelector ;
+						dc:title				"Range Selector" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.RangeSelectorElement" }
+
+
+	slide:checkboxElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Checkbox ;
+						dc:title				"Checkbox" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.CheckboxElement" }
+
+	slide:optionElement
+						rdf:type				ozone:Part ;
+						ozone:dataDomain		slide:Option ;
+						dc:title				"Option" ;
+						slide:checkedImage		<http://haystack.lcs.mit.edu/data/ozone/common/checkedOption.gif> ;
+						slide:uncheckedImage	<http://haystack.lcs.mit.edu/data/ozone/common/uncheckedOption.gif> ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.CheckboxElement" }
+
+}
+
+#############################################################################################
+# Attributes of slide parts
+
+add {
+	slide:children		rdf:type				daml:ObjectProperty ;
+						rdf:type				hs:ProprietalProperty ;
+						rdfs:label				"Children" ;
+						rdfs:isDefinedBy		^ ;
+						rdfs:range				rdf:List
+						
+	slide:child			rdf:type				daml:ObjectProperty ;
+						rdf:type				hs:ProprietalProperty ;
+						rdfs:isDefinedBy		^ ;
+						rdfs:label				"Child"
+											
+	slide:background	rdf:type				daml:ObjectProperty ;
+						rdf:type				hs:ProprietalProperty ;
+						rdfs:isDefinedBy		^ ;
+						rdfs:label				"Background Image"
+
+	slide:bgcolor		rdf:type				daml:DatatypeProperty ;
+						rdf:type				hs:ProprietalProperty ;
+						rdfs:isDefinedBy		^ ;
+						rdfs:label				"Background Color"
+
+	slide:color			rdf:type				daml:DatatypeProperty ;
+						rdf:type				hs:ProprietalProperty ;
+						rdfs:isDefinedBy		^ ;
+						rdfs:label				"Color"
+
+	slide:margin		rdf:type				daml:DatatypeProperty ;
+						rdf:type				hs:ProprietalProperty ;
+						rdfs:isDefinedBy		^ ;
+						rdfs:label				"Margin"
+
+	slide:linkColor		rdf:type				daml:DatatypeProperty ;
+						rdf:type				hs:ProprietalProperty ;
+						rdfs:isDefinedBy		^ ;
+						rdfs:label				"Link Color"
+}
+
+#############################################################################################
+# Predefined slide part data for common use
+
+add {
+	slide:break					rdf:type	slide:Break
+	slide:line					rdf:type	slide:Line
+	slide:null					rdf:type	slide:Text
+	slide:space					rdf:type	slide:Text ; slide:text " "
+	slide:nonwrappingSpace		rdf:type	slide:Text ; slide:text " " ; slide:wrap "false"
+	slide:doubleSpace			rdf:type	slide:Text ; slide:text "\b\b"
+	slide:newLine				rdf:type	slide:Text ; slide:text "\n"
+	slide:comma					rdf:type	slide:Text ; slide:text ","
+	slide:period				rdf:type	slide:Text ; slide:text "."
+	slide:semicolon				rdf:type	slide:Text ; slide:text ";"
+	slide:colon					rdf:type	slide:Text ; slide:text ":"
+	slide:dollar				rdf:type	slide:Text ; slide:text "$"
+	slide:question				rdf:type	slide:Text ; slide:text "?"
+	slide:singleQuote			rdf:type	slide:Text ; slide:text "'"
+	slide:leftParenthesis		rdf:type	slide:Text ; slide:text "("
+	slide:rightParenthesis		rdf:type	slide:Text ; slide:text ")"
+	slide:and					rdf:type	slide:Text ; slide:text "and"
+	slide:or					rdf:type	slide:Text ; slide:text "or"
+	slide:hyphen				rdf:type	slide:Text ; slide:text "-"
+}

@@ -1,0 +1,306 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone status UI
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/status.ad,v 1.19 2004/05/15 15:18:59 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/status>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	status:		<http://haystack.lcs.mit.edu/ui/status#>
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	scheduler:	<http://haystack.lcs.mit.edu/agents/scheduler#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	editor:		<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+
+#############################################################################################
+# Status agent: cleans up old status messages when they go out of date
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	if (== null (extract ?x rdf:type status:StatusAgent)) 
+		= statusAgent ${
+			rdf:type	config:AdenineService ;
+			rdf:type	status:StatusAgent ;
+			dc:title	"Status Agent" ;
+			wsdl:port ${
+				rdf:type wsdl:Port ;
+				wsdl:binding ${
+					rdf:type wsdl:Binding ;
+					wsdl:type :interface ;
+				}
+			} ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:className "edu.mit.lcs.haystack.server.standard.adenine.AdenineService"
+			} ;
+			config:method ${
+				rdf:type config:Method ;
+				config:operation scheduler:performScheduledTask ;
+				config:adenineMethod :doCleanup
+			}
+		} 
+
+		= subscription ${
+			rdf:type			scheduler:Task ;
+			scheduler:service	statusAgent ;
+			dc:title			"Status notification maintenance agent" ;
+			scheduler:frequency	"60000"
+		} 
+
+		add { 
+			server config:hostsService statusAgent 
+			statusAgent hs:user user 
+		}
+
+method :doCleanup task ; adenine:preload "true" ; adenine:precompile "true"
+	importjava "java.util" Date
+	importjava "java.lang" Long
+	= items (query { :statusCollection hs:member ?x })
+	= now ((Date).getTime)
+	for x in items
+		= item x[0]
+		= duration (extract item status:duration ?x)
+		= startTime (extract item status:startTime ?x)
+		if (!= duration null)
+			= intDuration (Long.parseLong (duration.getContent))
+			= intStartTime (Long.parseLong (startTime.getContent))
+			if (gt now (+ intDuration intStartTime))
+				status:removeStatusItem item
+
+#############################################################################################
+# Status UI
+
+add { :statusCollection
+	dc:title		"Important Notifications" ;
+	rdf:type		hs:Collection ;
+	ozone:important	"true" ;
+	hs:view			${ rdf:type ozone:AppletCollectionView }
+}
+
+method status:addStatusItem item ; adenine:preload "true"
+	importjava "java.util" Date
+#[	if (! (frame:isInStartPaneCollection :statusCollection))
+		frame:addToStartPaneCollection :statusCollection 0
+]#
+	with __target__ __infosource__
+		add { :statusCollection hs:member item }
+		add { item status:startTime ((Date).getTime) }
+	frame:addToStartPaneCollection item 0
+	
+method status:removeStatusItem item ; adenine:preload "true"
+	with __target__ __infosource__
+		remove :statusCollection hs:member item
+	frame:removeFromStartPaneCollection item
+	
+#[	var items
+	with __source__ __infosource__
+		= items (query { :statusCollection hs:member ?x })
+	if (== (items.size) 0)
+		frame:removeFromStartPaneCollection  :statusCollection
+]#
+add { :statusItemViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:LineSummaryViewPart ;
+	rdf:type				ozone:PhraseViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	ozone:viewDomain		status:StatusItemView ;
+	ozone:partDataGenerator	:presentStatusItem ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+add { status:StatusItem
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Status item" ;
+	hs:classView	status:StatusItemView
+}
+
+method status:notifyUser message link duration ; adenine:preload "true"
+	= statusItem ${
+		rdf:type		status:StatusItem ;
+		dc:title		"Status Message";
+		status:message	message
+	}
+	
+	if (!= null link)
+		add { statusItem status:link link }
+	
+	if (!= null duration)
+		add { statusItem status:duration duration }
+	
+	status:addStatusItem statusItem
+	
+method :presentStatusItem statusItem ; adenine:preload "true"
+	= message (extract statusItem status:message ?x)
+	= link (extract statusItem status:link ?x)
+	
+	= children @(
+		${	rdf:type		slide:Text ;
+			slide:fontBold	"true" ;
+			slide:text		message
+		}
+		slide:break
+	)
+	
+	if (!= null link)
+		children.add ${
+			rdf:type		slide:Text ;
+			slide:text		"[More Information]" ;
+			ozone:onClick	${ rdf:type ozone:Hyperlink ; ozone:target link }
+		}
+		children.add slide:space
+	
+	uniqueMethod dismiss
+		status:removeStatusItem `statusItem
+	
+	children.add ${
+		rdf:type		slide:Text ;
+		slide:text		"[Dismiss]" ;
+		ozone:onClick	dismiss
+	}
+	
+	return ${
+		rdf:type		slide:Paragraph ;
+		slide:children	children
+	}
+
+#############################################################################################
+# Error ontology
+
+add { status:Error
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Error report" ;
+	hs:classView		lensui:AspectView
+}
+
+add { status:error
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Error" ;
+	rdfs:range			status:Error
+}
+
+add { status:TextError
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Text error report" ;
+	hs:classView		status:TextErrorView ;
+	rdfs:subClassOf		status:Error
+}
+
+add { :textErrorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	ozone:viewDomain		status:TextErrorView ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			ozone:dataSource ${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		dc:description
+			}
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { status:JavaExceptionError
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Java exception error report" ;
+	hs:classView		status:JavaExceptionErrorView ;
+	rdfs:subClassOf		status:Error
+}
+
+add { :javaExceptionErrorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	ozone:viewDomain		status:JavaExceptionErrorView ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type			editor:LiteralEditor ;
+			editor:multiline	"true" ;
+			ozone:dataSource ${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		status:stackTrace
+			}
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+method status:constructErrorCollectionDataSet obj ; adenine:preload "true"
+	= dataSet (extract ?x :errorSetOf obj adenine:source = __infosource__)
+	if (!= null dataSet)
+		return dataSet
+
+	with __target__ __infosource__
+		return ${
+			rdf:type		data:CollectionDataSet ;
+			dc:title		"Errors" ;
+			:errorSetOf		obj ;
+			data:dataSource	${
+				rdf:type		data:PredicateSetSource ;
+				data:subject	obj ;
+				data:predicate	status:error
+			} ;
+			hs:view ${
+				rdf:type	ozone:CollectionView ;
+				cv:preview	"false" ;
+				cv:initialLayoutConstraint ${
+					rdf:type					layout:VerticalFlowConstraint ;
+					ozone:viewPartClass			ozone:AppletViewPart ;
+					layout:sortBy ${
+						rdf:type				data:SortingListSource ;
+						data:sortValueType		xsd:dateTime ;
+						data:sortOrder			"descending" ;
+						data:sortDataSource		${ rdf:type data:LiteralPropertySource ; data:predicate dc:date ; data:default "" } ;
+					}
+				}
+			}
+		}

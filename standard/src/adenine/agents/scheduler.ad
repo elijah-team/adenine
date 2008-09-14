@@ -1,0 +1,289 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Scheduler agent
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/agents/scheduler> 
+
+@prefix	:			<http://haystack.lcs.mit.edu/agents/scheduler#> 
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+
+#############################################################################################
+# Scheduler agent
+
+add {
+	:Task		rdf:type		daml:Class ;
+				rdf:type		rdfs:Class ;
+				rdfs:label		"Scheduled Task" ;
+				hs:classView	lensui:AspectView
+
+	:lastRun	rdf:type		daml:DatatypeProperty ;
+				rdfs:label		"Last Run" ; 
+				rdfs:domain		:Task ;
+				rdfs:range		xsd:dateTime 
+
+	:timeOfDay	rdf:type		daml:DatatypeProperty ;
+				rdfs:label		"Time of Day" ; 
+				rdfs:domain		:Task ;
+				rdfs:range		xsd:time 
+
+	:frequency	rdf:type		daml:DatatypeProperty ;
+				rdf:type		daml:UniqueProperty ;
+				rdfs:label		"Frequency" ; 
+				rdfs:domain		:Task ;
+				rdfs:range		xsd:duration 
+
+	:service	rdf:type		daml:ObjectProperty ;
+				rdfs:label		"Service" ; 
+				rdfs:domain		:Task ;
+				rdfs:range		wsdl:Service 
+}
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	if (== null (extract ?x rdf:type :SchedulerAgent))
+		= x ${
+			dc:title	"Scheduler Agent" ;
+			rdf:type	config:Service ;
+			rdf:type	:SchedulerAgent ;
+			hs:user		user ;
+			wsdl:port ${
+				rdf:type wsdl:Port ;
+				wsdl:binding ${
+					rdf:type	wsdl:Binding ;
+					rdf:type	config:JavaBinding ;
+					wsdl:type ${
+						rdf:type wsdl:PortType ;
+						config:javaInterface ${
+							rdf:type hs:JavaClass ;
+							hs:className "edu.mit.lcs.haystack.server.standard.scheduler.IScheduler" 
+						} 
+					} 
+				} 
+			} ;
+			config:singleton "true" ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:className "edu.mit.lcs.haystack.server.standard.scheduler.SchedulerAgent" 
+			}
+		}
+
+
+		add { server config:hostsService x }
+
+#############################################################################################
+# Run scheduled task now
+
+add { :task
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Task to run" ;
+	op:required			"true" ;
+	rdfs:range			:Task
+}
+
+method :runTaskNow target0 :task = target ; 
+adenine:preload 	"true" ;
+op:primaryParameter	:task ;
+rdf:type			op:Operation ;
+dc:title			"Run task now"
+	if (!= null target)
+		for x in target
+			add { x :runNow "true" }
+
+	if (!= null target0)
+		add { target0 :runNow "true" }
+
+#############################################################################################
+# View scheduled tasks operation
+
+add { opdata:schedulingOperations hs:member :viewScheduledTasksOperation }
+
+method :viewScheduledTasksOperation ;
+rdf:type	op:Operation ;
+dc:title	"View scheduled tasks"
+	ozone:navigate :scheduledTasks
+
+add { :scheduledTasks
+	rdf:type		data:CollectionDataSet ;
+	dc:title		"Scheduled Tasks" ;
+	data:dataSource	${
+		rdf:type		data:PredicateSetSource ;
+		data:predicate	rdf:type ;
+		data:object		:Task ;
+	}
+}
+
+#############################################################################################
+# Schedule aspect part
+
+add { :scheduleAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				lensui:LensPart ;
+	ozone:dataDomain		:ScheduleAspect ;
+	
+	ozone:partDataGenerator	:presentScheduleAspect ;
+#	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentScheduleAspect aspect ; adenine:preload "true"
+	= createPane (UniqueResource)
+
+	uniqueMethod flip x changeType change
+		= m (__context__.getProperty `createPane)
+		if (== changeType data:resourceChange)
+			m.setPartByIndex 1
+		else
+			if (== changeType data:resourceDeletion)
+				m.setPartByIndex 0
+
+	return ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type				ozone:MultiplexPartContainer ;
+				ozone:registerService	createPane ;
+				ozone:children	@(
+					:noSchedule
+					${	rdf:type			ozone:ViewContainer ;
+						ozone:dataSource ${
+							rdf:type			data:ResourcePropertySource ;
+							data:predicate		:service ;
+							data:reverse		"true" ;
+							ozone:dataSource	lensui:underlyingSource
+						} ;
+						ozone:viewPartClass	ozone:AppletViewPart
+					}
+				)
+			}
+			${	rdf:type			ozone:DataConsumer ;
+				ozone:onDataChanged	flip ;
+				ozone:dataSource ${
+					rdf:type			data:ResourcePropertySource ;
+					data:predicate		:service ;
+					data:reverse		"true" ;
+					ozone:dataSource	lensui:underlyingSource
+				}
+			}
+		)
+	}
+
+add { :noSchedule
+	rdf:type		slide:Slide ;
+	slide:margin	"5" ;
+	slide:child ${
+		rdf:type		slide:Paragraph ;
+		ozone:onClick	:setupSchedule ;
+		slide:children @(
+			${	rdf:type	slide:Text ;
+				slide:text	"This service is not currently scheduled. Click here to set up a schedule."
+			}
+		)
+	}
+}
+
+method :setupSchedule
+	= subscription ${
+		rdf:type	:Task ;
+		:service	(lensui:getUnderlying) ;
+		:frequency	(* 1000 60 10)
+	}
+
+#############################################################################################
+# Task applet view part
+
+add { :taskAppletViewHeaderFields
+	rdf:type		data:OrderedSetSource ;
+	data:damlList @(
+		:lastRun
+		:frequency
+		:timeOfDay
+		:service
+	)
+}
+
+add { :taskAppletViewPart
+	rdf:type						ozone:SWTPart ;
+	rdf:type						ozone:Part ;
+	rdf:type						ozone:AppletViewPart ;
+	rdf:type						ozone:ViewPart ;
+	ozone:viewDomain				:TaskAppletView ;
+	ozone:partDataGenerator			:presentTaskAppletView ;
+#	ozone:cachePartData				"true" ;
+	hs:javaImplementation			${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentTaskAppletView underlying ; adenine:preload "true"
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	5 ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type						metadata:MetadataEditor ;
+					metadata:propertiesToDisplay	:taskAppletViewHeaderFields ;
+					ozone:dataSource				data:underlyingSource ;
+					metadata:scrollable				"false"
+				}
+				slide:break
+				${	rdf:type					slide:Button ;
+					slide:backgroundHighlight	"90%" ;
+					slide:borderWidth			"1" ;
+					slide:clearance				"5" ;
+					ozone:onClick ${ 
+						rdf:type 			ozone:AdenineCall ;
+						ozone:method		:runTaskNow ;
+						ozone:parameters 	@( underlying )
+					} ;
+					slide:child ${
+						rdf:type		slide:Text ;
+						slide:text		"Run task now"
+					}
+				}
+			)
+		}
+	}
+
+add { :Task
+	hs:classView	:TaskAppletView
+}
+
+add { :TaskAppletView
+	rdfs:label	"Task View"
+}
+

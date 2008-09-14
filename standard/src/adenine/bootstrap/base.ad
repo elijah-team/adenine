@@ -1,0 +1,85 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Base Package
+# Written by Dennis Quan, David Huynh
+# $Header: /home/stefano/haystack/src/adenine/bootstrap/base.ad,v 1.6 2003/12/17 17:34:27 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/bootstrap/base>
+
+@prefix config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+
+add { ^
+	config:includes	<http://purl.org/dc/elements/1.1> ;
+	config:includes	<http://purl.org/rss/1.0/schema.rdf> ;
+#	config:includes	<http://schemas.xmlsoap.org/wsdl> ;
+	config:includes	<http://www.daml.org/2001/03/daml+oil> ;
+	config:includes	<http://www.w3.org/1999/02/22-rdf-syntax-ns> ;
+	config:includes	<http://www.w3.org/2000/01/rdf-schema>
+}
+
+
+add { <http://www.w3.org/1999/02/22-rdf-syntax-ns>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Base RDF Definitions" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/edu/mit/lcs/haystack/server/standard/setup/rdf.rdf"
+}
+
+add { <http://www.w3.org/2000/01/rdf-schema>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"RDF Schema Definitions" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/edu/mit/lcs/haystack/server/standard/setup/rdfs.rdf"
+}
+
+add { <http://www.daml.org/2001/03/daml+oil>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"DAML+OIL Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/edu/mit/lcs/haystack/server/standard/setup/damloil.daml"
+}
+
+add { <http://purl.org/dc/elements/1.1>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Dublin Core Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/edu/mit/lcs/haystack/server/standard/setup/dublincore.rdf"
+}
+
+add { <http://purl.org/rss/1.0/schema.rdf>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"RSS Schema" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/edu/mit/lcs/haystack/server/standard/setup/rss.rdf"
+}
+
+add { <http://schemas.xmlsoap.org/wsdl>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"WSDL/RDF Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/edu/mit/lcs/haystack/server/standard/setup/wsdl.n3"
+}

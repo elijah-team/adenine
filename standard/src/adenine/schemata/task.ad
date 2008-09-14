@@ -1,0 +1,220 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Task Ontology
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/schemata/task.ad,v 1.17 2003/12/21 02:44:03 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/schemata/task>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#> 
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+
+add { ^
+	rdf:type		daml:Ontology ;
+	dc:title		"Haystack Task Ontology"
+}
+
+#############################################################################################
+# Task
+
+add { task:Task
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Task" ;
+	rdfs:isDefinedBy	^
+}
+
+add { task:participant
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Participant" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:Task ;
+	rdfs:range			hs:Person
+}
+
+add { task:subTask
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:ContainmentProperty ;
+	rdfs:label			"Subtask" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:Task ;
+	rdfs:range			task:Task
+}
+
+add { task:activeTask
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			rdf:Property ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Active task" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			hs:Person ;
+	rdfs:range			task:Task
+}
+
+add { task:context
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			rdf:Property ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Context" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:Task ;
+	rdfs:range			task:Context
+}
+
+add { task:homepage
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			rdf:Property ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Home page" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:Task
+}
+
+#############################################################################################
+# Context
+
+add { task:Context
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Context" ;
+	rdfs:isDefinedBy	^
+}
+
+add { task:associatedOperation
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			rdf:Property ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Associated operation" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:Context ;
+	rdfs:range			op:Operation
+}
+
+add { task:recentVisitation
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			rdf:Property ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Recent visitation" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:Context ;
+	rdfs:range			hs:Visitation
+}
+
+add { task:generalContext
+	rdf:type	task:Context ;
+	dc:title	"General usage context"
+}
+
+#############################################################################################
+# Reading task
+
+add { task:ReadingTask
+	rdf:type				rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Reading task" ;
+	rdfs:subClassOf		task:Task ;
+	rdfs:isDefinedBy	^
+}
+
+add { task:toRead
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"To read" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:ReadingTask
+}
+
+#############################################################################################
+# Reply to task
+
+add { task:ReplyToTask
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Reply to task" ;
+	rdfs:subClassOf		task:Task ;
+	rdfs:isDefinedBy	^
+}
+
+add { task:toReplyTo
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"To reply to" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:ReplyToTask
+}
+
+#############################################################################################
+# Prepare for task
+
+add { task:PrepareForTask
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Prepare for task" ;
+	rdfs:subClassOf		task:Task ;
+	rdfs:isDefinedBy	^
+}
+
+add { task:toPrepareFor
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"To prepare for" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:PrepareForTask
+}
+
+#############################################################################################
+# Contact task
+
+add { task:ContactTask
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Make contact task" ;
+	rdfs:subClassOf		task:Task ;
+	rdfs:isDefinedBy	^
+}
+
+add { task:toContact
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Party to contact" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			task:ContactTask
+}
+
+#############################################################################################
+# Project
+
+add { task:Project
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Project" ;
+	rdfs:subClassOf		task:Task ;
+	rdfs:subClassOf		hs:Collection ;
+	rdfs:isDefinedBy	^
+}

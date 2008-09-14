@@ -1,0 +1,128 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Base Operation and Task Support Package
+# Written by Dennis Quan, David Huynh
+
+@base <http://haystack.lcs.mit.edu/bootstrap/operationTaskBase>
+
+@prefix config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+
+add {
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/activity>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/operation>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/continuation>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/dnd>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/constructor>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/task>
+
+	^ config:includes	<http://haystack.lcs.mit.edu/programs/create>
+
+	^ config:includes	<http://haystack.lcs.mit.edu/data/operations>
+
+	^ config:includes	<http://haystack.lcs.mit.edu/ui/continuation>
+	^ config:includes	<http://haystack.lcs.mit.edu/ui/operation>
+	^ config:includes	<http://haystack.lcs.mit.edu/ui/task>
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/operation>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Operation Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/operation.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/dnd>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Drag and Drop Operation Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/dnd.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/constructor>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Constructor Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/constructor.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/continuation>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Continuation Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/continuation.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/task>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Task Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/task.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/activity>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Activity Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/activity.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/programs/create>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Create Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/programs/create.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/continuation>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Continuation UI" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/ui/continuation.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/operation>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Operation UI" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/ui/operation.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/task>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Task UI" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/ui/task.ad"
+}
+
+
+add { <http://haystack.lcs.mit.edu/data/operations>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Built-in Operations" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/data/operations.ad"
+}
+

@@ -1,0 +1,165 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Configuration Support
+# Written by Dennis Quan
+
+
+@base <http://haystack.lcs.mit.edu/programs/config>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	:			<http://haystack.lcs.mit.edu/programs/config#> 
+
+#############################################################################################
+# Sharing aspect part
+
+add { :sharingAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				lensui:LensPart ;
+	ozone:dataDomain		:SharingAspect ;
+	
+	ozone:partDataGenerator	:presentSharingAspect ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentSharingAspect ; adenine:preload "true"
+	= res (lensui:getUnderlying)
+
+	= children @()
+	if (== (extract ?x config:hostsService res) (__serviceaccessor__.getResource))
+		= transports (query { ?x rdf:type config:Transport })
+		for x in transports
+			= y (connect x[0])
+			children.add ${
+				rdf:type	slide:Text ;
+				slide:text	(y.getConnectionInstructions res)
+			}
+			children.add slide:break
+
+	return ${
+		rdf:type		slide:Slide ;
+		slide:child		${
+			rdf:type		slide:Paragraph ;
+			slide:children	children
+		}
+	}
+
+#############################################################################################
+# Service UI
+
+add { config:Service 
+	hs:classView	lensui:AspectView ;
+	vowl:hasLens	:summaryAspect
+#[	vowl:hasLens	${ rdf:type :SharingAspect ; dc:title "Sharing" } ;
+	vowl:hasLens ${
+		rdf:type			lensui:DataSetAspect ;
+		dc:title			"Who Can Use This Service" ;
+		lensui:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:predicate		config:canConnectTo ;
+			data:reverse		"true" ;
+			ozone:dataSource	lensui:underlyingSource
+		} ;
+		lensui:layoutConstraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		ozone:PhraseViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+	} ]#
+}
+
+add { :summaryAspect
+	rdf:type			metadata:MetadataAspect ;
+	dc:title			"Agent summary" ;
+	vowl:priority	"b" ;
+	metadata:propertiesToDisplay ${
+		rdf:type		data:DAMLListSource ;
+		data:damlList @(
+			dc:title
+			dc:description
+			hs:user
+		)
+	}
+}
+
+add { wsdl:Operation
+	hs:classView	lensui:AspectView
+}
+
+add { wsdl:Service
+	hs:classView	lensui:AspectView ;
+	vowl:hasLens ${
+		rdf:type			lensui:DataSetAspect ;
+		dc:title			"Web Service Operations" ;
+		lensui:dataSource ${
+			rdf:type				data:RDFQuerySetSource ;
+			data:existentials		@( ?x ?port ?binding ?portType ) ;
+			data:targetExistential	?x ;
+			data:statement ${
+				data:subjectDataSource	lensui:underlyingSource ;
+				data:predicate		wsdl:port ;
+				data:object			?port
+			} ;
+			data:statement ${
+				data:subject	?port ;
+				data:predicate	wsdl:binding ;
+				data:object		?binding
+			} ;
+			data:statement ${
+				data:subject	?binding ;
+				data:predicate	wsdl:type ;
+				data:object		?portType
+			} ;
+			data:statement ${
+				data:subject	?portType ;
+				data:predicate	wsdl:operation ;
+				data:object		?x
+			}
+		} ;
+		lensui:layoutConstraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		ozone:PhraseViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+	}
+}

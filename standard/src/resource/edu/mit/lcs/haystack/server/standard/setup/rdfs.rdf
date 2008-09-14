@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY b 'http://www.w3.org/2000/01/rdf-schema#'>
+]>
+<rdf:RDF xmlns:rdf="&rdf;"
+	 xmlns:b="&b;"
+	 >
+<b:Class rdf:about="&rdf;Alt"
+	 b:label="Alt">
+	<b:subClassOf rdf:resource="&b;Container"/>
+</b:Class>
+<b:Class rdf:about="&rdf;Bag"
+	 b:label="Bag">
+	<b:subClassOf rdf:resource="&b;Container"/>
+</b:Class>
+<b:Class rdf:about="&rdf;Property"
+	 b:comment="The concept of a property."
+	 b:label="Property">
+	<b:subClassOf rdf:resource="&b;Resource"/>
+</b:Class>
+<b:Class rdf:about="&rdf;Seq"
+	 b:label="Sequence">
+	<b:subClassOf rdf:resource="&b;Container"/>
+</b:Class>
+<b:Class rdf:about="&rdf;Statement"
+	 b:comment="This represents the set of reified statements."
+	 >
+	<b:subClassOf rdf:resource="&b;Resource"/>
+	<b:label>Statement</b:label>
+</b:Class>
+<rdf:Property rdf:about="&rdf;object"
+	 b:label="object">
+	<b:domain rdf:resource="&rdf;Statement"/>
+</rdf:Property>
+<rdf:Property rdf:about="&rdf;predicate"
+	 b:label="predicate">
+	<b:range rdf:resource="&rdf;Property"/>
+	<b:domain rdf:resource="&rdf;Statement"/>
+</rdf:Property>
+<rdf:Property rdf:about="&rdf;subject"
+	 b:label="subject">
+	<b:domain rdf:resource="&rdf;Statement"/>
+	<b:range rdf:resource="&b;Resource"/>
+</rdf:Property>
+<rdf:Property rdf:about="&rdf;type"
+	 b:comment="Indicates membership of a class"
+	 b:label="type">
+	<b:range rdf:resource="&b;Class"/>
+</rdf:Property>
+<rdf:Property rdf:about="&rdf;value"
+	 b:label="object"
+	 />
+<rdf:Description rdf:about="&b;">
+	<b:seeAlso rdf:resource="urn:rdf:a28b5e4ec899577a43d6859e3131fb88"/>
+</rdf:Description>
+<b:Class rdf:about="&b;Class"
+	 b:comment="The concept of Class"
+	 b:label="Class">
+	<b:subClassOf rdf:resource="&b;Resource"/>
+</b:Class>
+<b:Class rdf:about="&b;ConstraintProperty"
+	 b:comment="Properties used to express RDF Schema constraints."
+	 b:label="ConstraintProperty">
+	<b:subClassOf rdf:resource="&rdf;Property"/>
+	<b:subClassOf rdf:resource="&b;ConstraintResource"/>
+</b:Class>
+<b:Class rdf:about="&b;ConstraintResource"
+	 b:comment="Resources used to express RDF Schema constraints."
+	 b:label="ConstraintResource">
+	<b:subClassOf rdf:resource="&b;Resource"/>
+</b:Class>
+<b:Class rdf:about="&b;Container"
+	 b:comment="This represents the set Containers."
+	 b:label="Container">
+	<b:subClassOf rdf:resource="&b;Resource"/>
+</b:Class>
+<b:Class rdf:about="&b;ContainerMembershipProperty"
+	 b:label="ContainerMembershipProperty">
+	<b:subClassOf rdf:resource="&rdf;Property"/>
+</b:Class>
+<b:Class rdf:about="&b;Literal"
+	 b:label="Literal">
+	<b:comment>This represents the set of atomic values, eg. textual strings.</b:comment>
+</b:Class>
+<b:Class rdf:about="&b;Resource"
+	 b:comment="The most general class"
+	 b:label="Resource"
+	 />
+<rdf:Property rdf:about="&b;comment"
+	 b:comment="Use this for descriptions"
+	 b:label="comment">
+	<b:range rdf:resource="&b;Literal"/>
+	<b:domain rdf:resource="&b;Resource"/>
+</rdf:Property>
+<b:ConstraintProperty rdf:about="&b;domain"
+	 b:label="domain">
+	<b:comment>This is how we associate a class with properties that its instances can have</b:comment>
+</b:ConstraintProperty>
+<rdf:Property rdf:about="&b;isDefinedBy"
+	 >
+	<b:comment>Indicates a resource containing and defining the subject resource.</b:comment>
+	<b:domain rdf:resource="&b;Resource"/>
+	<b:range rdf:resource="&b;Resource"/>
+	<b:subPropertyOf rdf:resource="&b;seeAlso"/>
+	<b:label>isDefinedBy</b:label>
+</rdf:Property>
+<rdf:Property rdf:about="&b;label"
+	 b:comment="Provides a human-readable version of a resource name."
+	 b:label="label">
+	<b:range rdf:resource="&b;Literal"/>
+	<b:domain rdf:resource="&b;Resource"/>
+</rdf:Property>
+<b:ConstraintProperty rdf:about="&b;range"
+	 b:label="range">
+	<b:comment>Properties that can be used in a schema to provide constraints</b:comment>
+	<b:domain rdf:resource="&rdf;Property"/>
+	<b:range rdf:resource="&b;Class"/>
+</b:ConstraintProperty>
+<rdf:Property rdf:about="&b;seeAlso"
+	 b:label="seeAlso">
+	<b:comment>Indicates a resource that provides information about the subject resource.</b:comment>
+	<b:range rdf:resource="&b;Resource"/>
+	<b:domain rdf:resource="&b;Resource"/>
+</rdf:Property>
+<rdf:Property rdf:about="&b;subClassOf"
+	 b:comment="Indicates membership of a class"
+	 >
+	<b:domain rdf:resource="&b;Class"/>
+	<b:range rdf:resource="&b;Class"/>
+	<b:label>subClassOf</b:label>
+</rdf:Property>
+<rdf:Property rdf:about="&b;subPropertyOf"
+	 b:comment="Indicates specialization of properties"
+	 >
+	<b:domain rdf:resource="&rdf;Property"/>
+	<b:range rdf:resource="&rdf;Property"/>
+	<b:label>subPropertyOf</b:label>
+</rdf:Property>
+<rdf:Description rdf:about="urn:rdf:a28b5e4ec899577a43d6859e3131fb88"
+	 b:resource="http://www.w3.org/2000/01/rdf-schema-more"/>
+</rdf:RDF>

@@ -1,0 +1,1665 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone Task UI
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/task>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#> 
+@prefix	editor:		<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	create:		<http://haystack.lcs.mit.edu/programs/create#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	note:		<http://haystack.lcs.mit.edu/schemata/note#> 
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	vc:			<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	contextMenu: <http://haystack.lcs.mit.edu/ui/contextMenu#> 
+@prefix	:			<http://haystack.lcs.mit.edu/ui/task#> 
+@prefix modeless:	<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix activity:	<http://haystack.lcs.mit.edu/schemata/activity#>
+
+add { ^ config:dependsOn <http://haystack.lcs.mit.edu/ui/frame> }
+
+#############################################################################################
+# Task activation and deactivation
+
+method :activateTask task
+	with __source__ __infosource__
+		if (! (contains (__identity__.getResource) task:activeTask task))
+			with __target__ __infosource__
+				add { (__identity__.getResource) task:activeTask task }
+
+				importjava "java.util" Date
+				= record ${ rdf:type :StartTaskRecord ; dc:date (Date) ; task:task task }
+
+method :deactivateTask task removeFromStartPane
+	with __target__ __infosource__
+		importjava "java.util" Date
+		= record ${ rdf:type :StopTaskRecord ; dc:date (Date) ; task:task task }
+		remove (__identity__.getResource) task:activeTask task
+		
+		= deactiveMeth ( query {task rdf:type ?x ?x task:deactivateMethod ?y} @(?y) )
+		if (!= null deactiveMeth)
+			for m in deactiveMeth
+				m[0] task
+
+#############################################################################################
+# Task aspects
+
+add { :subTasksAspect
+	rdf:type			lensui:DataSetAspect ;
+	dc:title			"Sub tasks" ;
+	lensui:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		task:subTask ;
+		ozone:dataSource	lensui:underlyingSource
+	} ;
+	lensui:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	}
+}
+
+add { :recentDocumentsAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				lensui:LensPart ;
+	ozone:dataDomain		:RecentDocumentsAspect ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type				layout:Layout ;
+					ozone:dataSource ${
+						rdf:type				data:RDFQuerySetSource ;
+						data:existentials		@( ?x ?y ?z ) ;
+						data:targetExistential	?y ;
+						data:statement ${
+							data:subjectDataSource	lensui:underlyingSource ;
+							data:predicate			task:context ;
+							data:object				?z
+						} ;
+						data:statement ${
+							data:subject	?z ;
+							data:predicate	task:recentVisitation ;
+							data:object		?x
+						} ;
+						data:statement ${
+							data:subject	?x ;
+							data:predicate	hs:visitedResource ;
+							data:object		?y
+						}
+					} ;
+					layout:layoutConstraint ${
+						rdf:type				layout:RowStackerConstraint ;
+						ozone:viewPartClass		ozone:PhraseViewPart ;
+						layout:sortBy ${
+							rdf:type			data:SortingListSource ;
+							data:sortDataSource ${ rdf:type summary:TitleSource }
+						}
+					}
+				}
+				slide:break
+				${	rdf:type					slide:Button ;
+					slide:backgroundHighlight	"90%" ;
+					slide:borderWidth			"1" ;
+					slide:clearance				"5" ;
+					ozone:onClick				:clearRecentItems ;
+					slide:child ${
+						rdf:type		slide:Text ;
+						slide:text		"Clear"
+					}
+				}
+			)
+		}
+	}
+}
+
+method :clearRecentItems
+	with __target__ __infosource__
+		remove (extract (lensui:getUnderlying) task:context ?x) task:recentVisitation ?x
+
+add { :recentDocumentsAspect
+	rdf:type	:RecentDocumentsAspect ;
+	dc:title	"Recently used documents"
+}
+
+add { :summaryAspect
+	rdf:type						metadata:MetadataAspect ;
+	dc:title						"Task Summary" ;
+	metadata:propertiesToDisplay	:taskHeaderFields
+}
+
+add { :taskHeaderFields
+	rdf:type		data:OrderedSetSource ;
+	data:damlList @(
+		dc:title
+		task:homepage
+		task:context
+	)
+}
+
+#############################################################################################
+# One line views
+
+add { :isActiveTaskDataSource
+	rdf:type				data:StatementExistenceSource ;
+	data:subjectDataSource	data:currentUserSource ;
+	data:predicate			task:activeTask ;
+	data:objectDataSource	data:underlyingSource
+}
+
+add { :titleStatusSpan
+	rdf:type	slide:Paragraph ;
+	slide:children @(
+		${	rdf:type			slide:Checkbox ;
+			slide:children @(
+				${	rdf:type			ozone:MultiplexPartContainer ;
+					ozone:children		@( :boldTitleInactive :unboldTitleInactive ) ;
+					ozone:dataSource ${
+						rdf:type			data:MappingSource ;
+						data:domain			@( "true" "false" ) ;
+						data:range			@( :boldTitleInactive :unboldTitleInactive ) ;
+						data:default		:unboldTitleInactive ;
+						ozone:dataSource	:isActiveTaskDataSource
+					}
+				}
+			) ;
+			ozone:dataSource	:isActiveTaskDataSource
+		}
+	)
+}
+
+add { :unboldTitleInactive
+	rdf:type		slide:Paragraph ;
+	slide:children @(
+		${	rdf:type		summary:Title
+		}
+	)
+}
+
+add { :boldTitleInactive
+	rdf:type		slide:Paragraph ;
+	slide:fontBold	"true" ;
+	slide:children @(
+		${	rdf:type		summary:Title
+		}
+	)
+}
+
+add { :unboldTitle
+	rdf:type		slide:Paragraph ;
+	ozone:onClick	:startAndNavigate ;
+	slide:children @(
+		${	rdf:type		summary:Title
+		}
+	)
+}
+
+add { :boldTitle
+	rdf:type		slide:Paragraph ;
+	ozone:onClick	:startAndNavigate ;
+	slide:fontBold	"true" ;
+	slide:children @(
+		${	rdf:type		summary:Title
+		}
+	)
+}
+
+method :startAndNavigate element context part event
+	= task (data:getUnderlying)
+
+	var homepage
+	with __source__ __infosource__
+		:activateTask task
+
+		= homepage (extract task task:homepage ?x adenine:source = __infosource__)
+		if (or (== null homepage) (=="null" homepage))
+			= homepage task
+			
+	if (!= null homepage)
+		if (!= null event)
+			importjava "org.eclipse.swt.events" MouseEvent
+			importjava "org.eclipse.swt" SWT
+			if (instanceOf event MouseEvent)
+				if (! (& event.stateMask SWT.SHIFT))
+					ozone:navigate homepage
+
+add {
+	:TaskLineSummaryView rdfs:label "Task Line Summary View"
+	:taskLineSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		rdf:type				ozone:PhraseViewPart ;
+		ozone:viewDomain		:TaskLineSummaryView ;
+		ozone:template ${
+			rdf:type			slide:ColumnSet ;
+			slide:children @(
+				${	rdf:type	summary:IconBlank
+				}
+				slide:nonwrappingSpace
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type			summary:Title ;
+							ozone:onClick	:startAndNavigate
+						}
+					)
+				}
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	task:Task hs:classView :TaskLineSummaryView 
+}
+
+add {
+	:TaskInlineView rdfs:label "Task Inline View"
+	:taskInlineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InlineViewPart ;
+		ozone:viewDomain		:TaskInlineView ;
+		ozone:template ${
+			rdf:type		summary:Title ;
+			ozone:onClick	:startAndNavigate
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	task:Task hs:classView :TaskInlineView 
+}
+
+add { :checkBoxTaskViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:CheckBoxTaskViewPart ;
+	ozone:viewDomain		:CheckBoxTaskView ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"3" ;
+		slide:child			:titleStatusSpan
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+}
+
+add { task:Task 
+	hs:classView :CheckBoxTaskView
+}
+
+#############################################################################################
+# Task view
+
+add { task:Task 
+	hs:classView		lensui:AspectView ;
+	vowl:hasLens		:summaryAspect ;
+	vowl:hasLens		:recentDocumentsAspect ;
+	lensui:appletAspect	:recentDocumentsAspect ;
+	vowl:hasLens		:subTasksAspect
+}
+
+add { task:Project
+	hs:classView		lensui:AspectView
+}
+
+#############################################################################################
+# Operations
+
+add { :task
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	rdfs:label	"Task" ;
+	rdfs:range	task:Task ;
+	op:required	"true"
+}
+
+method :activateTaskOperation :task = tasks ;
+rdf:type			op:Operation ;
+op:primaryParameter	:task ;
+dc:title			"Begin doing this task" ;
+adenine:preload		"true"
+	for x in tasks
+		:activateTask x
+
+method :deactivateTaskOperation :task = tasks ;
+rdf:type			op:Operation ;
+op:primaryParameter	:task ;
+dc:title			"Finish doing this task" ;
+adenine:preload		"true"
+	for x in tasks
+		:deactivateTask x
+
+#############################################################################################
+# Constructors
+
+add { :title
+	rdf:type				op:Parameter ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	editor:disallowBlanks	"true" ;
+	rdfs:label				"Title" ;
+	rdfs:range				xsd:string
+}
+
+
+#############################################################################################
+# Tasks applet
+
+add { :addButton1
+	rdf:type				slide:Button ;
+	ozone:onClick			ozone:showMultiplexPart1 ;
+	slide:borderWidth		"1" ;
+	slide:fillParent		"false" ;
+	slide:child ${
+		rdf:type			slide:Train ;
+		slide:children			@(
+			${	rdf:type		slide:Text ;
+				slide:text		"Add an item to this task list"
+			}
+			slide:space
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif>
+			}
+		)
+	}
+}
+
+add { :addButton2
+	rdf:type				slide:Button ;
+	ozone:onClick			ozone:showMultiplexPart0 ;
+	slide:borderWidth		"1" ;
+	slide:fillParent		"false" ;
+	slide:child ${
+		rdf:type			slide:Train ;
+		slide:children @(
+			${	rdf:type		slide:Text ;
+				slide:text		"Add an item to this task list"
+			}
+			slide:space
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif>
+			}
+		)
+	}
+}
+
+add { :defaultTaskBarItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskBarItemViewPart ;
+	ozone:viewDomain		:DefaultTaskBarItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:marginY	"3" ;
+		slide:width		"180" ;
+		slide:marginX	"2" ;
+		slide:child ${
+			rdf:type			slide:Block ;
+			slide:marginY		"4" ;
+			slide:marginX		"4" ;
+			slide:bgcolor		"lighterGray";
+			slide:color			"black" ;
+			slide:borderColor	"darkGray" ;
+			slide:borderWidth	"1" ;
+			slide:child ${
+				rdf:type	slide:ColumnSet ;
+				slide:pack	"right" ;
+				slide:children @(
+					${	rdf:type		slide:Train ;
+						ozone:onClick	:showDropdown ;
+						slide:children @(
+							${	rdf:type	summary:IconBlank
+							}
+							slide:space
+							${	rdf:type	summary:Title
+							}
+							slide:space
+							${	rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+							}
+							slide:space
+						)
+					}
+					${	rdf:type				slide:Train ;
+						slide:children @(
+							${	rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif> ;
+								ozone:onClick	:stopTask
+							}
+						)
+					}							
+				)
+			}
+		}
+	}
+}
+
+method :showDropdown
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	= contextMenu ${
+		rdf:type			modeless:Modeless ;
+		modeless:child ${
+			rdf:type			ozone:ViewContainer ;
+			ozone:dataSource	data:underlyingSource ;
+			ozone:viewPartClass	:TaskDropdownViewPart
+		}
+	}
+
+	modelessCreator.createModelessPart contextMenu ((((__context__.getParentContext).getParentContext).getLocalProperty ozone:parentPart).getBounds) true false context
+
+add { daml:Thing hs:classView :DefaultTaskBarItemView }
+
+add { :defaultStandaloneDropdownViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskDropdownViewPart ;
+	ozone:viewDomain		:DefaultStandaloneDropdownView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:alignX		"left" ;
+		slide:fontBold		"false" ;
+		slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+		slide:fontSize		"8" ;
+		slide:bgcolor		"white" ;
+		slide:color			"#3B5377" ;
+		slide:borderWidth	"1" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"2" ;
+		slide:width			"200" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type			ozone:ViewContainer ;
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:DropdownViewPart
+				}
+				frame:dockMessage
+				:startMessage
+				:putAwayMessage
+				:mruItem
+			)
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultStandaloneDropdownView }
+
+add { :startMessage
+	rdf:type					slide:MenuItem ;
+	slide:margin				"4" ;
+	ozone:onClick				:goHome ;
+	slide:backgroundHighlight	"lightestGray" ;
+	slide:child ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/frame/home.gif>
+			}
+			slide:space
+			${	rdf:type	slide:Text ;
+				slide:text	"Go home"
+			}
+		)
+	}
+}
+
+method :goHome
+	(__context__.getProperty modeless:modelessParent).dispose
+	:startAndNavigate
+
+add { :putAwayMessage
+	rdf:type					slide:MenuItem ;
+	slide:margin				"4" ;
+	ozone:onClick				:putAway ;
+	slide:backgroundHighlight	"lightestGray" ;
+	slide:child ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type		summary:IconBlank
+			}
+			slide:space
+			${	rdf:type	slide:Text ;
+				slide:text	"File away into to-do list"
+			}
+		)
+	}
+}
+
+method :putAway
+	(__context__.getProperty modeless:modelessParent).dispose
+	:stopTask
+	with __source__ __infosource__
+		with __target__ __infosource__
+			add { (extract (__identity__.getResource) ozone:todoList ?x) hs:member (data:getUnderlying) }
+
+add { :mruSubmenu
+	rdf:type		modeless:Modeless ;
+	modeless:child ${
+		rdf:type			slide:Block ;
+		slide:alignX		"left" ;
+		slide:fontBold		"false" ;
+		slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+		slide:fontSize		"8" ;
+		slide:bgcolor		"white" ;
+		slide:color			"#3B5377" ;
+		slide:borderWidth	"1" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"2" ;
+		slide:width			"200" ;
+		slide:child ${
+			rdf:type	layout:Layout ;
+			ozone:dataSource ${
+				rdf:type				data:RDFQuerySetSource ;
+				data:existentials		@( ?x ?y ) ;
+				data:targetExistential	?y ;
+				data:statement ${
+					data:subjectDataSource ${
+						rdf:type			data:ResourcePropertySource ;
+						ozone:dataSource	data:underlyingSource ;
+						data:predicate		task:context
+					} ;
+					data:predicate		task:recentVisitation ;
+					data:object			?x
+				} ;
+				data:statement ${
+					data:subject	?x ;
+					data:predicate	hs:visitedResource ;
+					data:object		?y
+				}
+			} ;
+			layout:layoutConstraint ${ 
+				rdf:type				layout:RowStackerConstraint ;
+				layout:emptyPartData	${ rdf:type slide:Text ; slide:text "None" } ;
+				ozone:viewPartClass		ozone:DropdownItemViewPart ;
+				layout:defaultShowCount	"30" ;
+				layout:sortBy ${
+					rdf:type			data:SortingListSource ;
+					data:sortDataSource ${ rdf:type summary:TitleSource }
+				}
+			}
+		}
+	}
+}
+
+add { :mruItem
+	rdf:type					slide:MenuItem ;
+	slide:margin				"4" ;
+	slide:backgroundHighlight	"lightestGray" ;
+	slide:submenu				:mruSubmenu ;
+	slide:child ${
+		rdf:type		slide:ColumnSet ;
+		ozone:onClick	:onDropdownItemClick ;
+		slide:pack		"right" ;
+		slide:children @(
+			${	rdf:type	slide:Block ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	summary:IconBlank
+						}
+						slide:space
+						${	rdf:type	slide:Text ;
+							slide:text	"Recently used items"
+						}
+					)
+				}
+			}
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+			}
+		)
+	}
+}
+
+add { :suggestedTaskBarItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:SuggestedTaskBarItemViewPart ;
+	ozone:viewDomain		:SuggestedTaskBarItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:width		"180" ;
+		slide:marginY	"3" ;
+		slide:marginX	"2" ;
+		slide:child ${
+			rdf:type					slide:Block ;
+			slide:marginY				"4" ;
+			slide:marginX				"4" ;
+			slide:borderColor			"darkerGray" ;
+			slide:color					"gray" ;
+			slide:borderWidth			"1" ;
+			slide:child ${
+				rdf:type		slide:ColumnSet ;
+				ozone:onClick	:startTask ;
+				slide:pack		"right" ;
+				slide:children @(
+					${	rdf:type				slide:Train ;
+						slide:children @(
+							${	rdf:type	summary:IconBlank
+							}
+							slide:space
+							${	rdf:type	summary:Title
+							}
+						)
+					}
+				)
+			}
+		}
+	}
+}
+
+add { daml:Thing hs:classView :SuggestedTaskBarItemView }
+
+add { :todoListInteractiveViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+	vc:toolbarCaption		"Show as a task list" ;
+	ozone:viewDomain		:TodoListView ;
+	ozone:template ${
+		rdf:type		slide:Slide ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	layout:Layout ;
+			ozone:dataSource ${
+				rdf:type			data:PredicateSetSource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		hs:member
+			} ;
+			layout:layoutConstraint ${ 
+				rdf:type				layout:RowStackerConstraint ;
+				ozone:viewPartClass		:TaskAppletViewPart ;
+				layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No tasks on list" } ;
+				layout:sortBy ${
+					rdf:type			data:SortingListSource ;
+					data:sortDataSource ${ rdf:type summary:TitleSource }
+				}
+			}
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { :todoListAppletViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	vc:toolbarCaption		"Show as a task list" ;
+	ozone:viewDomain		:TodoListView ;
+	ozone:template ${
+		rdf:type		slide:Slide ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type			slide:Block ;
+					slide:child ${
+						rdf:type	layout:Layout ;
+						ozone:dataSource ${
+							rdf:type			data:PredicateSetSource ;
+							ozone:dataSource	data:underlyingSource ;
+							data:predicate		hs:member
+						} ;
+						layout:layoutConstraint ${ 
+							rdf:type				layout:RowStackerConstraint ;
+							ozone:viewPartClass		:TaskAppletViewPart ;
+							layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No tasks on list" } ;
+							layout:sortBy ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${ rdf:type summary:TitleSource }
+							}
+						}
+					}
+				}
+				slide:break
+				${	rdf:type	ozone:MultiplexPartContainer ;
+					ozone:children @(
+						:addButton1
+						${	rdf:type		slide:RowSet ;
+							slide:pack		"bottom" ;
+							slide:children @(
+								:addButton2
+								${	rdf:type		slide:Block ;
+									slide:child		slide:space ;
+									slide:height	"3"
+								}
+								${	rdf:type			slide:Block ;
+									slide:borderWidth	"1" ;
+									slide:margin		"1" ;
+									slide:borderColor	"lighterGray" ;
+									slide:bgcolor		"white" ;
+								}
+							)
+						}
+					)
+				}
+			)
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+method :doCreateTask task ; adenine:preload "true"
+	with __target__ __infosource__
+		add { (data:getSecondUnderlying) hs:member task }
+
+#############################################################################################
+# Task applet views
+
+add { :defaultTaskAppletViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskAppletViewPart ;
+	ozone:viewDomain		:DefaultTaskAppletView ;
+	ozone:template			:taskAppletTitleSpan ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { daml:Thing hs:classView :DefaultTaskAppletView }
+
+add { :taskAppletTitleSpan
+	rdf:type		slide:Block ;
+	slide:child ${
+		rdf:type		slide:ColumnSet ;
+		slide:pack		"right" ;
+		slide:children	@(
+			${	rdf:type		slide:Paragraph ;
+				ozone:onClick	ozone:underlyingHyperlink ;
+				slide:children @(
+					${ rdf:type summary:IconBlank }
+					slide:nonwrappingSpace
+					${	rdf:type			ozone:MultiplexPartContainer ;
+						ozone:children		@( :grayTitle :unboldTitle ) ;
+						ozone:dataSource ${
+							rdf:type			data:MappingSource ;
+							data:domain			@( "true" "false" ) ;
+							data:range			@( :grayTitle :unboldTitle ) ;
+							data:default		:unboldTitle ;
+							ozone:dataSource	:isCompletedTaskDataSource
+						}
+					}
+				)
+			}
+			:check
+			${	rdf:type		slide:Block ;
+				slide:margin	"3" 
+			}
+		)
+	}
+}
+
+add { :grayTitle
+	rdf:type		slide:Paragraph ;
+	slide:color		"50%" ;
+	slide:children @(
+		${	rdf:type		summary:Title
+		}
+	)
+}
+
+add { :isCompletedTaskDataSource
+	rdf:type				data:StatementExistenceSource ;
+	data:subjectDataSource	data:underlyingSource ;
+	data:predicate			task:completed ;
+	data:object				"true"
+}
+
+add { :close
+	rdf:type		slide:Image ;
+	ozone:onClick	:doClose ;
+	ozone:tooltip	"Remove from list" ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+}
+
+method :doClose
+	= item (data:getUnderlying)
+	= dataProvider (__context__.getDescendantLocalProperty ozone:dataProvider)
+	dataProvider.requestChange data:setRemoval (Set item)
+	:stopTask
+
+add { :check
+	rdf:type		slide:Image ;
+	ozone:onClick	:toggleComplete ;
+	ozone:tooltip	"Mark the task as completed" ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/checkMark.gif>
+}
+
+method :toggleComplete
+	= task (data:getUnderlying)
+
+	with __source__ __infosource__
+		with __target__ __infosource__
+			= completed (contains task task:completed "true")
+			if completed
+				replace task task:completed ?x "false"
+			else
+				replace task task:completed ?x "true"
+
+add { :pin
+	rdf:type		slide:Image ;
+	ozone:onClick	:pinTask ;
+	ozone:tooltip	"Pin this task to this list" ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/pin.gif>
+}
+
+add { :play
+	rdf:type		slide:Image ;
+	ozone:onClick	:startTask ;
+	ozone:tooltip	"Start doing this task" ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/play.gif>
+}
+
+add { :playPauseControls
+	rdf:type			ozone:MultiplexPartContainer ;
+	ozone:children		@( :play :pause ) ;
+	ozone:dataSource ${
+		rdf:type			data:MappingSource ;
+		data:domain			@( "true" "false" ) ;
+		data:range			@( :pause :play ) ;
+		data:default		:play ;
+		ozone:dataSource	:isActiveTaskDataSource
+	}
+}
+
+add { :pause
+	rdf:type		slide:Image ;
+	ozone:onClick	:stopTask ;
+	ozone:tooltip	"Stop doing this task for now" ;
+	slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/pause.gif>
+}
+
+method :pinTask
+	with __target__ __infosource__
+		add { (data:getSecondUnderlying) hs:member (data:getUnderlying) }
+
+method :removeTask
+	:deactivateTask (data:getUnderlying)
+
+method :stopTask
+	:deactivateTask (data:getUnderlying) false
+
+method :startTask
+	= task (data:getUnderlying)
+
+	# Convert to task, if necessary
+	with __target__ __infosource__
+		with __source__ __infosource__
+			if (! (contains task rdf:type task:Task))
+				add { task rdf:type task:Task }
+				if (== null (extract task task:context ?x))
+					add { task task:context ${ rdf:type task:Context } }
+
+	:activateTask task
+
+add { :TaskAppletViewPart ozone:defaultViewClass :DefaultTaskAppletView }
+
+#############################################################################################
+# Create task operation
+
+add { opdata:inputOperations task:associatedOperation :createTodoOperation }
+
+method :putInTodoList res donavigate ; adenine:preload "true"
+	= user (__context__.getProperty ozone:user)
+	var incoming
+	with __source__ __infosource__
+		= incoming (extract user ozone:todoList ?x)
+	add { incoming hs:member res }
+	if (!= donavigate false)
+		ozone:navigate res
+
+add { :title2
+	rdf:type				op:Parameter ;
+	op:required				"true" ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	editor:disallowBlanks	"true" ;
+	rdfs:label				"Text" ;
+	rdfs:range				xsd:string
+}
+
+add { task:generalContext
+	task:associatedOperation	:createTodoOperation ;
+}
+
+method :createTodoOperation :title2 = titles ; 
+rdf:type				op:Operation ;
+dc:title				"Create a to-do item" ;
+rdf:type				construct:Constructor ;
+construct:targetType	note:Todo ;
+construct:targetType	task:Task ;
+adenine:preload			"true"
+	= x (create:create note:Todo)
+
+	with __target__ __infosource__
+		add { x note:body ${ rdf:type content:LiteralContent ; content:content "" } }
+		add { x rdf:type task:Task }
+		add { x task:context ${ rdf:type task:Context } }
+		if (!= null titles)
+			if (== 1 (length titles))
+				replace x dc:title ?x titles[0]
+	return x
+
+add { :title3
+	rdf:type				op:Parameter ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	rdfs:label				"Title" ;
+	rdfs:range				xsd:string ;
+	editor:disallowBlanks	"true"
+}
+
+#############################################################################################
+# Mark as to read operation
+
+add { :toReadTarget
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"To Read" ;
+	op:required			"true" ;
+	rdfs:range			daml:Thing
+}
+
+method :markAsToRead :toReadTarget = target ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:toReadTarget ;
+dc:title			"Remind me to read this" ;
+adenine:preload 	"true"
+	= res (create:create task:ReadingTask)
+	with __target__ __infosource__
+		add { res task:toRead target[0] }
+		add { res task:homepage target[0] }
+		add { res rdf:type task:Task }
+		replace res dc:title ?x "Reminder to read something"
+		add { res summary:titleSlide :readingTaskSummarySlide }
+		add { res task:context ${ rdf:type task:Context } }
+	:putInTodoList res false
+
+add { :readingTaskSummarySlide
+	rdf:type	slide:Span ;
+	slide:children @(
+		${	rdf:type	slide:Text ;
+			slide:text	"Reminder to read"
+		}
+		slide:space
+		${	rdf:type				ozone:ViewContainer ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		task:toRead
+			} ;
+			ozone:viewPartClass		ozone:InlineViewPart
+		}
+	)
+}
+
+#############################################################################################
+# Mark as to prepare for operation
+
+add { :toPrepareForTarget
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"To Prepare For" ;
+	op:required			"true" ;
+	rdfs:range			daml:Thing
+}
+
+method :markAsToPrepareFor :toPrepareForTarget = target ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:toPrepareForTarget ;
+dc:title			"Remind me to prepare for this" ;
+adenine:preload 	"true"
+	= res (create:create task:PrepareForTask)
+	with __target__ __infosource__
+		add { res task:toPrepareFor target[0] }
+		add { res task:homepage target[0] }
+		add { res rdf:type task:Task }
+		replace res dc:title ?x "Reminder to prepare for something"
+		add { res summary:titleSlide :prepareForTaskSummarySlide }
+		add { res task:context ${ rdf:type task:Context } }
+	:putInTodoList res false
+
+add { :prepareForTaskSummarySlide
+	rdf:type	slide:Span ;
+	slide:children @(
+		${	rdf:type	slide:Text ;
+			slide:text	"Reminder to prepare for"
+		}
+		slide:space
+		${	rdf:type				ozone:ViewContainer ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		task:toPrepareFor
+			} ;
+			ozone:viewPartClass		ozone:InlineViewPart
+		}
+	)
+}
+
+#############################################################################################
+# Mark as to contact operation
+
+add { :toContactTarget
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Whom to Contact" ;
+	op:required			"true" ;
+	rdfs:range			hs:Person
+}
+
+method :markAsToContact :toContactTarget = target ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:toContactTarget ;
+dc:title			"Remind me to contact this party" ;
+adenine:preload 	"true"
+	= res (create:create task:ContactTask)
+	with __target__ __infosource__
+		add { res task:toContact target[0] }
+		add { res task:homepage target[0] }
+		add { res rdf:type task:Task }
+		replace res dc:title ?x "Reminder to contact some party"
+		add { res summary:titleSlide :contactTaskSummarySlide }
+		add { res task:context ${ rdf:type task:Context } }
+	:putInTodoList res false
+
+add { :contactTaskSummarySlide
+	rdf:type	slide:Span ;
+	slide:children @(
+		${	rdf:type	slide:Text ;
+			slide:text	"Reminder to contact"
+		}
+		slide:space
+		${	rdf:type				ozone:ViewContainer ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		task:toContact
+			} ;
+			ozone:viewPartClass		ozone:InactiveInlineViewPart
+		}
+	)
+}
+
+#############################################################################################
+# Task view part
+
+add { task:Task hs:classView lensui:AspectView }
+
+#############################################################################################
+# Pending tasks abstraction
+
+method :addPendingTask c ; adenine:preload "true" ; adenine:precompile "true"
+#[	= newWindow (ozone:navigateInNewWindowIfPossible c)
+	if (!= null newWindow)
+		newWindow.setRedirectToNewWindow true
+	else
+		with __target__ __infosource__
+			add { c :showOnStartPane "true" }
+			
+		:activateTask c
+#]
+#	:activateTask c
+	frame:addToStartPaneCollection c
+
+method :removePendingTask c ; adenine:preload "true" ; adenine:precompile "true"
+#	:deactivateTask c
+	frame:removeFromStartPaneCollection c
+
+	= bw (__context__.getProperty ozone:browserWindow)
+	if (!= null bw)
+		if (and (bw.isRedirectToNewWindow) (== (bw.getCurrentResource) c))
+			bw.close
+
+method :addUnderlyingAsPendingTask ; adenine:preload "true" ; adenine:precompile "true"
+	:addPendingTask (__context__.getDescendantLocalProperty ozone:underlying)
+
+#############################################################################################
+# Visitation phrase view part
+
+add {
+	:VisitationPhraseSummaryView rdfs:label "Keyword Search Phrase Summary View"
+	:visitationPhraseSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:PhraseViewPart ;
+		ozone:viewDomain		:VisitationPhraseSummaryView ;
+		ozone:template ${
+			rdf:type					slide:Paragraph ; 
+			slide:children	@(
+				${	rdf:type			ozone:ViewContainer ;
+					ozone:dataSource ${
+						rdf:type			data:ResourcePropertySource ;
+						ozone:dataSource	data:underlyingSource ;
+						data:predicate		hs:visitedResource
+					} ;
+					ozone:viewPartClass	ozone:PhraseViewPart
+				}
+				slide:nonwrappingSpace
+				slide:leftParenthesis
+				${	rdf:type			slide:Text ;
+					ozone:dataSource ${
+						rdf:type			data:LiteralPropertySource ;
+						ozone:dataSource	data:underlyingSource ;
+						data:predicate		hs:visitTime
+					}
+				}
+				slide:rightParenthesis
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:Visitation hs:classView :VisitationPhraseSummaryView
+}
+
+#############################################################################################
+# Dropdown item view part
+
+add { task:Task hs:classView :TaskDropdownItemView }
+
+add { :taskDropdownItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:DropdownItemViewPart ;
+	ozone:viewDomain		:TaskDropdownItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type		slide:ColumnSet ;
+			ozone:onClick	:onDropdownItemClick ;
+			slide:children @(
+				${	rdf:type	summary:IconBlank
+				}
+				slide:space
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	summary:Title
+						}
+					)
+				}
+			)
+		}
+	}
+}
+
+method :onDropdownItemClick
+	= menuCreator (__context__.getProperty contextMenu:menuCreator)
+	if (!= null menuCreator)
+		menuCreator.disposeChildren
+
+	= task (data:getUnderlying)
+	:activateTask task
+
+	= homepage (extract task task:homepage ?x adenine:source = __infosource__)
+	if (!= null homepage)
+		ozone:navigate homepage
+
+add { task:Project hs:classView :ProjectDropdownItemView }
+
+add { :projectDropdownItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:DropdownItemViewPart ;
+	ozone:viewDomain		:ProjectDropdownItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:submenu ${
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type				ozone:ViewContainer ;
+				ozone:viewPartClass		ozone:StandaloneDropdownViewPart ;
+				ozone:dataSource		data:underlyingSource
+			}
+		} ;
+		slide:child ${
+			rdf:type		slide:ColumnSet ;
+			ozone:onClick	:onDropdownItemClick ;
+			slide:pack		"right" ;
+			slide:children @(
+				${	rdf:type	slide:Block ;
+					slide:child ${
+						rdf:type	slide:Paragraph ;
+						slide:children @(
+							${	rdf:type	summary:IconBlank
+							}
+							slide:space
+							${	rdf:type	slide:Paragraph ;
+								slide:children @(
+									${	rdf:type	summary:Title
+									}
+								)
+							}
+						)
+					}
+				}
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+				}
+			)
+		}
+	}
+}
+
+#############################################################################################
+# Task pane
+
+add { :taskPane
+	rdf:type	data:CollectionDataSet ;
+	hs:view		${ rdf:type :TaskPaneView } ;
+	data:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		ozone:dataSource	data:currentUserSource ;
+		data:predicate		task:activeTask
+	}
+}
+
+add { :recommendedTasksSource 
+	rdf:type			data:SetDifferenceSource ;
+	data:exclusionDataSource ${
+		rdf:type			data:ProviderConstructorSource ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			ozone:dataSource	data:underlyingSource ;
+			data:predicate		data:dataSource
+		}
+	} ;
+	ozone:dataSource ${
+		rdf:type	data:MergeSetSource ;
+		ozone:dataSource ${
+			rdf:type				data:RDFQuerySetSource ;
+			data:existentials		@( ?type ?task ?aspect ?context ) ;
+			data:targetExistential	?task ;
+			data:statement ${
+				data:subjectDataSource	frame:currentlyViewedResourceSource ;
+				data:predicate			rdf:type ;
+				data:object				?type
+			} ;
+			data:statement ${
+				data:subject	?aspect ;
+				data:predicate	vowl:domain ;
+				data:object		?type
+			} ;
+			data:statement ${
+				data:subject	?aspect ;
+				data:predicate	vowl:forContext ;
+				data:object		?context
+			} ;
+			data:statement ${
+				data:subject	?task ;
+				data:predicate	task:context ;
+				data:object		?context
+			}
+		} ;
+		ozone:dataSource ${
+			rdf:type				data:RDFQuerySetSource ;
+			data:existentials		@( ?type ?task ) ;
+			data:targetExistential	?task ;
+			data:statement ${
+				data:subjectDataSource	frame:currentlyViewedResourceSource ;
+				data:predicate			rdf:type ;
+				data:object				?type
+			} ;
+			data:statement ${
+				data:subject	?task ;
+				data:predicate	activity:relatedType ;
+				data:object		?type
+			}
+		} ;
+		ozone:dataSource ${
+			rdf:type				data:RDFQuerySetSource ;
+			data:existentials		@( ?task ) ;
+			data:targetExistential	?task ;
+			data:statement ${
+				data:subject			?task ;
+				data:predicate			task:homepage ;
+				data:objectDataSource	frame:currentlyViewedResourceSource
+			}
+		} ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			ozone:dataSource	frame:currentlyViewedResourceSource ;
+			data:predicate		activity:relatedResource ;
+			data:reverse		"true"
+		}
+	}
+}
+
+add { :taskPaneViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					frame:StartPaneViewPart ;
+	ozone:viewDomain			:TaskPaneView ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:color		"black" ;
+		slide:bgcolor	"#d4dae5" ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	layout:Layout ;
+					ozone:dataSource ${
+						rdf:type	data:SetToListSource ;
+						ozone:dataSource ${
+							rdf:type			data:ProviderConstructorSource ;
+							ozone:dataSource ${
+								rdf:type			data:ResourcePropertySource ;
+								ozone:dataSource	data:underlyingSource ;
+								data:predicate		data:dataSource
+							}
+						}
+					} ;
+					layout:layoutConstraint ${
+						rdf:type				layout:RowStackerConstraint ;
+						layout:emptyPartData	slide:null ;
+						ozone:viewPartClass		:TaskPaneTaskViewPart
+					}
+				}
+				slide:break
+				${	rdf:type			layout:Layout ;
+					ozone:dataSource	:recommendedTasksSource ;
+					layout:layoutConstraint ${
+						rdf:type				layout:RowStackerConstraint ;
+						ozone:viewPartClass		:TaskPaneSuggestedTaskViewPart ;
+						layout:emptyPartData	slide:space ;
+						layout:sortBy ${
+							rdf:type			data:SortingListSource ;
+							data:sortDataSource ${ rdf:type summary:TitleSource }
+						}
+					}
+				}
+			)
+		}
+	} ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" 
+	}
+}
+
+add { daml:Thing hs:classView :DefaultTaskPaneSuggestedTaskView }
+
+add { :defaultTaskPaneSuggestedTaskViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneSuggestedTaskViewPart ;
+	ozone:viewDomain		:DefaultTaskPaneSuggestedTaskView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:Block ;
+		slide:margin			"10" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type			slide:Block ;
+					slide:marginY		"4" ;
+					slide:marginX		"4" ;
+					slide:borderColor	"darkerGray" ;
+					slide:color			"gray" ;
+					slide:borderWidth	"1" ;
+					ozone:onClick		:startTask ;
+					slide:child ${
+						rdf:type	slide:ColumnSet ;
+						slide:pack	"right" ;
+						slide:children @(
+							${	rdf:type		slide:Train ;
+								slide:children @(
+									${	rdf:type	summary:IconBlank
+									}
+									slide:space
+									${	rdf:type	summary:Title
+									}
+								)
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultTaskPaneTaskView }
+
+add { :defaultTaskPaneTaskViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneTaskViewPart ;
+	ozone:viewDomain		:DefaultTaskPaneTaskView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type			ozone:MultiplexPartContainer ;
+			ozone:children		@( :expandedPane :collapsedPane ) ;
+#[			ozone:dataSource ${
+				rdf:type		data:MappingSource ;
+				data:domain		@( "true" "false" ) ;
+				data:range		@( :expandedPane :collapsedPane ) ;
+				data:default	:expandedPane ;
+				ozone:dataSource ${
+					rdf:type			data:LiteralPropertySource ;
+					ozone:dataSource	data:underlyingSource ;
+					data:predicate		:expanded
+				}
+			}#]
+		}
+	}
+}
+
+add { :taskPaneTaskTitleBar
+	rdf:type	slide:ColumnSet ;
+	slide:pack	"right" ;
+	slide:children @(
+		${	rdf:type		slide:Train ;
+			slide:children @(
+				${	rdf:type	summary:IconBlank
+				}
+				slide:space
+				${	rdf:type		summary:Title ;
+					ozone:onClick	:startAndNavigate
+				}
+				slide:space
+			)
+		}
+		${	rdf:type				slide:Train ;
+			slide:children @(
+				${	rdf:type		slide:Button ;
+					ozone:onClick	:stopTask ;
+					ozone:tooltip	"Stop doing task" ;
+					slide:marginX	"2" ;
+					slide:child ${
+						rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+					}
+				}
+			)
+		}							
+	)
+}
+
+add { :collapsedPane
+	rdf:type	slide:Paragraph ;
+	slide:children @(
+		${	rdf:type			slide:Block ;
+			slide:marginY		"4" ;
+			slide:marginX		"4" ;
+			slide:bgcolor		"lighterGray";
+			slide:color			"black" ;
+			slide:borderColor	"darkGray" ;
+			slide:borderWidth	"1" ;
+			ozone:onClick		ozone:showMultiplexPart0 ;
+			slide:child			:taskPaneTaskTitleBar
+		}
+	)
+}
+
+add { :expandedPane
+	rdf:type	slide:RowSet ;
+	slide:children @(
+		${	rdf:type			slide:Block ;
+			slide:marginY		"4" ;
+			slide:marginX		"4" ;
+			slide:bgcolor		"lighterGray";
+			slide:color			"black" ;
+			slide:borderColor	"darkGray" ;
+			slide:borderWidth	"1" ;
+			ozone:onClick		ozone:showMultiplexPart1 ;
+			slide:child			:taskPaneTaskTitleBar
+		}
+		${	rdf:type		slide:Block ;
+			slide:margin	"10" ;
+			slide:child ${
+				rdf:type			ozone:ViewContainer ;
+				ozone:dataSource	data:underlyingSource ;
+				ozone:viewPartClass	:TaskPaneTaskContentsViewPart
+			}
+		}
+	)
+}
+
+add { daml:Thing hs:classView :DefaultTaskPaneTaskContentsView }
+
+add { :defaultTaskPaneTaskContentsViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneTaskContentsViewPart ;
+	ozone:viewDomain		:DefaultTaskPaneTaskContentsView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type			ozone:ViewContainer ;
+				ozone:dataSource ${
+					rdf:type			data:ResourcePropertySource ;
+					ozone:dataSource	data:underlyingSource ;
+					data:predicate		task:homepage
+				} ;
+				ozone:viewPartClass	ozone:PhraseViewPart
+			}
+			slide:newLine
+			:categorizationSchemes
+			slide:newLine
+			:history
+		)
+	}
+}
+
+add { task:associatedCategorizationScheme
+	rdfs:label "Associated Categorization Scheme" ;
+}
+
+add { :categorizationSchemes
+	rdf:type			layout:Layout ;
+	ozone:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		ozone:dataSource	data:underlyingSource ;
+		data:predicate		task:associatedCategorizationScheme
+	} ;
+	layout:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:emptyPartData	slide:null ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	}
+}
+
+add { :history
+	rdf:type		slide:Paragraph ;
+	slide:children @(
+		${	rdf:type		slide:Train ;
+			ozone:onClick	:showHistoryPopup ;
+			slide:children @(
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/icons/types/collection.gif>
+				}
+				slide:nonwrappingSpace
+				${	rdf:type	slide:Text ;
+					slide:text	"History"
+				}
+				slide:nonwrappingSpace
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+				}
+			)
+		}
+	)
+}
+
+method :showHistoryPopup
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	modelessCreator.createModelessPart :mruSubmenu ((__context__.getLocalProperty ozone:parentPart).getBounds) true false context

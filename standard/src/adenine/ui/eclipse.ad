@@ -1,0 +1,1426 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Eclipse UI
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/eclipse>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	modeless:	<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix op:			<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix opui:		<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	vc:			<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#>
+@prefix taskui:		<http://haystack.lcs.mit.edu/ui/task#>
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix	activity:	<http://haystack.lcs.mit.edu/schemata/activity#> 
+@prefix	setupui:	<http://haystack.lcs.mit.edu/ui/setup#> 
+@prefix	pictureui:	<http://haystack.lcs.mit.edu/ui/picture#>
+@prefix	metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix content:	<http://haystack.lcs.mit.edu/schemata/content#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/eclipse#> 
+@prefix	contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#> 
+
+#add { ^ config:dependsOn <http://haystack.lcs.mit.edu/data/data> }
+add { ^ config:dependsOn <http://haystack.lcs.mit.edu/data/frame> }
+
+#############################################################################################
+# Navigation
+
+add { :browserCurrentResourceDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ResourceDataProvider ;
+	ozone:dataDomain		:BrowserCurrentResourceSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.BrowserCurrentResourceDataProvider" }
+}
+
+#############################################################################################
+# Eclipse pane
+
+add { :defaultEclipsePaneItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:EclipsePaneItemViewPart ;
+	ozone:viewDomain		:DefaultEclipsePaneItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"2" ;
+		slide:child ${
+			rdf:type			ozone:ViewContainer ;	
+			ozone:dataSource	data:underlyingSource ;
+			ozone:viewPartClass	ozone:PhraseViewPart
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultEclipsePaneItemView }
+
+add { :collectionEclipsePaneItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:EclipsePaneItemViewPart ;
+	ozone:viewDomain		:CollectionEclipsePaneItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"2" ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ; 
+			slide:pack	"right" ;
+			slide:children	@(
+				${	rdf:type			ozone:ViewContainer ;	
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:PhraseViewPart
+				}
+				${	rdf:type					slide:Button ;
+					slide:marginY				"5" ;
+					slide:marginX				"7" ;
+					slide:backgroundHighlight	"95%" ;
+					ozone:onClick				:showDropdown2 ;
+					slide:child ${
+						rdf:type		slide:Train ;
+						slide:children @(
+							${	rdf:type			slide:Image ;
+								slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+add { hs:Collection hs:classView :CollectionEclipsePaneItemView }
+
+add { :eclipsePaneActiveTaskViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:EclipsePaneActiveTaskViewPart ;
+	ozone:viewDomain		:DefaultEclipsePaneActiveTaskView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"2" ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ; 
+			slide:pack	"right" ;
+			slide:children	@(
+				${	rdf:type			ozone:ViewContainer ;	
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:PhraseViewPart
+				}
+				${	rdf:type					slide:Button ;
+					slide:marginY				"5" ;
+					slide:marginX				"7" ;
+					slide:backgroundHighlight	"95%" ;
+					ozone:onClick				:showDropdown3 ;
+					slide:child ${
+						rdf:type		slide:Train ;
+						slide:children @(
+							${	rdf:type			slide:Image ;
+								slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultEclipsePaneActiveTaskView }
+
+add { :eclipsePaneSwitchViewViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:EclipsePaneSwitchViewViewPart ;
+	ozone:viewDomain		:DefaultEclipsePaneSwitchViewView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"4" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ; 
+			slide:children	@(
+				${	rdf:type		slide:Text ;
+					ozone:onClick	:switchView ;
+					ozone:dataSource ${
+						rdf:type			data:LiteralPropertySource ;
+						ozone:dataSource	data:underlyingSource ;
+						data:predicate		vc:toolbarCaption
+					}
+				}
+			)
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultEclipsePaneSwitchViewView }
+
+method :switchView
+	importjava "edu.mit.lcs.haystack.eclipse" SelectionDataProvider
+	= selection (SelectionDataProvider.getSelection __context__)
+	= viewInstance ${ rdf:type (extract (data:getUnderlying) ozone:viewDomain ?x ) }
+	(selection.getHost).changeView viewInstance
+
+method :getSelection
+	importjava "edu.mit.lcs.haystack.eclipse" SelectionDataProvider
+	return ((SelectionDataProvider.getSelection __context__).getResource)
+
+method :onClickGo
+	ozone:navigate (Resource ((__context__.getProperty :goID).getContent))
+
+method :onClickSearch
+	= text ((__context__.getProperty :searchID).getContent)
+	= literals (__source__.searchLiterals text)
+	= results ${ rdf:type hs:List ; dc:title "Results" }
+	= resultList @()
+	for x in literals
+		for y in (query { ?x dc:title x })
+			if (! (resultList.contains y[0]))
+				resultList.add y[0]
+		for z in (query { ?x hs:alias x })
+			if (! (resultList.contains z[0]))
+				resultList.add z[0]
+	add { results hs:list resultList }
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	= resultsUI ${
+		rdf:type	modeless:Modeless ;
+		modeless:child ${
+			rdf:type				ozone:ViewContainer ;
+			ozone:initialResource	results ;
+			ozone:viewPartClass		ozone:StandaloneDropdownViewPart
+		}
+	}
+
+	modelessCreator.createModelessPart resultsUI (((__context__.getParentContext).getLocalProperty ozone:parentPart).getBounds) true false context
+
+add { opdata:startingPoints
+	hs:view	${ rdf:type :StartingPointsView }
+}
+
+add { :startingPointsViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:StartingPointsViewPart ;
+	ozone:viewDomain		:StartingPointsView ;
+	ozone:template ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type		slide:Span ;
+				slide:fontBold	"true" ;
+				slide:children @(
+					${	rdf:type		summary:Title ;
+						ozone:onClick	ozone:underlyingHyperlink
+					}
+				)
+			}
+			slide:break
+			${	rdf:type			layout:Layout ;
+				ozone:dataSource ${
+					rdf:type			data:PredicateSetSource ;
+					ozone:dataSource	data:underlyingSource ;
+					data:predicate		hs:member
+				} ;
+				layout:layoutConstraint ${
+					rdf:type				layout:RowStackerConstraint ;
+					ozone:viewPartClass		:EclipsePaneItemViewPart ;
+					layout:sortBy ${
+						rdf:type			data:SortingListSource ;
+						data:sortDataSource ${ rdf:type summary:TitleSource }
+					}
+				}
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+}
+
+add { :navigationControls
+	dc:title				"Starting points" ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	ozone:viewDomain		:NavigationControlsView ;
+	hs:view					${ rdf:type :NavigationControlsView } ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	opdata:startingPoints ;
+					ozone:viewPartClass		:StartingPointsViewPart
+				}
+				slide:break
+				slide:break
+				${	rdf:type		slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text		"Go to"
+				}
+				slide:newLine
+				${	rdf:type				ozone:Edit ;
+					slide:color				"#426496" ;
+					slide:fontBold			"false" ;
+					ozone:width				"150" ;
+					ozone:registerService	:goID ;
+					ozone:onEnterPressed	:onClickGo
+				}
+				${	rdf:type					slide:Button ;
+					slide:highlightBorder		"true" ;
+					slide:borderColor			"lighterGray" ;
+					slide:borderWidth			"1" ;
+					ozone:onClick				:onClickGo ;
+					slide:child ${
+						rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+					}
+				}
+				slide:break
+				slide:break
+				${	rdf:type		slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text		"Search for"
+				}
+				slide:newLine
+				${	rdf:type	slide:Train ;
+					slide:children @(
+						${	rdf:type				ozone:Edit ;
+							slide:color				"#426496" ;
+							slide:fontBold			"false" ;
+							ozone:width				"150" ;
+							ozone:registerService	:searchID ;
+							ozone:onEnterPressed	:onClickSearch
+						}
+						${	rdf:type					slide:Button ;
+							slide:highlightBorder		"true" ;
+							slide:borderColor			"lighterGray" ;
+							slide:borderWidth			"1" ;
+							ozone:onClick				:onClickSearch ;
+							slide:child ${
+								rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+							}
+						}
+					)
+				}
+			)
+		}
+	}
+}
+
+method :suggestOperations
+	= x (lensui:getUnderlying)
+	= browserID (__context__.getProperty ozone:browserID)
+	opui:suggestOperations x browserID :suggestedOperation
+	
+	# Also add operations from the activity if available
+#[	with __source__ __infosource__
+		var activity
+		if (contains x rdf:type activity:Activity)
+			= activity x
+		else
+			= activity (queryExtract { ?x task:homepage x ?x rdf:type activity:Activity })
+			if (!= null activity)
+				= activity activity[0]
+			else
+				= activity null
+	
+		if (!= null activity)
+			for x in (query { activity hs:member ?x })
+				add { browserID :suggestedOperation x[0] }
+]#
+
+add { :suggestionsPane
+	dc:title				"Useful commands and items" ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	ozone:viewDomain		:SuggestionsPaneView ;
+	hs:view					${ rdf:type :SuggestionsPaneView } ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:child ${
+			rdf:type					ozone:DataProviderHost ;
+			ozone:hostedDataProvider	:selectionWithinEditorSource ;
+			ozone:propertyName			lensui:underlyingSource ;
+			ozone:putProperty			${ ozone:name opui:useAspectUnderlying ; ozone:value "true" } ;
+			slide:child ${
+				rdf:type	slide:Paragraph ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:color				"#274683" ;
+						slide:marginBottom		"15" ;
+						slide:cropChildWidth	"true" ;
+						slide:child ${
+							rdf:type	slide:ColumnSet ;
+							slide:children @(
+								${	rdf:type		slide:Image ;
+									slide:width		"32" ;
+									slide:height	"32" ;
+									ozone:dataSource ${
+										rdf:type				data:DefaultSource ;
+										ozone:dataSource ${
+											rdf:type			summary:IconSource ;
+											ozone:dataSource	:selectionWithinEditorSource
+										} ;
+										data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif>
+									}
+								}
+								${	rdf:type			slide:Block ;
+									slide:marginLeft	"5" ;
+									slide:marginTop		"10" ;
+									slide:child ${
+										rdf:type			slide:Paragraph ;
+										slide:fontBold		"true" ;
+										slide:children @(
+											${	rdf:type			ozone:ViewContainer ;
+												ozone:dataSource	:selectionWithinEditorSource ;
+												ozone:viewPartClass	ozone:InactiveInlineViewPart
+											}
+										)
+									}
+								}
+							)
+						}
+					}
+					${	rdf:type				slide:Block ;
+						slide:marginBottom		"3" ;
+						slide:color				"darkGray" ;
+						slide:borderBottomWidth	"1" ;
+						slide:borderBottomColor	"darkGray" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type		slide:Text ;
+									slide:fontBold	"true" ;
+									slide:text		"Commands"
+								}
+							)
+						}
+					}
+					slide:break
+					${	rdf:type			layout:Layout ;
+						ozone:dataSource ${
+							rdf:type	data:MergeSetSource ;
+							ozone:dataSource ${
+								rdf:type			data:PredicateSetSource ;
+								ozone:dataSource ${
+									rdf:type		data:ContextPropertySource ;
+									data:property	ozone:browserID
+								} ;
+								data:predicate		:suggestedOperation
+							} ;
+							ozone:dataSource ${
+								rdf:type		data:SingleResourceSource ;
+								data:resource	opdata:editTitleOperation
+							} ;
+							ozone:dataSource ${
+								rdf:type		data:SingleResourceSource ;
+								data:resource	:fileAwayOperation
+							}
+						} ;
+						layout:layoutConstraint ${
+							rdf:type				layout:RowStackerConstraint ;
+							ozone:viewPartClass		:EclipsePaneItemViewPart ;
+							layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No suggested commands" } ;
+							layout:sortBy ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${ rdf:type summary:TitleSource }
+							}
+						}
+					}
+					${	rdf:type			ozone:DataConsumer ;
+						ozone:onDataChanged	:suggestOperations ;
+						ozone:dataSource ${
+							rdf:type			data:ResourcePropertySource ;
+							data:predicate		rdf:type ;
+							ozone:dataSource	lensui:underlyingSource
+						}
+					}
+					slide:break
+					slide:break
+#[					${	rdf:type				slide:Block ;
+						slide:marginBottom		"3" ;
+						slide:color				"darkGray" ;
+						slide:borderBottomWidth	"1" ;
+						slide:borderBottomColor	"darkGray" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type		slide:Text ;
+									slide:fontBold	"true" ;
+									slide:text		"Active contexts"
+								}
+							)
+						}
+					}
+					slide:break
+					${	rdf:type			layout:Layout ;
+						ozone:dataSource ${
+							rdf:type			data:PredicateSetSource ;
+							ozone:dataSource	data:currentUserSource ;
+							data:predicate		task:activeTask
+						} ;
+						layout:layoutConstraint ${
+							rdf:type				layout:RowStackerConstraint ;
+							ozone:viewPartClass		:EclipsePaneActiveTaskViewPart ;
+							layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No active tasks" } ;
+							layout:sortBy ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${ rdf:type summary:TitleSource }
+							}
+						}
+					}
+					slide:break
+					slide:break#]
+					${	rdf:type				slide:Block ;
+						slide:marginBottom		"3" ;
+						slide:color				"darkGray" ;
+						slide:borderBottomWidth	"1" ;
+						slide:borderBottomColor	"darkGray" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type		slide:Text ;
+									slide:fontBold	"true" ;
+									slide:text		"Relevant contexts"
+								}
+							)
+						}
+					}
+					slide:break
+					${	rdf:type	layout:Layout ;
+						ozone:dataSource ${
+							rdf:type	data:MergeSetSource ;
+							ozone:dataSource ${
+								rdf:type				data:RDFQuerySetSource ;
+								data:existentials		@( ?type ?task ?aspect ?context ) ;
+								data:targetExistential	?task ;
+								data:statement ${
+									data:subjectDataSource	lensui:underlyingSource ;
+									data:predicate			rdf:type ;
+									data:object				?type
+								} ;
+								data:statement ${
+									data:subject	?aspect ;
+									data:predicate	vowl:domain ;
+									data:object		?type
+								} ;
+								data:statement ${
+									data:subject	?aspect ;
+									data:predicate	vowl:forContext ;
+									data:object		?context
+								} ;
+								data:statement ${
+									data:subject	?task ;
+									data:predicate	task:context ;
+									data:object		?context
+								}
+							} ;
+							ozone:dataSource ${
+								rdf:type				data:RDFQuerySetSource ;
+								data:existentials		@( ?type ?task ) ;
+								data:targetExistential	?task ;
+								data:statement ${
+									data:subjectDataSource	lensui:underlyingSource ;
+									data:predicate			rdf:type ;
+									data:object				?type
+								} ;
+								data:statement ${
+									data:subject	?task ;
+									data:predicate	activity:relatedType ;
+									data:object		?type
+								}
+							} ;
+							ozone:dataSource ${
+								rdf:type			data:PredicateSetSource ;
+								ozone:dataSource	lensui:underlyingSource ;
+								data:predicate		activity:relatedResource ;
+								data:reverse		"true"
+							}
+						} ;
+						layout:layoutConstraint ${ 
+							rdf:type				layout:RowStackerConstraint ;
+							ozone:viewPartClass		taskui:CheckBoxTaskViewPart ;
+							layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No suggestions" } ;
+							layout:sortBy ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${ rdf:type summary:TitleSource }
+							}
+						}
+					}
+					slide:break
+					${	rdf:type		slide:Text ;
+						slide:color		"gray" ;
+						slide:fontSize	"90%" ;
+						slide:text		"If you are not seeing the information you need, try checking one or more of the above boxes."
+					}
+				)
+			}
+		}
+	}
+}
+
+add { :viewPartClassDataSource
+	rdf:type		data:SingleResourceSource ;
+	data:resource	ozone:InteractiveViewPart
+}
+
+add { :viewSelectorPane
+	dc:title				"View selector" ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	ozone:viewDomain		:ViewSelectorPaneView ;
+	hs:view					${ rdf:type :ViewSelectorPaneView } ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:child ${
+			rdf:type					ozone:DataProviderHost ;
+			ozone:hostedDataProvider	:selectionWithinEditorSource ;
+			ozone:propertyName			lensui:underlyingSource ;
+			slide:child ${
+				rdf:type	slide:Paragraph ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:marginBottom		"3" ;
+						slide:color				"darkGray" ;
+						slide:borderBottomWidth	"1" ;
+						slide:borderBottomColor	"darkGray" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type		slide:Text ;
+									slide:fontBold	"true" ;
+									slide:text		"Available views"
+								}
+							)
+						}
+					}
+					slide:break
+					${	rdf:type			layout:Layout ;
+						ozone:dataSource ${
+							rdf:type			data:MergeSetSource ;
+							ozone:dataSource ${
+								rdf:type				data:RDFQuerySetSource ;
+								data:existentials		@( ?t ?vc ?vp ) ;
+								data:targetExistential	?vp ;
+								data:statement ${
+									data:subjectDataSource	lensui:underlyingSource ;
+									data:predicate			rdf:type ;
+									data:object				?t
+								} ;
+								data:statement ${
+									data:subject	?t ;
+									data:predicate	hs:classView ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject	?vp ;
+									data:predicate	ozone:viewDomain ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject			?vp ;
+									data:predicate			rdf:type ;
+									data:objectDataSource	:viewPartClassDataSource
+								}
+							} ;
+							ozone:dataSource ${
+								rdf:type				data:RDFQuerySetSource ;
+								data:existentials		@( ?t ?vc ?vp ) ;
+								data:targetExistential	?vp ;
+								data:statement ${
+									data:subjectDataSource	lensui:underlyingSource ;
+									data:predicate			rdf:type ;
+									data:object				?t
+								} ;
+								data:statement ${
+									data:subject	?t ;
+									data:predicate	hs:possibleClassView ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject	?vp ;
+									data:predicate	ozone:viewDomain ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject			?vp ;
+									data:predicate			rdf:type ;
+									data:objectDataSource	:viewPartClassDataSource
+								}
+							} ;
+							ozone:dataSource ${
+								rdf:type				data:RDFQuerySetSource ;
+								data:existentials		@( ?v ?vc ?vp ) ;
+								data:targetExistential	?vp ;
+								data:statement ${
+									data:subjectDataSource	lensui:underlyingSource ;
+									data:predicate			hs:view ;
+									data:object				?v
+								} ;
+								data:statement ${
+									data:subject	?v ;
+									data:predicate	rdf:type ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject	?vp ;
+									data:predicate	ozone:viewDomain ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject			?vp ;
+									data:predicate			rdf:type ;
+									data:objectDataSource	:viewPartClassDataSource
+								}
+							} ;
+							ozone:dataSource ${
+								rdf:type				data:RDFQuerySetSource ;
+								data:existentials		@( ?vc ?vp ) ;
+								data:targetExistential	?vp ;
+								data:statement ${
+									data:subject	daml:Thing ;
+									data:predicate	hs:classView ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject	?vp ;
+									data:predicate	ozone:viewDomain ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject			?vp ;
+									data:predicate			rdf:type ;
+									data:objectDataSource	:viewPartClassDataSource
+								}
+							} ;
+							ozone:dataSource ${
+								rdf:type				data:RDFQuerySetSource ;
+								data:existentials		@( ?vc ?vp ) ;
+								data:targetExistential	?vp ;
+								data:statement ${
+									data:subject	daml:Thing ;
+									data:predicate	hs:possibleClassView ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject	?vp ;
+									data:predicate	ozone:viewDomain ;
+									data:object		?vc
+								} ;
+								data:statement ${
+									data:subject			?vp ;
+									data:predicate			rdf:type ;
+									data:objectDataSource	:viewPartClassDataSource
+								}
+							}
+						} ;
+						layout:layoutConstraint ${
+							rdf:type				layout:RowStackerConstraint ;
+							ozone:viewPartClass		:EclipsePaneSwitchViewViewPart ;
+							layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No available views" } ;
+							layout:sortBy ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${
+									rdf:type			data:LiteralPropertySource ;
+									data:predicate		vc:toolbarCaption ;
+									data:default		"Custom view"
+								}
+							}
+						}
+					}
+				)
+			}
+		}
+	}
+}
+
+add { :startingPointsView
+	rdf:type		slide:Slide ;
+	slide:bgcolor	"white" ;
+	slide:color		"black" ;
+	slide:child ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type				layout:Layout ;
+				ozone:dataSource ${
+					rdf:type	data:DAMLListSource ;
+					data:damlList @(
+						:navigationControls
+					)
+				} ;
+				layout:layoutConstraint ${
+					rdf:type				layout:VerticalFlowConstraint ;
+					ozone:viewPartClass		ozone:AppletViewPart
+				}
+			}
+		)
+	}
+}
+
+add { :commandView
+	rdf:type		slide:Slide ;
+	slide:bgcolor	"white" ;
+	slide:color		"black" ;
+	slide:child ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type				layout:Layout ;
+				ozone:dataSource ${
+					rdf:type	data:DAMLListSource ;
+					data:damlList @(
+						:suggestionsPane
+					)
+				} ;
+				layout:layoutConstraint ${
+					rdf:type				layout:VerticalFlowConstraint ;
+					ozone:viewPartClass		ozone:AppletViewPart
+				}
+			}
+		)
+	}
+}
+
+add { :contextsView
+	rdf:type		slide:Slide ;
+	slide:bgcolor	"white" ;
+	slide:color		"black" ;
+	slide:child ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type			layout:Layout ;
+				ozone:dataSource ${
+					rdf:type				data:RDFQuerySetSource ;
+					data:existentials		@( ?task ) ;
+					data:targetExistential	?task ;
+					data:statement ${
+						data:subjectDataSource	data:currentUserSource ;
+						data:predicate			task:activeTask ;
+						data:object				?task
+					} ;
+					data:statement ${
+						data:subject 	?task ;
+						data:predicate	rdf:type ;
+						data:object		activity:Activity
+					}
+				} ;
+				layout:layoutConstraint ${
+					rdf:type				layout:InlineConstraint ;
+					ozone:viewPartClass		:EclipsePaneActiveTaskIconViewPart ;
+		#			layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No active tasks" } ;
+					layout:sortBy ${
+						rdf:type			data:SortingListSource ;
+						data:sortDataSource ${ rdf:type summary:TitleSource }
+					} ;
+					layout:separator		slide:space ;
+					layout:noItems			slide:space ;
+					layout:moreItems		slide:space ;
+					layout:lastSeparator	slide:space
+				}
+			}
+			${	rdf:type		slide:Span ;
+				slide:bgcolor	"lightestGray" ;
+				slide:children @(
+					${	rdf:type			layout:Layout ;
+						ozone:dataSource ${
+							rdf:type	data:SetDifferenceSource ;
+							ozone:dataSource ${
+								rdf:type	data:MergeSetSource ;
+								ozone:dataSource ${
+									rdf:type				data:RDFQuerySetSource ;
+									data:existentials		@( ?type ?task ?aspect ?context ) ;
+									data:targetExistential	?task ;
+									data:statement ${
+										data:subjectDataSource	:selectionWithinEditorSource ;
+										data:predicate			rdf:type ;
+										data:object				?type
+									} ;
+									data:statement ${
+										data:subject	?aspect ;
+										data:predicate	vowl:domain ;
+										data:object		?type
+									} ;
+									data:statement ${
+										data:subject	?aspect ;
+										data:predicate	vowl:forContext ;
+										data:object		?context
+									} ;
+									data:statement ${
+										data:subject	?task ;
+										data:predicate	task:context ;
+										data:object		?context
+									}
+								} ;
+								ozone:dataSource ${
+									rdf:type				data:RDFQuerySetSource ;
+									data:existentials		@( ?type ?task ) ;
+									data:targetExistential	?task ;
+									data:statement ${
+										data:subjectDataSource	:selectionWithinEditorSource ;
+										data:predicate			rdf:type ;
+										data:object				?type
+									} ;
+									data:statement ${
+										data:subject	?task ;
+										data:predicate	activity:relatedType ;
+										data:object		?type
+									}
+								} ;
+								ozone:dataSource ${
+									rdf:type			data:PredicateSetSource ;
+									ozone:dataSource	:selectionWithinEditorSource ;
+									data:predicate		activity:relatedResource ;
+									data:reverse		"true"
+								}
+							} ;
+							data:exclusionDataSource ${
+								rdf:type			data:PredicateSetSource ;
+								ozone:dataSource	data:currentUserSource ;
+								data:predicate		task:activeTask
+							}
+						} ;
+						layout:layoutConstraint ${
+							rdf:type				layout:InlineConstraint ;
+							ozone:viewPartClass		:EclipsePaneSuggestedTaskIconViewPart ;
+				#			layout:emptyPartData	${ rdf:type slide:Text ; slide:text "No active tasks" } ;
+							layout:sortBy ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${ rdf:type summary:TitleSource }
+							} ;
+							layout:separator		slide:space ;
+							layout:noItems			slide:null ;
+							layout:moreItems		slide:space ;
+							layout:lastSeparator	slide:space
+						}
+					}
+				)
+			}
+		)
+	}
+}
+
+add { :eclipsePaneActiveTaskIconViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:EclipsePaneActiveTaskIconViewPart ;
+	ozone:viewDomain		:DefaultEclipsePaneActiveTaskIconView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		summary:LargeIcon ;
+		ozone:onClick	taskui:startAndNavigate
+	}
+}
+
+add { daml:Thing hs:classView :DefaultEclipsePaneActiveTaskIconView }
+
+add { :eclipsePaneSuggestedTaskIconViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:EclipsePaneSuggestedTaskIconViewPart ;
+	ozone:viewDomain		:DefaultEclipsePaneSuggestedTaskIconView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		summary:LargeIcon ;
+		ozone:onClick	taskui:startTask
+	}
+}
+
+add { daml:Thing hs:classView :DefaultEclipsePaneSuggestedTaskIconView }
+
+add { :viewSelectorView
+	rdf:type				slide:Slide ;
+	slide:bgcolor			"#ebeef5" ;
+	slide:color				"black" ;
+	slide:marginRight		"1" ;
+	slide:borderRightWidth	"1" ;
+	slide:borderRightColor	"darkGray" ;
+	slide:child ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type				layout:Layout ;
+				ozone:dataSource ${
+					rdf:type	data:DAMLListSource ;
+					data:damlList @(
+						:suggestionsPane
+						:viewSelectorPane
+					)
+				} ;
+				layout:layoutConstraint ${
+					rdf:type				layout:VerticalFlowConstraint ;
+					ozone:viewPartClass		ozone:AppletViewPart
+				}
+			}
+		)
+	}
+}
+
+add { :notificationsView
+	rdf:type		slide:Slide ;
+	slide:bgcolor	"white" ;
+	slide:color		"black" ;
+	slide:child ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource ${
+			rdf:type	data:HSListSource ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:currentUserSource ;
+				data:predicate		frame:startPaneCollection
+			} ;
+		} ;
+		layout:layoutConstraint ${
+			rdf:type				layout:VerticalFlowConstraint ;
+			ozone:viewPartClass		:EclipsePaneNotificationViewPart
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultEclipsePaneNotificationView }
+
+add { :eclipsePaneNotificationViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:EclipsePaneNotificationViewPart ;
+	ozone:viewDomain		:DefaultEclipsePaneNotificationView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:RowSet ;
+		slide:children @(
+			${	rdf:type				slide:Block ;
+				slide:background		<http://haystack.lcs.mit.edu/data/ozone/frame/horizontalBlocks.png> ;
+				slide:backgroundRepeat	"both" ;
+				slide:height			"7" ;
+				slide:cropChildWidth	"true" ;
+				slide:child				slide:null
+			}
+			${	rdf:type				slide:Block ;
+				slide:color				"#274683" ;
+				slide:fontSize			"150%" ;
+				slide:fontBold			"true" ;
+				slide:marginX			"13" ;
+				slide:marginBottom		"7" ;
+				slide:cropChildWidth	"true" ;
+				slide:child ${
+					rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	summary:MediumIcon
+						}
+						${	rdf:type			slide:Block ;
+							slide:marginLeft	"10" ;
+							slide:marginTop		"20" ;
+							slide:child ${
+								rdf:type	slide:Paragraph ;
+								slide:children @(
+									${	rdf:type			ozone:ViewContainer ;
+										ozone:dataSource	data:underlyingSource ;
+										ozone:viewPartClass	ozone:InactiveInlineViewPart
+									}
+								)
+							}
+						}
+					)
+				}
+			}
+			${	rdf:type				slide:Block ;
+				slide:cropChildWidth	"true" ;
+				slide:child ${
+					rdf:type			ozone:ViewContainer ;
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:AppletViewPart
+				}
+			}
+		)
+	}
+}
+
+add { :availableStoresSource
+	rdf:type		data:PredicateSetSource ;
+	data:reverse	"true" ;
+	data:predicate	rdf:type ;
+	data:object		info:RDFStore	
+}
+
+add { :titleSource
+	rdf:type			summary:TitleSource ;
+	ozone:dataSource	${ rdf:type :BrowserCurrentResourceSource }
+}
+
+add { :selectionDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:StringDataProvider ;
+	ozone:dataDomain		:SelectionSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.eclipse.SelectionDataProvider" }
+}
+
+add { :selectionSource
+	rdf:type	:SelectionSource
+}
+
+add { :selectionWithinEditorSource
+	rdf:type		data:ContextHostedResourceSource ;
+	data:property	ozone:navigationDataProvider
+}
+
+add { daml:Thing hs:classView :DefaultTaskDropdownView }
+
+add { :defaultTaskDropdownViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskDropdownViewPart ;
+	ozone:viewDomain		:DefaultTaskDropdownView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:alignX		"left" ;
+		slide:fontBold		"false" ;
+		slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+		slide:fontSize		"8" ;
+		slide:bgcolor		"white" ;
+		slide:color			"black" ;
+		slide:borderWidth	"1" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"2" ;
+		slide:width			"200" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	slide:Block ;
+					slide:marginBottom		"1" ;
+					slide:borderBottomWidth	"1" ;
+					slide:borderBottomColor	"lightGray" ;
+					slide:child ${
+						rdf:type					ozone:DataProviderHost ;
+						ozone:hostedDataProvider	data:underlyingSource ;
+						ozone:propertyName			lensui:underlyingSource ;
+						ozone:putProperty			${ ozone:name opui:useAspectUnderlying ; ozone:value "true" } ;
+						slide:child ${
+							rdf:type				ozone:ViewContainer ;
+							ozone:initialResource	taskui:deactivateTaskOperation ;
+							ozone:viewPartClass		ozone:DropdownItemViewPart
+						}
+					}
+				}
+				${	rdf:type			ozone:ViewContainer ;
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:DropdownViewPart
+				}
+			)
+		}
+	}
+}
+
+method :showDropdown2
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	= contextMenu ${
+		rdf:type	modeless:Modeless ;
+		modeless:child ${
+			rdf:type			ozone:ViewContainer ;
+			ozone:dataSource	data:underlyingSource ;
+			ozone:viewPartClass	ozone:StandaloneDropdownViewPart
+		}
+	}
+
+	modelessCreator.createModelessPart contextMenu ((__context__.getLocalProperty ozone:parentPart).getBounds) false false context
+
+method :showDropdown3
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	= contextMenu ${
+		rdf:type	modeless:Modeless ;
+		modeless:child ${
+			rdf:type			ozone:ViewContainer ;
+			ozone:dataSource	data:underlyingSource ;
+			ozone:viewPartClass	:TaskDropdownViewPart
+		}
+	}
+
+	modelessCreator.createModelessPart contextMenu ((__context__.getLocalProperty ozone:parentPart).getBounds) false false context
+
+add { :eclipseEditor
+	rdf:type		slide:Slide ;
+	slide:bgcolor	"white" ;
+	slide:color		"black" ;
+	slide:child ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type					slide:Block ;
+				slide:marginX				"2" ;
+				slide:marginY				"2" ;
+				slide:bgcolor				"#003366" ;
+				slide:borderBottomWidth		"1" ;
+				slide:borderBottomColor		"gray" ;
+				slide:color					"white" ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	layout:Layout ;
+							ozone:dataSource ${
+								rdf:type			data:DAMLListSource ;
+								data:damlList @(
+									:backOperation
+									:forwardOperation
+									:refreshOperation
+								)
+							} ;
+							layout:layoutConstraint ${
+								rdf:type				layout:InlineConstraint ;
+								layout:separator		slide:space ;
+								layout:lastSeparator	slide:space ;
+								layout:noItems			slide:space ;
+								ozone:viewPartClass		frame:ToolbarItemViewPart
+							}
+						}
+					)
+				}
+			}
+			${	rdf:type				ozone:ScrollableViewContainer ;
+				ozone:viewPartClass		ozone:InteractiveViewPart ;
+				ozone:registerService	:viewContainer
+			}
+		)
+	}
+}
+
+method :backOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Back" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/frame/back.gif> ;
+hs:view ${
+	rdf:type	frame:NavigationToolbarView ;
+	:label		"Back" ;
+	:tooltip	"Go to the previous screen"
+}
+	(__context__.getProperty ozone:browserWindow).back
+
+method :forwardOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Forward" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif> ;
+hs:view ${
+	rdf:type	frame:NavigationToolbarView ;
+#	:label		"Forward" ;
+	:tooltip	"Go to the next screen" ;
+	:iconAlign	"right" 
+}
+	(__context__.getProperty ozone:browserWindow).forward
+
+method :refreshOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Refresh" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/common/refresh.gif> ;
+hs:view ${
+	rdf:type	frame:NavigationToolbarView ;
+	:tooltip	"Refresh this screen"
+}
+	(__context__.getProperty ozone:browserWindow).refresh
+
+#############################################################################################
+# Eclipse workspace content view parts
+
+add { :Directory
+	hs:classView			cv:ReportView ;
+	hs:possibleClassView	cv:ListView ;
+	hs:possibleClassView	pictureui:AlbumView ;
+	hs:possibleClassView	setupui:CollectionView ;
+	rdfs:label				"Folder" ;
+	cv:setDataSourceSpecification ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		:child ;
+		ozone:dataSource	data:underlyingSource
+	} ;
+	cv:listDataSourceSpecification ${
+		rdf:type			data:SortingListSource ;
+		data:sortDataSource ${ rdf:type summary:TitleSource } ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:predicate		:child ;
+			ozone:dataSource	data:underlyingSource
+		}
+	} ;
+	cv:naturalDataSourceSpecification ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		:child ;
+		ozone:dataSource	data:underlyingSource
+	}
+}
+
+add { :File
+	rdf:type		daml:Class ;
+	rdfs:subClassOf	content:ServiceBackedContent ;
+	rdfs:label		"File" ;
+	hs:classView	lensui:AspectView ;
+	vowl:hasLens	:fileSummaryAspect ;
+#	vowl:hasLens	:eclipseAspect
+}
+
+add { :fileSummaryAspect
+	rdf:type						metadata:MetadataAspect ;
+	dc:title						"File summary" ;
+	metadata:propertiesToDisplay	:fileSummaryPropertiesList
+}
+
+add { :eclipseAspect
+	rdf:type		lensui:SlideAspect ;
+	dc:title		"Editing in Eclipse" ;
+	lensui:slide ${
+		rdf:type		slide:Slide ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type			slide:Paragraph ;
+			ozone:putProperty	${ ozone:name opui:useAspectUnderlying ; ozone:value "true" } ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"You are currently viewing the metadata of this file from within Haystack. To edit this file from within Eclipse, click on the link below."
+				}
+				slide:break
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	:launchDocument ;
+					ozone:viewPartClass		setupui:SmallSummaryViewPart
+				}
+			)
+		}
+	}
+}
+
+add { :fileSummaryPropertiesList
+	rdf:type		data:OrderedSetSource ;
+	data:damlList @(
+		:filename
+		:lastModifiedTime
+		dc:format
+	)
+}
+
+add { :filename
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Filename" ;
+	rdfs:domain		:File ;
+	rdfs:range		xsd:string
+}
+
+add { :lastModifiedTime
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Last modified time" ;
+	rdfs:domain		:File ;
+	rdfs:range		xsd:dateTime
+}
+
+#############################################################################################
+# Launch document
+
+add { :document
+	rdfs:label	"Document to open" ;
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	rdfs:range	:File ;
+	op:required	"true"
+}
+
+method :launchDocument :document = documents ; 
+rdf:type			op:Operation ;
+ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/eclipse.gif> ;
+dc:description		"Opens this file for editing from within Eclipse." ;
+op:primaryParameter	:document ;
+adenine:preload		"true" ;
+dc:title			"Open for editing"
+	= x (extract ?x rdf:type :WorkspaceSyncAgent)
+	= y (connect x)
+	y.openEditor documents[0]	
+
+#############################################################################################
+# Mount directory
+
+add { opdata:startingPoints hs:member :mountDirectory }
+
+# TODO: The following code depends on the WorkspaceSynchronization agent to
+# have made enough progress, which is more likely, but not certain, given the
+# addition of config:startingOrder to bootstrapEclipse.ad.  Perhaps the
+# WorkspaceSynchronization agent should perform these two additions.
+main
+	importjava "edu.mit.lcs.haystack.eclipse" WorkspaceSynchronizationAgent
+	= base ((WorkspaceSynchronizationAgent.getDefault).getBaseFolderResource)
+	with __target__ __infosource__
+		add { opdata:myItems hs:member base }
+		add { base dc:description "Files stored on your file system." }
+
+method :mountDirectory ;
+rdf:type			op:Operation ;
+adenine:preload		"true" ;
+dc:title			"Attach folder tree from file system" ;
+dc:description		"Makes files on your computer available from Haystack."
+	importjava "edu.mit.lcs.haystack.ozone.core" Ozone
+	importjava "edu.mit.lcs.haystack.eclipse" WorkspaceSynchronizationAgent
+	importjava "org.eclipse.swt.widgets" DirectoryDialog
+
+	= x (DirectoryDialog (Ozone.s_display.getActiveShell))
+	= y (x.open)
+	if (!= null y)
+		= z ((WorkspaceSynchronizationAgent.getDefault).mountFolder y)
+		ozone:navigate z

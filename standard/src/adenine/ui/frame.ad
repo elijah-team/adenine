@@ -1,0 +1,1211 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone frame UI
+# Written by David Huynh and Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/frame>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	modeless:	<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	navigator:	<http://haystack.lcs.mit.edu/ui/viewNavigator#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix op:			<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix opui:		<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vc:			<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix util:		<http://haystack.lcs.mit.edu/programs/utilities#>
+@prefix	contextMenu: <http://haystack.lcs.mit.edu/ui/contextMenu#> 
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#>
+@prefix nav: 	<http://haystack.lcs.mit.edu/agents/navigation#>
+@prefix	navView:	<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix taskui:		<http://haystack.lcs.mit.edu/ui/task#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/frame#> 
+
+add { ^ config:dependsOn <http://haystack.lcs.mit.edu/data/frame> }
+
+#############################################################################################
+# Frame operations
+
+add { :target
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Target" ;
+	op:required			"true" ;
+	rdfs:range			daml:Thing
+}
+
+method frame:browseToOperation target0 :target = target ; 
+adenine:preload 	"true" ;
+op:primaryParameter	:target ;
+rdf:type			op:Operation ;
+dc:title			"Browse to" ;
+ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/browseto.gif> ;
+hs:view				${ rdf:type :BrowseToToolbarView }
+	if (!= null target)
+		ozone:navigate target[0]
+	else
+		if (!= null target0)
+			ozone:navigate target0
+
+method frame:backOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Back" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/frame/back.gif> ;
+hs:view ${
+	rdf:type	:NavigationToolbarView ;
+	:label		"Back" ;
+	:tooltip	"Go to the previous screen"
+}
+	((__context__.getProperty ozone:navigationMaster).getViewNavigator (__context__.getProperty frame:mainNavigatorID)).back
+
+method frame:forwardOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Forward" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif> ;
+hs:view ${
+	rdf:type	:NavigationToolbarView ;
+#	:label		"Forward" ;
+	:tooltip	"Go to the next screen" ;
+	:iconAlign	"right" 
+}
+	((__context__.getProperty ozone:navigationMaster).getViewNavigator (__context__.getProperty frame:mainNavigatorID)).forward
+
+method frame:refreshOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Refresh" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/common/refresh.gif> ;
+hs:view ${
+	rdf:type	:NavigationToolbarView ;
+	:tooltip	"Refresh this screen"
+}
+	((__context__.getProperty ozone:navigationMaster).getViewNavigator (__context__.getProperty frame:mainNavigatorID)).refresh
+
+method frame:homeOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Home" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/frame/home.gif> ;
+hs:view ${
+	rdf:type	:NavigationToolbarView ;
+#	:label		"Home" ;
+	:tooltip	"Go to your home page"
+}
+	((__context__.getProperty ozone:navigationMaster).getViewNavigator (__context__.getProperty frame:mainNavigatorID)).home
+
+method frame:toggleNavigatePaneOperation ;
+adenine:preload	"true" ;
+rdf:type		op:Operation ;
+dc:title		"Navigate" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/frame/navigate.gif> ;
+hs:view ${
+	rdf:type	:NavigationToolbarView ;
+#	:label		"Navigate"
+}
+	#[
+	= navigatePane (__context__.getProperty :navigatePane)
+	= a (extract navigatePane ozone:visible ?x)
+	if (== a "false")
+		replace navigatePane ozone:visible ?x "true"
+	else
+		replace navigatePane ozone:visible ?x "false"
+	]#
+	
+	= advisors (query { ?x rdf:type adenine:Method ; navView:NavMethodDomain ?y } @(?x) )
+	for a in advisors
+		replace a[0] nav:enabled ?x "true"
+
+	= navServiceRes (extract ?x rdf:type nav:NavigationService )
+	= navService (connect navServiceRes)
+	if (!= null navService)
+		navService.toggleSourceConnection __context__
+	else
+		print "Cannot connect to Navigation Service"
+
+
+#############################################################################################
+# Toolbar view parts
+
+add { frame:welcomeMessage
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				frame:ToolbarItemViewPart ;
+	ozone:viewDomain		:WelcomeMessageView ;
+	hs:view					${ rdf:type :WelcomeMessageView } ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:fillParent	"true" ;
+		slide:margin		"3" ;
+		slide:child ${
+			rdf:type		slide:Train ;
+			slide:children @(
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/types/person.gif>
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:text	"User"
+				}
+				slide:space
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:dataSource		data:currentUserSource ;
+					ozone:viewPartClass		ozone:InlineViewPart
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:text	"is logged into Haystack"
+				}
+			)
+		}
+	}
+}
+
+add { :operationToolbarViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				frame:ToolbarItemViewPart ;
+	ozone:viewDomain		:OperationToolbarView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:Button ;
+		slide:marginY				"5" ;
+		slide:marginX				"7" ;
+		slide:backgroundHighlight	"95%" ;
+		ozone:onClick				opui:startUnderlyingAsOperation ;
+		slide:child ${
+			rdf:type		slide:Train ;
+			slide:children @(
+				${	rdf:type	summary:Icon
+				}
+				slide:space
+				${	rdf:type	summary:Title
+				}
+			)
+		}
+	}
+}
+
+add { op:Operation hs:classView :OperationToolbarView }
+
+add { :defaultToolbarItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				frame:ToolbarItemViewPart ;
+	ozone:viewDomain		:DefaultToolbarItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:Button ;
+		slide:marginY				"5" ;
+		slide:marginX				"7" ;
+		slide:backgroundHighlight	"95%" ;
+		ozone:onClick				ozone:underlyingHyperlink ;
+		slide:child ${
+			rdf:type				slide:Train ;
+			slide:children @(
+				${	rdf:type	summary:Icon
+				}
+				slide:space
+				${	rdf:type	summary:Title
+				}
+			)
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultToolbarItemView }
+
+add { :dropdownToolbarViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				frame:ToolbarItemViewPart ;
+	ozone:viewDomain		frame:DropdownToolbarView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:Button ;
+		slide:marginY				"5" ;
+		slide:marginX				"7" ;
+		slide:backgroundHighlight	"95%" ;
+		ozone:onClick				:showDropdown ;
+		slide:child ${
+			rdf:type		slide:Train ;
+			slide:children @(
+				${	rdf:type	summary:Icon
+				}
+				slide:space
+				${	rdf:type	summary:Title
+				}
+				slide:space
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+				}
+			)
+		}
+	}
+}
+
+add { hs:Collection hs:classView frame:DropdownToolbarView }
+
+method :showDropdown
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	= contextMenu ${
+		rdf:type	modeless:Modeless ;
+		modeless:child ${
+			rdf:type			ozone:ViewContainer ;
+			ozone:dataSource	data:underlyingSource ;
+			ozone:viewPartClass	ozone:StandaloneDropdownViewPart
+		}
+	}
+
+	modelessCreator.createModelessPart contextMenu ((__context__.getLocalProperty ozone:parentPart).getBounds) true false context
+
+add { daml:Thing hs:classView :DefaultStandaloneDropdownView }
+
+add { :defaultStandaloneDropdownViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:StandaloneDropdownViewPart ;
+	ozone:viewDomain		:DefaultStandaloneDropdownView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:alignX		"left" ;
+		slide:fontBold		"false" ;
+		slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+		slide:fontSize		"8" ;
+		slide:bgcolor		"white" ;
+		slide:color			"black" ;
+		slide:borderWidth	"1" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"2" ;
+		slide:width			"200" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type			ozone:ViewContainer ;
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:DropdownViewPart
+				}
+#				:dockMessage
+			)
+		}
+	}
+}
+
+add { daml:Thing hs:classView :DefaultDropdownView }
+
+add { :defaultDropdownViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:DropdownViewPart ;
+	ozone:viewDomain		:DefaultDropdownView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			ozone:ViewContainer ;
+		ozone:dataSource	data:underlyingSource ;
+		ozone:viewPartClass	ozone:AppletViewPart
+	}
+}
+
+add { daml:Thing hs:classView :DefaultDropdownItemView }
+
+add { :defaultDropdownItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:DropdownItemViewPart ;
+	ozone:viewDomain		:DefaultDropdownItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type		slide:ColumnSet ;
+			ozone:onClick	:onDropdownItemClick ;
+			slide:children @(
+				${	rdf:type	summary:IconBlank
+				}
+				slide:space
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	summary:Title
+						}
+					)
+				}
+			)
+		}
+	}
+}
+
+method :onDropdownItemClick
+	= menuCreator (__context__.getProperty contextMenu:menuCreator)
+	if (!= null menuCreator)
+		menuCreator.disposeChildren
+
+	ozone:navigate (data:getUnderlying)
+
+add { frame:dockMessage
+	rdf:type					slide:MenuItem ;
+	slide:margin				"4" ;
+	slide:backgroundHighlight	"lightestGray" ;
+	slide:borderTopWidth		"1" ;
+	slide:borderTopColor		"lightGray" ;
+	ozone:onClick				:doDock ;
+	slide:child ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/pin.gif>
+			}
+			slide:space
+			${	rdf:type	slide:Text ;
+				slide:text	"Dock"
+			}
+			slide:space
+			${	rdf:type			ozone:ViewContainer ;
+				ozone:dataSource	data:underlyingSource ;
+				ozone:viewPartClass	ozone:InactiveInlineViewPart
+			}
+			slide:space
+			${	rdf:type	slide:Text ;
+				slide:text	"to the right hand pane"
+			}
+		)
+	}
+}
+
+method :doDock
+	frame:addToStartPaneCollection (data:getUnderlying)
+	(__context__.getProperty modeless:modelessParent).dispose
+
+add { :navigationToolbarViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					frame:ToolbarItemViewPart ;
+	ozone:viewDomain			:NavigationToolbarView ;
+	ozone:partDataGenerator		:generateNavigationToolbarView ;
+#	ozone:cachePartData			"true" ;
+	ozone:synchronous			"true" ;
+	hs:javaImplementation ${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :generateNavigationToolbarView underlying
+	= viewInstance (__context__.getLocalProperty ozone:viewInstance)
+	= label (extract viewInstance :label ?x)
+	= tooltip (extract viewInstance :tooltip ?x)
+	= align (extract viewInstance :iconAlign ?x)
+	
+	= children @(
+		${	rdf:type	summary:Icon
+		}
+	)
+		
+	if (!= label null)
+		if (or (== align null) (!= align "right"))
+			children.add slide:space
+			children.add ${
+				rdf:type		slide:Text ;
+				slide:text		label
+			}
+		else
+			children.add 0 slide:space
+			children.add 0 ${
+				rdf:type		slide:Text ;
+				slide:text		label
+			}
+	
+	= button ${
+		rdf:type					slide:Button ;
+		slide:marginY				"5" ;
+		slide:marginX				"7" ;
+		slide:backgroundHighlight	"95%" ;
+		ozone:onClick				opui:startUnderlyingAsOperation ;
+		slide:child ${
+			rdf:type				slide:Train ;
+			slide:children 			children
+		}
+	}
+	
+	if (!= tooltip null)
+		add { button ozone:tooltip tooltip }
+
+	return button
+
+add { :browseToToolbarViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					frame:ToolbarItemViewPart ;
+	ozone:viewDomain			:BrowseToToolbarView ;
+	ozone:partDataGenerator		:generateBrowseToToolbarView ;
+#	ozone:cachePartData			"true" ;
+	ozone:synchronous			"true" ;
+	hs:javaImplementation ${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :generateBrowseToToolbarView
+	= id (UniqueResource)
+
+	uniqueMethod go
+		ozone:navigate (Resource ((__context__.getProperty `id).getContent))
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:marginY	"3" ;
+		slide:marginX	"7" ;
+		slide:height	"24" ;
+		slide:child ${
+			rdf:type	slide:Train ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Go to"
+				}
+				slide:space
+				${	rdf:type				ozone:Edit ;
+					slide:color				"#426496" ;
+					slide:fontBold			"false" ;
+					ozone:width				"150" ;
+					ozone:registerService	id ;
+					ozone:onEnterPressed	go
+				}
+				${	rdf:type					slide:Button ;
+					slide:highlightBorder		"true" ;
+					slide:borderColor			"lighterGray" ;
+					slide:borderWidth			"1" ;
+					ozone:onClick				go ;
+					slide:child ${
+						rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+					}
+				}
+			)
+		}
+	}
+
+add { frame:searchBar
+	dc:title					"Search Bar" ;
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					frame:ToolbarItemViewPart ;
+	ozone:viewDomain			:SearchBar ;
+	hs:view						${ rdf:type :SearchBar } ;
+	ozone:partDataGenerator		:generateSearchBarToolbarView ;
+#	ozone:cachePartData			"true" ;
+	ozone:synchronous			"true" ;
+	hs:javaImplementation ${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :generateSearchBarToolbarView
+	= id (UniqueResource)
+
+	uniqueMethod go
+		= text ((__context__.getProperty `id).getContent)
+		= literals (__source__.searchLiterals text)
+		= results ${ rdf:type hs:List ; dc:title "Results" }
+		= resultList @()
+		for x in literals
+			for y in (query { ?x dc:title x })
+				if (! (resultList.contains y[0]))
+					resultList.add y[0]
+			for z in (query { ?x hs:alias x })
+				if (! (resultList.contains z[0]))
+					resultList.add z[0]
+		add { results hs:list resultList }
+		= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+		importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+		= context (Context __context__)
+		context.putProperty contextMenu:menuCreator modelessCreator
+		context.putProperty contextMenu:oldContext context
+
+		= resultsUI ${
+			rdf:type	modeless:Modeless ;
+			modeless:child ${
+				rdf:type				ozone:ViewContainer ;
+				ozone:initialResource	results ;
+				ozone:viewPartClass		ozone:StandaloneDropdownViewPart
+			}
+		}
+
+		modelessCreator.createModelessPart resultsUI (((__context__.getParentContext).getLocalProperty ozone:parentPart).getBounds) true false context
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:marginY	"3" ;
+		slide:marginX	"7" ;
+		slide:height	"24" ;
+		slide:child ${
+			rdf:type	slide:Train ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Search for"
+				}
+				slide:space
+				${	rdf:type	slide:Train ;
+					slide:children @(
+						${	rdf:type				ozone:Edit ;
+							slide:color				"#426496" ;
+							slide:fontBold			"false" ;
+							ozone:width				"150" ;
+							ozone:registerService	id ;
+							ozone:onEnterPressed	go
+						}
+						${	rdf:type					slide:Button ;
+							slide:highlightBorder		"true" ;
+							slide:borderColor			"lighterGray" ;
+							slide:borderWidth			"1" ;
+							ozone:onClick				go ;
+							slide:child ${
+								rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+							}
+						}
+					)
+				}
+			)
+		}
+	}
+
+add { :toolbarViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					frame:ToolbarViewPart ;
+	ozone:viewDomain			:ToolbarView ;
+	ozone:template ${
+		rdf:type				slide:Block ;
+		slide:bgcolor			"black" ;
+		slide:color				"white" ;
+#		slide:fontBold			"true" ;
+		slide:fontSize			"9" ;
+#		slide:borderBottomWidth	"1" ;
+#		slide:marginBottom		"1" ;
+#		slide:borderTopWidth	"1" ;
+#		slide:marginTop			"1" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	layout:Layout ;
+					ozone:dataSource ${
+						rdf:type			data:HSListSource ;
+						ozone:dataSource	data:underlyingSource
+					} ;
+					layout:layoutConstraint ${
+						rdf:type				layout:InlineConstraint ;
+						layout:separator		slide:space ;
+						layout:lastSeparator	slide:space ;
+						layout:noItems			slide:space ;
+						ozone:viewPartClass		frame:ToolbarItemViewPart
+					}
+				}
+			)
+		}
+	} ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" 
+	}
+}
+
+add { daml:Thing hs:classView :ToolbarView }
+
+#############################################################################################
+# Frame
+
+add { frame:currentlyViewedResourceSource
+	rdf:type		data:ResourcePropertySource ;
+	ozone:dataSource ${
+		rdf:type		data:ContextPropertySource ;
+		data:property	frame:mainNavigatorID
+	} ;
+	data:predicate	frame:currentResource
+}
+
+method :onNavigate resource ; adenine:preload "true"
+	importjava "java.util" Date
+	with __target__ __infosource__
+		= visitation ${
+			rdf:type			hs:Visitation ;
+			hs:visitTime		(Date) ;
+			hs:visitedResource	resource ;
+			hs:visitedBy		(__identity__.getResource)
+		}
+
+		with __source__ __infosource__
+			for x in (query { (__identity__.getResource) task:activeTask ?x ?x task:context ?y } @(?y))
+				add { x[0] task:recentVisitation visitation }
+				
+		replace (__context__.getProperty frame:mainNavigatorID) frame:currentResource ?x resource
+
+add { :framePart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	ozone:dataDomain			frame:Frame ;
+	ozone:partDataGenerator		:generateFrame ;
+	ozone:cachePartData			"true" ;
+	ozone:synchronous			"true" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :generateFrame data ; adenine:preload "true"
+	= toolTargets (extract data frame:toolTargets ?x)
+	= startPaneCollection (extract data frame:startPaneCollection ?x)
+	= toolCollection (extract data frame:toolCollection ?x)
+	= topList (extract data frame:topList ?x)
+#	= bottomList (extract data frame:bottomList ?x)
+	= infoSourceSpec (extract data frame:informationSourceSpecification ?x)
+
+	= toolTargets ${ rdf:type hs:Collection }
+
+	if (== null infoSourceSpec)
+		= infoSourceSpec ${
+			rdf:type	vc:InformationSourceSpecification
+		}
+		
+	= viewNavigator (UniqueResource)
+
+	= navigatePane ${ 
+		dc:title		"Navigation Options";
+		rdf:type 		navView:NavigationPane ; 
+		ozone:visible 	"false" ;
+		frame:navigationSource ${
+			rdf:type				navigator:NavigationSource ;
+			navigator:viewNavigator	viewNavigator
+		}
+	}
+
+	# set up the dataprovider for the navigation pane
+	= navServiceRes (extract ?x rdf:type nav:NavigationService )
+	= navService (connect navServiceRes)
+	if (!= null navService)
+		navService.setNavigationSource  __context__ ${
+			rdf:type				navigator:NavigationSource ;
+			navigator:viewNavigator	viewNavigator
+		}
+	
+
+	add { viewNavigator
+		rdf:type							navigator:SimpleViewNavigator ;
+		vc:informationSourceSpecification	infoSourceSpec ;
+		ozone:onNavigate					:onNavigate ;
+		navigator:navigatePane				navigatePane
+	}
+
+	#add {
+	#	navigatePane
+	#		frame:navigationSource ${
+	#			rdf:type					navigator:NavigationSource ;
+	#			navigator:viewNavigator		viewNavigator
+	#		}
+	#}
+
+	= topPane ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:viewPartClass		frame:ToolbarViewPart ;
+		ozone:initialResource	topList
+	}
+
+	#[= bottomPane ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:viewPartClass		frame:ToolbarViewPart ;
+		ozone:initialResource	bottomList
+	}]#
+
+	= expandedStartPane (UniqueResource)
+	= collapsedStartPane (UniqueResource)
+	frame:createStartPane expandedStartPane collapsedStartPane startPaneCollection false
+
+	= expandedToolPane (UniqueResource)
+	= collapsedToolPane (UniqueResource)
+	frame:createToolPane expandedToolPane collapsedToolPane viewNavigator toolCollection toolTargets infoSourceSpec viewNavigator
+
+	= viewNavigatorPlusToolPane ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:VisibleResourceListSource ;
+			ozone:dataSource ${
+				rdf:type		data:DAMLListSource ;
+				data:damlList	@( expandedToolPane collapsedToolPane viewNavigator )
+			}
+		} ;
+		layout:layoutConstraint ${
+			rdf:type			layout:ColumnSplitterConstraint ;
+			layout:constraint	${ layout:element expandedToolPane ; layout:dimension "22%" } ;
+			layout:constraint	${ layout:element collapsedToolPane ; layout:resizable "false" }
+		}
+	}
+
+	= middlePane ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:VisibleResourceListSource ;
+			ozone:dataSource ${
+				rdf:type		data:DAMLListSource ;
+				data:damlList	@( viewNavigatorPlusToolPane expandedStartPane collapsedStartPane )
+			}
+		} ;
+		layout:layoutConstraint ${
+			rdf:type			layout:ColumnSplitterConstraint ;
+			layout:pack			"last" ;
+			layout:constraint	${ layout:element expandedStartPane ; layout:dimension "20%" } ;
+			layout:constraint	${ layout:element collapsedStartPane ; layout:resizable "false" }
+		}
+	}
+
+	= middlePlusTopPane ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:VisibleResourceListSource ;
+			ozone:dataSource ${
+				rdf:type		data:DAMLListSource ;
+				data:damlList	@( topPane middlePane )
+			}
+		} ;
+		layout:layoutConstraint ${
+			rdf:type			layout:RowSplitterConstraint ;
+			layout:constraint	${ layout:element topPane ; layout:dimension "24" ; layout:resizable "false" } ;
+#			layout:constraint	${ layout:element bottomPane ; layout:dimension "24" ; layout:resizable "false" }
+		}
+	}
+
+	#[= wholePane ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:VisibleResourceListSource ;
+			ozone:dataSource ${
+				rdf:type		data:DAMLListSource ;
+				data:damlList	@( middlePlusTopPane bottomPane )
+			}
+		} ;
+		layout:layoutConstraint ${
+			rdf:type			layout:RowSplitterConstraint ;
+			layout:pack			"last" ;
+			layout:constraint	${ layout:element bottomPane ; layout:dimension "24" ; layout:resizable "false" }
+		}
+	}
+	]#
+
+	return ${
+		rdf:type			slide:Block ;
+		ozone:putProperty	${ ozone:name frame:toolTargets ; ozone:value toolTargets } ;
+		ozone:putProperty	${ ozone:name frame:mainNavigatorID ; ozone:value viewNavigator } ;
+		ozone:putProperty	${ ozone:name :navigatePane ; ozone:value navigatePane } ;
+		slide:fontFamily	"Sans, adobe-helvetica, Tahoma, Arial, Times New Roman" ;
+		slide:fontSize		"8" ;
+		slide:color			"#3B5377" ;
+		slide:bgcolor		"white" ;
+		slide:child			middlePlusTopPane
+	}
+
+add { opdata:debugActivity hs:member :refreshFrame }
+
+method :refreshFrame ; 
+adenine:preload "true" ; 
+rdf:type		op:Operation ;
+dc:title		"Refresh the frame"
+	(__context__.getProperty ozone:frame).refresh
+
+#############################################################################################
+# Frame top toolbar helper functions
+
+method frame:getTopToolbarList ; adenine:preload "true" ; adenine:precompile "true"
+	with __source__ __infosource__
+		return (extract (__identity__.getResource) frame:topList ?x)
+
+method frame:addToTopToolbarList x index ; adenine:preload "true" ; adenine:precompile "true"
+	with __target__ __infosource__
+		if (!= index null)
+			util:addToHSList (frame:getTopToolbarList) x index
+		else
+			util:appendToHSList (frame:getTopToolbarList) x
+
+method frame:removeFromTopToolbarList x ; adenine:preload "true" ; adenine:precompile "true"
+	with __target__ __infosource__
+		util:removeFromHSList (frame:getTopToolbarList) x
+
+method frame:isInTopToolbarList x ; adenine:preload "true" ; adenine:precompile "true"
+	with __source__ __infosource__
+		return (util:isInHSList (frame:getTopToolbarList) x)
+
+#############################################################################################
+# Frame start pane collection helper functions
+
+method frame:getStartPaneCollection ; adenine:preload "true" ; adenine:precompile "true"
+	with __source__ __infosource__
+		return (extract (__identity__.getResource) frame:startPaneCollection ?x)
+
+method frame:addToStartPaneCollection x index ; adenine:preload "true" ; adenine:precompile "true"
+	with __target__ __infosource__
+		if (!= index null)
+			util:addToHSList (frame:getStartPaneCollection) x index
+		else
+			util:appendToHSList (frame:getStartPaneCollection) x
+
+method frame:removeFromStartPaneCollection x ; adenine:preload "true" ; adenine:precompile "true"
+	with __target__ __infosource__
+		util:removeFromHSList (frame:getStartPaneCollection) x
+
+method frame:isInStartPaneCollection x ; adenine:preload "true" ; adenine:precompile "true"
+	with __source__ __infosource__
+		return (util:isInHSList (frame:getStartPaneCollection) x)
+
+#############################################################################################
+# Start pane view part
+
+add { :startPaneViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					frame:StartPaneViewPart ;
+	ozone:viewDomain			:StartPaneView ;
+	dc:title					"List" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" 
+	} ;
+	ozone:template ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:HSListSource ;
+			ozone:dataSource	data:underlyingSource
+		} ;
+		layout:layoutConstraint ${
+			rdf:type				layout:VerticalFlowConstraint ;
+			ozone:viewPartClass		ozone:VerticalAppletViewPart
+		}
+	}
+}
+
+add {
+	hs:List	hs:classView :StartPaneView
+}
+
+#############################################################################################
+# Tool pane
+
+method frame:addToToolCollection x ; adenine:preload "true" ; adenine:precompile "true"
+	with __target__ __infosource__
+		add { (frame:getToolCollection) hs:member x }
+
+method frame:removeFromToolCollection x ; adenine:preload "true" ; adenine:precompile "true"
+	with __target__ __infosource__
+		remove (frame:getToolCollection) hs:member x
+
+method frame:getToolCollection ; adenine:preload "true" ; adenine:precompile "true"
+	with __source__ __infosource__
+		return (extract (__identity__.getResource) frame:toolCollection ?x)
+
+add { :itemToSelect
+	rdf:type	daml:ObjectProperty ;
+	rdf:type	op:Parameter ;
+	op:required	"true" ;
+	rdfs:range	daml:Thing ;
+	rdfs:label	"Item to select"
+}
+
+method frame:select x :itemToSelect = itemToSelect ; 
+adenine:preload		"true" ;
+op:primaryParameter	:itemToSelect ;
+rdf:type			op:Operation ;
+dc:title			"Apply tools to"
+	if (!= null itemToSelect)
+		= x itemToSelect[0]
+	with __target__ __infosource__
+		replace (__context__.getProperty frame:toolTargets) frame:toolTarget ?x x
+
+method frame:createToolPane expandedPane collapsedPane viewNavigator toolCollection toolTargets infoSourceSpec viewNavigator
+	uniqueMethod collapsePane
+		replace `expandedPane ozone:visible ?x "false"
+		replace `collapsedPane ozone:visible ?x "true"
+
+	uniqueMethod expandPane
+		replace `collapsedPane ozone:visible ?x "false"
+		replace `expandedPane ozone:visible ?x "true"
+
+	= collapseControl ${
+		rdf:type		slide:Paragraph ;
+		slide:alignX	"right" ;
+		slide:children @(
+			${	rdf:type			slide:Button ;
+				slide:child ${
+					rdf:type		slide:Image ;
+					ozone:tooltip	"Expand or collapse this pane" ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/endLeft.gif>
+				} ;
+				ozone:onClick		collapsePane
+			}
+		)
+	}
+
+	= focusDataSource ${
+		rdf:type			data:StickyResourceSource ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:subject		toolTargets ;
+			data:predicate		hs:member
+		} ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:subject		toolTargets ;
+			data:predicate		frame:toolTarget
+		} ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ; 
+			ozone:dataSource ${
+				rdf:type				navigator:NavigationPropertiesSource ;
+				navigator:viewNavigator	viewNavigator
+			} ;
+			data:predicate		ozone:preview
+		} ;
+		ozone:dataSource ${
+			rdf:type				navigator:NavigationSource ;
+			navigator:viewNavigator	viewNavigator
+		} ;
+		data:persistentDataSource ${
+			rdf:type		data:ResourcePropertySource ;
+			data:subject	toolTargets ;
+			data:predicate	lensui:underlying
+		}
+	}
+
+	= body ${
+		rdf:type				slide:Block ;
+		slide:child ${
+			rdf:type	slide:RowSet ;
+			slide:pack	"bottom" ;
+			slide:children	@(
+				${	rdf:type			slide:Block ;
+					slide:child ${
+						rdf:type	slide:RowSet ;
+						slide:pack	"top" ;
+						slide:children @(
+							${	rdf:type		slide:Block ;
+								slide:margin	"5" ;
+								slide:child ${
+									rdf:type 		navView:NavigationPaneHeader ; 
+									frame:navigationSource ${
+										rdf:type				navigator:NavigationSource ;
+										navigator:viewNavigator	viewNavigator ;
+									}
+								} ;
+							}
+							#[
+							${	rdf:type		slide:Block ;
+								slide:margin	"5" ;
+								slide:child ${
+									rdf:type 		navView:SideNavigationPane ; 
+									frame:navigationSource ${
+										rdf:type				navigator:NavigationSource ;
+										navigator:viewNavigator	viewNavigator ;
+									}
+								} ;
+							}
+							]#
+							${	rdf:type	slide:Block ;
+								slide:child ${
+									rdf:type					ozone:DataProviderHost ;
+									ozone:hostedDataProvider	focusDataSource ;
+									ozone:propertyName			:focusDataSource ;
+									slide:child ${
+										rdf:type					ozone:DataProviderHost ;
+										ozone:hostedDataProvider ${
+											rdf:type		data:ResourcePropertySource ;
+											data:subject	toolTargets ;
+											data:predicate	lensui:underlying
+										} ;
+										ozone:propertyName			lensui:underlyingSource ;
+										slide:child ${
+											rdf:type				ozone:ScrollableViewContainer ;
+											ozone:initialResource	toolCollection ;
+											ozone:viewPartClass		frame:StartPaneViewPart
+										}
+									}
+								}
+							}
+						)
+					}
+				}
+				${	rdf:type		slide:Block ;
+					slide:margin	"5" ;
+					slide:child ${
+						rdf:type		slide:Text ;
+						ozone:onClick	taskui:newProject ;
+						slide:text		"Create a project workspace"
+					}
+				}
+			)
+		}
+	}
+
+
+
+	add { expandedPane
+		rdf:type				slide:Block ;
+		slide:color				"black" ;
+		slide:bgcolor			"#d4dae5" ;
+		slide:marginRight		"2" ;
+		slide:borderRightWidth	"2" ;
+		slide:borderRightColor	"gray" ;
+		slide:margin			"1" ;
+		slide:child ${
+			rdf:type							ozone:InformationSourceManagedContainer ;
+			vc:informationSourceSpecification	infoSourceSpec ;
+			ozone:child ${
+				rdf:type	slide:RowSet ;
+				slide:children @(
+					collapseControl
+					${	rdf:type		slide:Block ;
+						slide:marginTop	"0" ;
+						slide:child ${
+							rdf:type		slide:RowSet ;
+							slide:children	@( body )
+						}
+					}
+				)
+			}
+		}
+	}
+
+	add { collapsedPane
+		rdf:type				slide:Block ;
+		slide:bgcolor			"lightestGray" ;
+		slide:margin			"4" ;
+		slide:borderRightWidth	"2" ;
+		slide:borderRightColor	"gray" ;
+		slide:child ${
+			rdf:type		slide:Image ;
+			ozone:tooltip	"Expand or collapse this pane" ;
+			slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/endRight.gif>
+		} ;
+		ozone:onClick	expandPane ;
+		ozone:visible	"false"
+	}
+
+#############################################################################################
+# Start pane
+
+method frame:createStartPane expandedPane collapsedPane startPaneCollection includeHeader
+	uniqueMethod collapsePane
+		replace `expandedPane ozone:visible ?x "false"
+		replace `collapsedPane ozone:visible ?x "true"
+
+	uniqueMethod expandPane
+		replace `collapsedPane ozone:visible ?x "false"
+		replace `expandedPane ozone:visible ?x "true"
+
+	= collapseControl ${
+		rdf:type		slide:Paragraph ;
+		slide:alignX	"left" ;
+		slide:children @(
+			${	rdf:type		slide:Button ;
+				slide:child ${
+					rdf:type		slide:Image ;
+					ozone:tooltip	"Expand or collapse this pane" ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/endRight.gif>
+				} ;
+				ozone:onClick	collapsePane
+			}
+		)
+	}
+
+	= body ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:viewPartClass		frame:StartPaneViewPart ;
+		ozone:initialResource	startPaneCollection
+	}
+
+	= childrenToUse @( body )
+
+	add { expandedPane
+		rdf:type				slide:Block ;
+		slide:color				"black" ;
+		slide:bgcolor			"white" ;
+		slide:marginLeft		"2" ;
+		slide:borderLeftWidth	"2" ;
+		slide:borderLeftColor	"gray" ;
+		slide:margin			"1" ;
+		slide:child ${
+			rdf:type	slide:RowSet ;
+			slide:children @(
+				collapseControl
+				${	rdf:type		slide:Block ;
+					slide:marginTop	"0" ;
+					slide:child ${
+						rdf:type		slide:RowSet ;
+						slide:children	childrenToUse
+					}
+				}
+			)
+		}
+	}
+
+	add { collapsedPane
+		rdf:type				slide:Block ;
+#		slide:bgcolor			"#E0F0E0" ;
+		slide:margin			"4" ;
+		slide:borderLeftWidth	"2" ;
+		slide:borderLeftColor	"gray" ;
+		slide:child ${
+			rdf:type		slide:Image ;
+			ozone:tooltip	"Expand or collapse this pane" ;
+			slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/endLeft.gif>
+		} ;
+		ozone:onClick	expandPane ;
+		ozone:visible	"false"
+	}
+

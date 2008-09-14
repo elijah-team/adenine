@@ -1,0 +1,1238 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Metadata Editor
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/metadataEditor.ad,v 1.86 2004/05/15 15:18:58 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/metadataEditor>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	editor:		<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix	create:		<http://haystack.lcs.mit.edu/programs/create#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix opui:		<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#> 
+@prefix	cont:		<http://haystack.lcs.mit.edu/schemata/continuation#> 
+@prefix	contui:		<http://haystack.lcs.mit.edu/ui/continuation#> 
+@prefix	style:		<http://haystack.lcs.mit.edu/ui/style#> 
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	viewContainer: <http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	web:		<http://haystack.lcs.mit.edu/schemata/web#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+
+#############################################################################################
+# Default properties
+
+add { rdf:type
+	rdf:type	daml:ObjectProperty
+}
+
+add { dc:title
+	rdf:type	daml:DatatypeProperty ;
+	rdf:type	daml:UniqueProperty ;
+	rdfs:range	xsd:string
+}
+
+add { hs:alias
+	rdf:type	daml:DatatypeProperty ;
+	rdfs:label	"Alias" ;
+	rdfs:range	xsd:string
+}
+
+add { dc:date
+	rdfs:range	xsd:dateTime
+}
+
+add { dc:creator
+	rdf:type	daml:ObjectProperty ;
+	rdf:type	hs:RelationalProperty ;
+	rdfs:range	hs:Person
+}
+
+add { dc:description
+	editor:multiline	"true" ;
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:range			xsd:string
+}
+
+#############################################################################################
+# Properties set data provider
+
+add { :propertiesSetDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:SetDataProvider ;
+	ozone:dataDomain		:PropertiesSetSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.editor.PropertiesSetDataProvider" }
+}
+
+#############################################################################################
+# Statement editor
+
+add { :statementEditorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:StatementEditorPart ;
+	ozone:viewDomain		:StatementEditorView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:marginTop	"6" ;
+		slide:child ${
+			rdf:type						layout:FieldSet ; 
+			layout:fieldPartDataGenerator	:statementFieldPartDataGenerator
+		}
+	}
+}
+
+add { :noField
+	rdf:type				slide:Text ;
+	slide:text				"No such field"
+}
+
+add { :StatementEditorPart	ozone:defaultViewClass	:StatementEditorView }
+
+add { :clickHereToCreate
+	rdf:type		slide:Text ;
+	slide:text		"None specified; click here to add" ;
+	slide:color		"50%" ;
+	ozone:onClick	:switch
+}
+
+method :switch ; adenine:preload "true"
+	= state (__context__.getProperty :propertyState)
+	add { state :clickedToCreate "true" }
+	ozone:showMultiplexPart1
+
+add { :addButton0
+	rdf:type				slide:Button ;
+	ozone:onClick			ozone:showMultiplexPart0 ;
+#	slide:highlightBorder	"true" ;
+	slide:borderWidth		"1" ;
+	slide:fillParent		"false" ;
+	slide:child ${
+		rdf:type			slide:Train ;
+		slide:children @(
+			${	rdf:type		slide:Text ;
+				slide:text		"Edit"
+			}
+			slide:space
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif>
+			}
+		)
+	}
+}
+
+add { :addButton1
+	rdf:type				slide:Button ;
+	ozone:onClick			ozone:showMultiplexPart1 ;
+#	slide:highlightBorder	"true" ;
+	slide:borderWidth		"1" ;
+	slide:bgcolor			"lightestGray" ;
+	slide:fillParent		"false" ;
+	slide:child ${
+		rdf:type			slide:Train ;
+		slide:children			@(
+			${	rdf:type		slide:Text ;
+				slide:text		"Edit"
+			}
+			slide:space
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif>
+			}
+		)
+	}
+}
+
+add { :addButton2
+	rdf:type				slide:Button ;
+	ozone:onClick			ozone:showMultiplexPart0 ;
+	slide:highlightBorder	"true" ;
+	slide:borderWidth		"1" ;
+	slide:fillParent		"false" ;
+	slide:child ${
+		rdf:type			slide:Train ;
+		slide:children @(
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif>
+			}
+		)
+	}
+}
+
+add { :addButton3
+	rdf:type				slide:Button ;
+	ozone:onClick			ozone:showMultiplexPart1 ;
+	slide:highlightBorder	"true" ;
+	slide:borderWidth		"1" ;
+	slide:fillParent		"false" ;
+	slide:child ${
+		rdf:type			slide:Train ;
+		slide:children			@(
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif>
+			}
+		)
+	}
+}
+
+method :statementFieldPartDataGenerator fieldData fieldID ; adenine:preload "true" ; adenine:precompile "true"
+	if (== fieldID :predicate)
+		return ${
+			rdf:type					slide:Block ;
+			layout:uiOfFieldID			fieldID ;
+			layout:generatedBy			:statementFieldPartDataGenerator ;
+#			slide:fontBold				"true" ;
+			slide:marginRight			"5" ;
+			slide:child ${
+				rdf:type		slide:Paragraph ;
+				slide:color		"black" ;
+#				slide:fontBold	"true" ;
+#				slide:alignX	"right" ;
+				slide:children @(
+					${	rdf:type		slide:Span ;
+						ozone:onClick	ozone:underlyingHyperlinkInNewWindowIfPossible ;
+						slide:children @(
+							${	rdf:type				ozone:ViewContainer ;
+								ozone:dataSource		data:underlyingSource ;
+								ozone:viewPartClass		ozone:InactiveInlineViewPart
+							}
+						)
+					}
+					slide:colon
+				)
+			}
+		}
+	elseIf (== fieldID :object)
+		return ${
+			rdf:type			slide:Block ;
+			layout:uiOfFieldID	fieldID ;
+			layout:generatedBy	:statementFieldPartDataGenerator ;
+			slide:child ${
+				rdf:type			lensui:LensContainer ;
+				ozone:dataSource	data:underlyingSource
+			}
+		}
+	else
+		return :noField
+
+method :findPossibleObjects ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (lensui:getUnderlying)
+	= predicate (data:getUnderlying)
+
+	= cont ${ 
+		rdf:type		cont:Continuation ; 
+		rdf:type		task:Task ;
+		dc:title		"Choose object" ; 
+	}
+
+	uniqueMethod acceptor item
+		add { `underlying `predicate item }
+
+	uniqueMethod validator item
+		return true
+
+	add { cont
+		cont:acceptor	acceptor ; 
+		cont:validator	validator ;
+		cont:dataSource	${
+			rdf:type		data:PredicateSetSource ;
+			data:subject	underlying ;
+			data:predicate	predicate
+		} ;				
+		cont:origin		underlying
+	}
+
+	contui:addContinuation cont
+
+	# Query for all possible corresponding objects
+	= objects (query { ?x rdf:type ?y predicate rdfs:range ?y } @(?x))
+	= coll ${ rdf:type hs:Collection ; dc:title "Possible Objects" }
+	for x in objects
+		add { coll hs:member x[0] }
+
+	ozone:navigate coll
+
+#############################################################################################
+# Generic RDF property aspect part
+
+add { :genericRDFPropertyAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				lensui:LensPart ;
+	ozone:dataDomain		rdf:Property ;
+	ozone:dataDomain		daml:ObjectProperty ;
+	ozone:dataDomain		daml:DatatypeProperty ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		ozone:MultiplexPartContainer ;
+		ozone:dataSource ${
+			rdf:type		data:MappingSource ;
+			data:domain		@( "true" "false" ) ;
+			data:range		@( :rdfPropertyEditor1 :rdfPropertyEditor0 );
+			data:default	:rdfPropertyEditor0 ;
+			ozone:dataSource ${
+				rdf:type		data:ContextPropertySource ;
+				data:property	lensui:readOnly
+			}
+		} ;
+		ozone:children	@( :rdfPropertyEditor1 :rdfPropertyEditor0 )
+	}
+}
+
+add { :rdfPropertyEditor0
+	rdf:type	:EditableGenericRDFPropertyEditor
+}
+
+add { :rdfPropertyEditor1
+	rdf:type			layout:Layout ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subjectDataSource		lensui:underlyingSource ;
+			data:predicateDataSource	lensui:currentAspectSource ;
+			data:object					?x
+		} ;
+	} ;
+	layout:layoutConstraint ${ 
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	}
+}
+
+add { :rdfPropertyEditorConstructorsDataSource
+	rdf:type			data:MergeSetSource ;
+	ozone:dataSource	${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?y ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	rdf:type ;
+			data:object		construct:Constructor
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	construct:targetType ;
+			data:object		?y
+		} ;
+		data:statement ${
+			data:subjectDataSource	lensui:currentAspectSource ;
+			data:predicate	rdfs:range ;
+			data:object		?y
+		}
+	} ;
+	ozone:dataSource	${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	rdf:type ;
+			data:object		construct:Constructor
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	construct:targetType ;
+			data:object		daml:Thing
+		}
+	}
+}
+
+add { :rdfPropertyEditorCollapsedEditor
+	rdf:type			layout:Layout ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subjectDataSource		lensui:underlyingSource ;
+			data:predicateDataSource	lensui:currentAspectSource ;
+			data:object					?x
+		} ;
+	} ;
+	layout:layoutConstraint ${ 
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:emptyPartData	:clickHereToCreate ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	}
+}
+
+method :doCreate object
+	= subject (lensui:getUnderlying)
+	= predicate (lensui:getAspect)
+
+	with __target__ __infosource__
+		add { subject predicate object }
+
+	= state (__context__.getProperty :propertyState)
+	if (contains state :clickedToCreate "true")
+		remove state :clickedToCreate "true"
+		if (contains predicate rdf:type daml:UniqueProperty)
+			ozone:showMultiplexPart0
+
+add { :editableGenericRDFPropertyEditorPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		:EditableGenericRDFPropertyEditor ;
+	ozone:partDataGenerator	:presentEditableGenericRDFPropertyEditor ;
+	ozone:cacheStyle		ozone:cacheDisabled ;
+	ozone:synchronous		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+add { :uniquePropertyEditorCollapsedEditor
+	rdf:type	editor:UniquePropertyEditor ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ) ;
+		data:targetExistential	?x ;
+		data:extract			"true" ;
+		data:statement ${
+			data:subjectDataSource		lensui:underlyingSource ;
+			data:predicateDataSource	lensui:currentAspectSource ;
+			data:object					?x
+		}
+	}
+}
+
+add { :uniqueEditableGenericRDFPropertyEditor
+	rdf:type			ozone:MultiplexPartContainer ;
+	ozone:putProperty	${ ozone:name :propertyState ; ozone:value :uniquePropertyEditorCollapsedEditor } ;
+	ozone:children		@( :collapsedUniquePropertyEditor :expandedPropertyEditor )
+}
+
+add { :collapsedUniquePropertyEditor 
+	rdf:type			slide:ColumnSet ;
+	slide:pack			"right" ;
+	slide:children @(
+		:uniquePropertyEditorCollapsedEditor
+		:addButton3
+	)
+}
+
+add { :rdfPropertyEditableGenericRDFPropertyEditor
+	rdf:type			ozone:MultiplexPartContainer ;
+	ozone:putProperty	${ ozone:name :propertyState ; ozone:value :rdfPropertyEditorCollapsedEditor } ;
+	ozone:children		@( :collapsedRDFPropertyPropertyEditor :expandedPropertyEditor )
+}
+
+add { :collapsedRDFPropertyPropertyEditor 
+	rdf:type			slide:ColumnSet ;
+	slide:pack			"right" ;
+	slide:children @(
+		:rdfPropertyEditorCollapsedEditor
+		:addButton1
+	)
+}
+
+add { :expandedPropertyEditor
+	rdf:type			slide:RowSet ;
+	slide:children @(
+		${	rdf:type	slide:ColumnSet ;
+			slide:pack	"right" ;
+			slide:children @(
+				:rdfPropertyEditor1
+				:addButton0
+			)
+		}
+		${	rdf:type		slide:Block ;
+			slide:margin	"3"
+		}
+		${	rdf:type			slide:Block ;
+			slide:borderWidth	"1" ;
+			slide:margin		"1" ;
+			slide:borderColor	"lighterGray" ;
+			slide:bgcolor		"lightestGray" ;
+			slide:child ${
+				rdf:type	slide:ColumnSet ;
+				slide:pack	"right" ;
+				slide:children @(
+					${	rdf:type						create:InlineClosureContainer ;
+#						create:initialOperation		constructor ;
+						create:initialOperationChooser	:initialConstructorChooser ;
+						create:operationDataSource		:rdfPropertyEditorConstructorsDataSource ;
+						create:continuation				:doCreate
+					}
+					${	rdf:type	slide:RowSet ;
+						slide:children @(
+							${	rdf:type		slide:Block ;
+								slide:marginX	"3" ;
+								slide:child ${
+									rdf:type			slide:Button ;
+									ozone:onClick		ozone:showMultiplexPart0 ;
+									slide:margin		"3" ;
+									slide:borderWidth	"1" ;
+									slide:child ${
+										rdf:type		slide:Image ;
+										slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+									}
+								}
+							}
+						)
+					}
+				)
+			}
+		}
+	)
+}
+
+method :initialConstructorChooser
+	= predicate (lensui:getAspect)
+
+	# Find a suitable constructor
+	= constructor (queryExtract { predicate rdfs:range ?x ?y construct:targetType ?x } @(?y))
+	if (!= null constructor)
+		return constructor[0]
+	elseIf (contains predicate rdf:type daml:ObjectProperty)
+		return :genericConstructor
+	else
+		return :genericLiteralConstructor
+
+method :presentEditableGenericRDFPropertyEditor ; adenine:preload "true"
+	= predicate (lensui:getAspect)
+	= isUniqueProperty (contains predicate rdf:type daml:UniqueProperty)
+
+	if (and (contains predicate rdf:type daml:DatatypeProperty) isUniqueProperty)
+		return :uniqueEditableGenericRDFPropertyEditor
+	else
+		return :rdfPropertyEditableGenericRDFPropertyEditor
+
+#############################################################################################
+# Metadata editor part
+
+add { :metadataEditorPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		:MetadataEditor ;
+	ozone:partDataGenerator	:presentMetadataEditor ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentMetadataEditor partData ; adenine:preload "true" ; adenine:precompile "true"
+	= isAspect (contains partData rdf:type :MetadataAspect)
+	= input (extract partData ozone:dataSource ?x)
+
+	var scrollable margin
+	if (! isAspect)
+		if (== null input)
+			= input data:underlyingSource
+		= scrollable (!= (extract partData :scrollable ?x) "false")
+		= margin 0
+	else
+		= input lensui:underlyingSource
+		= scrollable (== (extract partData :scrollable ?x) "true")
+		if scrollable
+			= margin 0
+		else
+			= margin 5
+
+	= propertiesToDisplaySource (extract partData :propertiesToDisplay ?x)
+	= readOnly (:determineReadOnly partData)
+
+	= otherProperties @()
+	if (== null propertiesToDisplaySource)
+		var propertiesToDisplay
+		with __source__ __infosource__
+			= propertiesToDisplay (query { partData :propertyToDisplay ?x })
+		for x in propertiesToDisplay
+			otherProperties.add x[0]
+
+	return (:metadataEditorHelper input scrollable propertiesToDisplaySource readOnly otherProperties margin)
+
+#############################################################################################
+# Metadata editor aspect
+
+add { :metadataEditorAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				lensui:LensPart ;
+	ozone:dataDomain		:MetadataAspect ;
+	ozone:cacheStyle		ozone:cachePerResource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type		layout:FieldSetContainer ;
+			layout:fields	:fields ;
+			ozone:child ${
+				rdf:type				layout:Layout ;
+				ozone:putProperty		${ ozone:name op:continuation ; ozone:nullValue "true" } ;
+				ozone:dataSource ${
+					rdf:type	data:ProviderConstructorSource ;
+					ozone:dataSource ${
+						rdf:type			data:ResourcePropertySource ;
+						ozone:dataSource	data:partDataSource ;
+						data:predicate		:propertiesToDisplay
+					}
+				} ;
+				layout:layoutConstraint ${
+					rdf:type				layout:RowStackerConstraint ;
+					ozone:viewPartClass		:StatementEditorPart ;
+					layout:emptyPartData ${
+						rdf:type	slide:Text ;
+						slide:text	"No properties to display; drag and drop properties here"
+					}
+				}
+			}
+		}
+	}
+}
+
+add { :MetadataAspect
+	rdfs:label		"Property Set Aspect" ;
+	rdfs:subClassOf	vowl:Lens ;
+	hs:classView	lensui:AspectView ;
+	vowl:hasLens ${
+		rdf:type			lensui:DataSetAspect ;
+		dc:title			"Properties to Display" ;
+		lensui:dataSource ${
+			rdf:type	data:ProviderConstructorSource ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				data:predicate		:propertiesToDisplay ;
+				ozone:dataSource	lensui:underlyingSource
+			}
+		} ;
+		lensui:layoutConstraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		ozone:PhraseViewPart
+		}
+	}
+}
+
+method :metadataEditorViewGenerator ; adenine:preload "true"
+	= part (__context__.getProperty ozone:part)
+	= input data:underlyingSource
+	= readOnly (:determineReadOnly part)
+	return (:metadataEditorHelper input false (extract part :propertiesToDisplay ?x) readOnly @() 0)
+
+add { :fields
+	rdf:type			data:DAMLListSource ;
+	data:damlList @(
+		${	rdf:type					layout:Field ;
+			layout:fieldID				:predicate ;
+			layout:fieldDimension		"25%"
+		}
+		${	rdf:type					layout:Field ;
+			layout:fieldID				:object ;
+			layout:fieldDimension		"70%"
+		}
+	)
+}
+
+method :determineReadOnly subject
+	= x (extract subject :readOnly ?x)
+	if (== x null)
+		return null
+	if (== x "true")
+		return true
+	return false
+
+method :metadataEditorHelper input scrollable propertiesToDisplaySource readOnly otherProperties margin ; adenine:preload "true" ; adenine:precompile "true"
+	= layoutConstraint ${ 
+		ozone:viewPartClass		:StatementEditorPart
+	}
+
+	var datasource
+	if (!= propertiesToDisplaySource null)
+		= datasource propertiesToDisplaySource
+	else
+		= datasource ${
+			rdf:type			:PropertiesSetSource ;
+			ozone:dataSource	input ;
+			:propertyToDisplay	rdf:type ;
+			:propertyToDisplay	dc:title
+		}
+
+		# Add other properties to display
+		for x in otherProperties
+			add { datasource :propertyToDisplay x }
+
+		add { layoutConstraint
+			layout:sortBy ${
+				rdf:type				data:SortingListSource ;
+				data:sortCaseSensitive	false ;
+				data:sortDataSource		${ rdf:type summary:TitleSource }
+			}
+		}
+		
+	= body ${
+		rdf:type				layout:Layout ;
+		ozone:putProperty		${ ozone:name op:continuation ; ozone:nullValue "true" } ;
+		ozone:dataSource		datasource ;
+		layout:layoutConstraint	layoutConstraint
+	}
+	
+	if (!= null readOnly)
+		add { body
+			ozone:putProperty		${ ozone:name lensui:readOnly ; ozone:value readOnly }
+		}
+	
+	if scrollable
+		add { layoutConstraint rdf:type layout:ListViewConstraint ; layout:fields :fields ; layout:hostPartCache "true" }
+		return ${
+			rdf:type					ozone:DataProviderHost ;
+			ozone:hostedDataProvider	input ;
+			ozone:propertyName			lensui:underlyingSource ;
+			slide:child 				body
+		}
+	else
+		add { layoutConstraint 
+			rdf:type	layout:RowStackerConstraint ;
+			layout:emptyPartData ${
+				rdf:type	slide:Text ;
+				slide:text	"No properties to display; drag and drop properties here"
+			}
+		}
+		return ${
+			rdf:type		slide:Block ;
+			slide:margin	margin ;
+			slide:child ${
+				rdf:type					ozone:DataProviderHost ;
+				ozone:hostedDataProvider	input ;
+				ozone:propertyName			lensui:underlyingSource ;
+				slide:child ${
+					rdf:type		layout:FieldSetContainer ;
+					layout:fields	:fields ;
+					ozone:child		body
+				}
+			}
+		}
+
+#############################################################################################
+# Metadata editor view part
+
+add { :metadataEditorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+	ozone:viewDomain		hs:MetadataView ;
+	viewContainer:toolbarCaption "Metadata editor" ;
+	ozone:partDataGenerator	:presentMetadataEditorView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	daml:Thing hs:possibleClassView hs:MetadataView
+}
+
+method :presentMetadataEditorView input ; adenine:preload "true" ; adenine:precompile "true"
+	= viewInstance (__context__.getLocalProperty ozone:viewInstance)
+	var propertiesToDisplay
+	= readOnly false
+	= scrollable true
+	if (!= viewInstance null)
+		with __source__ __infosource__
+			= propertiesToDisplay (extract viewInstance :propertiesToDisplay ?x)
+			= readOnly (== (extract viewInstance :readOnly ?x) "true")
+			= scrollable (!= (extract viewInstance :scrollable ?x) "false")
+			= propertiesToDisplay2 (query { viewInstance :propertyToDisplay ?x })
+			for x in propertiesToDisplay2
+				add { me :propertyToDisplay x[0] }
+
+	= me ${
+		rdf:type	:MetadataEditor
+	}
+
+	if (!= null readOnly)
+		add { me :readOnly readOnly }
+
+	if (!= null scrollable)
+		add { me :scrollable scrollable }
+
+	if (!= null propertiesToDisplay)
+		add { me :propertiesToDisplay propertiesToDisplay }
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:style		style:slideStyle ;
+		slide:child ${
+			rdf:type	slide:RowSet ;
+			slide:children @(
+				${	rdf:type		slide:Block ;
+					slide:margin	"15" ;
+					slide:fontSize	"200%" ;
+					slide:bgcolor	"95%" ;
+					slide:child ${
+						rdf:type		slide:Text ;
+						slide:text		(Literal (input.getURI))
+					}
+				}
+				me
+			)
+		}
+	}
+	
+#############################################################################################
+# Generic value editor
+
+add { :valueEditorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+
+	rdf:type				:ValueEditorPart ;
+	ozone:viewDomain		:ValueView ;
+	ozone:partDataGenerator	:presentValueEditor ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+add { rdf:Statement hs:classView :ValueView }
+
+method :presentValueEditor input ; adenine:preload "true" ; adenine:precompile "true"
+	= s (__source__.getStatement input)
+
+	return ${
+		rdf:type	ozone:Edit ;
+		ozone:text	((s.getObject).getContent)
+	}
+
+#############################################################################################
+# Common property editors
+
+add { :defaultPropertyEditorPart	
+	rdf:type			ozone:Part ;
+	rdf:type			ozone:SWTPart ;
+	ozone:dataDomain	:DefaultPropertyEditor ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.parts.editor.DefaultPropertyEditorPart" }
+}
+
+#############################################################################################
+# Add property operation
+
+add { :target
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Target" ;
+	rdfs:range			:MetadataAspect ;
+	op:required			"true"
+}
+
+add { :property
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Property" ;
+	op:required			"true" ;
+	rdfs:range			rdf:Property ;
+	rdfs:range			daml:ObjectProperty ;
+	rdfs:range			daml:DatatypeProperty
+}
+
+method :addProperty :target = targets :property = properties ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+dc:title			"Add property" ;
+adenine:preload	 	"true"
+	= set (Set)
+	set.addAll properties
+
+	= dataSource (extract targets[0] :propertiesToDisplay ?x)
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider dataSource __context__ __source__)
+
+	# Obtain selected object
+	dataProvider.requestChange data:setAddition set
+	dataProvider.dispose
+
+#############################################################################################
+# Generic resource constructors
+
+add { :GenericConstructorClosure
+	rdfs:subClassOf	op:OperationClosure ;
+	hs:classView	:ConstructorView
+}
+
+method :genericConstructor ;
+adenine:preload			"true" ;
+dc:title				"Find item by name" ;
+rdf:type				op:Operation ;
+rdf:type				construct:Constructor ;
+construct:targetType	daml:Thing ;
+op:closureDomain		:GenericConstructorClosure
+	return (create:create daml:Thing)
+
+add { :constructorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				opui:InlineClosureViewPart ;
+	ozone:viewDomain		:ConstructorView ;
+	ozone:template ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type	slide:Block ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Type in the name of the item you wish to use and press Enter."
+						}
+					)
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"3"
+			}
+			${	rdf:type			editor:TitleBasedResourceEditor ;
+				editor:onValueSet	:passValue ;
+				editor:valuesSource ${
+					rdf:type				data:RDFQuerySetSource ;
+					data:existentials		@( ?x ?type ) ;
+					data:targetExistential	?x ;
+					data:statement ${
+						data:subjectDataSource	lensui:currentAspectSource ;
+						data:predicate			rdfs:range ;
+						data:object				?type
+					} ;
+					data:statement ${
+						data:subject	?x ;
+						data:predicate	rdf:type ;
+						data:object		?type
+					}
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"3"
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+method :passValue value
+	= continuation (__context__.getProperty op:continuation) 
+	if (== null continuation)
+		= continuation ozone:navigate
+
+	continuation value
+
+#############################################################################################
+# Collection constructor
+
+add { :CollectionConstructorClosure
+	rdfs:subClassOf	op:OperationClosure ;
+	hs:classView	:CollectionConstructorView
+}
+
+method :collectionConstructor ;
+adenine:preload			"true" ;
+dc:title				"Find collection by name" ;
+rdf:type				op:Operation ;
+rdf:type				construct:Constructor ;
+construct:targetType	hs:Collection ;
+op:closureDomain		:CollectionConstructorClosure
+	return (create:create hs:Collection)
+
+add { :collectionConstructorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				opui:InlineClosureViewPart ;
+	ozone:viewDomain		:CollectionConstructorView ;
+	ozone:template ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type	slide:Block ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Type in the name of the collection you wish to use and press Enter."
+						}
+					)
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"3"
+			}
+			${	rdf:type			editor:TitleBasedResourceEditor ;
+				editor:onValueSet	:passValue ;
+				editor:valuesSource ${
+					rdf:type		data:PredicateSetSource ;
+					data:reverse	"true" ;
+					data:predicate	rdf:type ;
+					data:object		hs:Collection
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"3"
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Connection constructor
+
+add { :ConnectionConstructorClosure
+	rdfs:subClassOf	op:OperationClosure ;
+	hs:classView	:ConnectionConstructorView
+}
+
+method :connectionConstructor ;
+adenine:preload			"true" ;
+dc:title				"Create or specify some arrow or property" ;
+rdf:type				op:Operation ;
+rdf:type				construct:Constructor ;
+construct:targetType	daml:ObjectProperty ;
+op:closureDomain		:ConnectionConstructorClosure
+	return (create:create daml:ObjectProperty)
+
+add { :connectionConstructorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				opui:InlineClosureViewPart ;
+	ozone:viewDomain		:ConnectionConstructorView ;
+	ozone:template ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type	slide:Block ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Type in the name of the arrow or property you wish to use and press Enter."
+						}
+					)
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"3"
+			}
+			${	rdf:type			editor:TitleBasedResourceEditor ;
+				editor:onValueSet	:passValue ;
+				editor:valuesSource ${
+					rdf:type				data:RDFQuerySetSource ;
+					data:existentials		@( ?x ?y ?z ) ;
+					data:targetExistential	?x ;
+					data:statement ${
+						data:subject		?x ;
+						data:predicate		rdf:type ;
+						data:object			?z
+					} ;
+					data:statement ${
+						data:subject	?y ;
+						data:predicate	rdf:type ;
+						data:object		data:ConnectionDataProvider
+					} ;
+					data:statement ${
+						data:subject	?y ;
+						data:predicate	ozone:dataDomain ;
+						data:object		?z
+					}
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"3"
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+method :passValue value
+	= continuation (__context__.getProperty op:continuation) 
+	if (== null continuation)
+		= continuation ozone:navigate
+
+	continuation value
+
+#############################################################################################
+# Generic literal constructor
+
+method :genericLiteralConstructor ;
+adenine:preload			"true" ;
+dc:title				"Create a string" ;
+rdf:type				op:Operation ;
+construct:targetType	xsd:string ;
+rdf:type				construct:Constructor ;
+op:closureDomain		:LiteralConstructorClosure
+	return (create:create daml:Thing)
+
+add { :LiteralConstructorClosure
+	rdfs:subClassOf	op:OperationClosure ;
+	hs:classView	:LiteralConstructorView
+}
+
+add { :literalConstructorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				opui:InlineClosureViewPart ;
+	ozone:viewDomain		:LiteralConstructorView ;
+	ozone:partDataGenerator	:presentLiteralConstructor ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :passLiteralValue
+	= continuation (__context__.getProperty op:continuation) 
+	= editPartData (__context__.getProperty :editPartData) 
+	= value (extract editPartData ozone:dynamicText ?x)
+	continuation value
+
+method :presentLiteralConstructor res ; adenine:preload "true" ; adenine:precompile "true"
+	= x ${ 
+		rdf:type				ozone:Edit ;
+		ozone:onEnterPressed	:passLiteralValue
+	}
+
+	return ${
+		ozone:putProperty	${ ozone:name :editPartData ; ozone:value x } ;
+		rdf:type			slide:Train ;
+		slide:children @(
+			x
+			slide:space
+			${	rdf:type					slide:Button ;
+				slide:backgroundHighlight	"90%" ;
+				slide:borderWidth			"1" ;
+				slide:clearance				"5" ;
+				ozone:onClick				:passLiteralValue ;
+				slide:child ${
+					rdf:type		slide:Text ;
+					slide:text		"Add value"
+				}
+			}
+		)
+	}
+
+#############################################################################################
+# URL constructor
+
+method :urlConstructor ;
+adenine:preload			"true" ;
+dc:title				"Enter a URL" ;
+rdf:type				op:Operation ;
+construct:targetType	web:WebPage ;
+construct:targetType	content:Content ;
+construct:targetType	info:Information ;
+rdf:type				construct:Constructor ;
+op:closureDomain		:URLConstructorClosure
+	return (create:create web:WebPage)
+
+add { :URLConstructorClosure
+	rdfs:subClassOf	op:OperationClosure ;
+	hs:classView	:URLConstructorView
+}
+
+add { :urlConstructorViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				opui:InlineClosureViewPart ;
+	ozone:viewDomain		:URLConstructorView ;
+	ozone:partDataGenerator	:presentURLConstructor ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :passURLValue
+	= continuation (__context__.getProperty op:continuation) 
+	= editPartData (__context__.getProperty :editPartData) 
+	= value (extract editPartData ozone:dynamicText ?x)
+	continuation (Resource (value.getContent))
+
+method :presentURLConstructor res ; adenine:preload "true" ; adenine:precompile "true"
+	= x ${ 
+		rdf:type				ozone:Edit ;
+		ozone:onEnterPressed	:passURLValue
+	}
+
+	return ${
+		ozone:putProperty	${ ozone:name :editPartData ; ozone:value x } ;
+		rdf:type			slide:Paragraph ;
+		slide:children @(
+			x
+			slide:space
+			${	rdf:type					slide:Button ;
+				slide:backgroundHighlight	"90%" ;
+				slide:borderWidth			"1" ;
+				slide:clearance				"5" ;
+				ozone:onClick				:passURLValue ;
+				slide:child ${
+					rdf:type		slide:Text ;
+					slide:text		"Enter URL"
+				}
+			}
+		)
+	}
+
+#############################################################################################
+# Metadata aspect constructor
+
+add { :title
+	rdf:type				op:Parameter ;
+	rdfs:label				"Name" ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	editor:disallowBlanks	"true" ;
+	rdfs:range				xsd:string
+}
+
+method :createMetadataAspect :title = titles ;
+adenine:preload			"true" ;
+dc:title				"Create a property set aspect" ;
+rdf:type				op:Operation ;
+construct:targetType	vowl:Lens ;
+construct:targetType	:MetadataAspect ;
+rdf:type				construct:Constructor
+	= title 'Untitled Property Set'
+	if (!= titles null)
+		if (== (length titles) 1)
+			= title titles[0]
+
+	return ${
+		rdf:type				:MetadataAspect ;
+		dc:title				title ;
+		:propertiesToDisplay	${ rdf:type data:OrderedSetSource }
+	}
+

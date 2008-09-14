@@ -1,0 +1,101 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Base Package
+# Written by Dennis Quan, David Huynh
+
+@base <http://haystack.lcs.mit.edu/bootstrap/haystackBase>
+
+@prefix config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+
+add {
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/acl>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/adenine>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/config>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/content>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/haystack>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/information>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/note>
+	^ config:includes	<http://haystack.lcs.mit.edu/schemata/language>
+}
+
+
+add { <http://haystack.lcs.mit.edu/schemata/acl>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Access Control Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/acl.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/adenine>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Adenine Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/adenine.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/config>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Haystack Configuration Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/config.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/content>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Content Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/content.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/haystack>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Haystack Base Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/haystack.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/information>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Haystack Information Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/information.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/note>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Haystack Note Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/note.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/language>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Language Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/language.ad"
+}
+

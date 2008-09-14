@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="edu.mit.csail.haystack.web"
+   name="Haystack Web Operation Plugin"
+   version="1.0.13"
+   provider-name="MIT CSAIL Haystack Project"
+   class="edu.mit.lcs.haystack.eclipse.Plugin">
+
+   <runtime>
+      <library name="web.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/java/lapis.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/$ws$/swt.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/java/xalan.jar">
+         <export
+               name="*">
+         </export>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui" export="true"/>
+      <import plugin="org.eclipse.core.runtime" export="true"/>
+      <import plugin="edu.mit.csail.haystack.standard" export="true"/>
+      <import plugin="javax.servlet" version="2.4.0"/>
+   </requires>
+   
+   <extension point="edu.mit.csail.haystack.core.bales"/>
+   
+</plugin>

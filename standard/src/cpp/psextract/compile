@@ -1,0 +1,15 @@
+#!/bin/sh
+chmod +x extract.sh
+g++    -c -o assocarr.o assocarr.C
+g++    -c -o cmd_line.o cmd_line.C
+g++    -c -o discreterv.o discreterv.C
+g++    -c -o matrix.o matrix.C
+g++    -c -o misc.o misc.C
+g++    -c -o Random_Number.o Random_Number.C
+g++    -c -o str.o str.C
+g++    -c -o genSamples.o genSamples.C
+g++    -c -o extractFeatures.o extractFeatures.C
+g++    -c -o readText.o readText.C
+g++    -c -o trainClassifier.o trainClassifier.C
+g++ -O trainClassifier.o assocarr.o cmd_line.o discreterv.o matrix.o misc.o Random_Number.o str.o genSamples.o extractFeatures.o readText.o -o trainClassifier -lm
+

@@ -1,0 +1,854 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Applet view parts
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/applet>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	applet:		<http://haystack.lcs.mit.edu/schemata/ozoneapplet#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix help:		<http://haystack.lcs.mit.edu/programs/help#>
+@prefix op:	<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#>
+@prefix viewContainer:	<http://haystack.lcs.mit.edu/ui/viewContainer#>
+@prefix cv:	<http://haystack.lcs.mit.edu/ui/collectionView#>
+
+#############################################################################################
+# defaultVerticalAppletViewPart
+
+add { :verticalAppletContainerPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	ozone:dataDomain			applet:VerticalAppletContainer ;
+	ozone:partDataGenerator		:verticalAppletContainerGenerator ;
+#	ozone:cachePartData			"true" ;
+	ozone:cacheStyle			ozone:cacheDisabled ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :verticalAppletContainerGenerator data ; adenine:preload "true" ; adenine:precompile "true"
+	= content (extract data slide:child ?x)
+	= dimension (extract data ozone:defaultVerticalAppletDimension ?x)
+	= color null
+	= bgcolor null
+#[	with __source__ __infosource__
+		if (contains (data:getUnderlying) ozone:important "true")
+			= bgcolor "#ebeef5"
+			= color "#274683"]#
+
+	= titleBar (extract data applet:titleBar ?x)
+	if (== null titleBar)
+		= titleBar :defaultTitleBar
+
+	:setupViewSwitcher content
+
+	return (ozone:createExpandableBox titleBar content dimension color bgcolor)
+
+add { applet:close
+	rdf:type		slide:Button ;
+	ozone:onClick	:doClose ;
+	ozone:tooltip	"Remove from list" ;
+	slide:marginX	"2" ;
+	slide:child ${
+		rdf:type		slide:Image ;
+		slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+	}
+}
+
+add { applet:maximize
+	rdf:type		slide:Button ;
+	ozone:onClick	:doMaximize ;
+	ozone:tooltip	"Show in content area" ;
+	slide:marginX	"2" ;
+	slide:child ${
+		rdf:type		slide:Image ;
+		slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/maximize.gif>
+	}
+}
+
+method :doClose
+	= item (data:getUnderlying)
+	= dataProvider (__context__.getDescendantLocalProperty ozone:dataProvider)
+	dataProvider.requestChange data:setRemoval (Set item)
+
+method :doMaximize
+	ozone:navigate (data:getUnderlying)
+
+add { :defaultTitleBar
+	rdf:type		slide:Block ;
+	slide:fontBold	"true" ;
+	slide:child ${
+		rdf:type		slide:ColumnSet ;
+		slide:pack		"right" ;
+		slide:children	@(
+			${	rdf:type			ozone:ViewContainer ;
+				ozone:dataSource	data:underlyingSource ;
+				ozone:viewPartClass	ozone:InlineViewPart
+			}
+#			applet:maximize
+			applet:close
+		)
+	}
+}
+
+add { :defaultVerticalAppletViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:VerticalAppletViewPart ;
+	ozone:viewDomain			ozone:DefaultVerticalAppletView ;
+	ozone:partDataGenerator		:defaultVerticalAppletViewGenerator ;
+	ozone:cacheStyle			ozone:cacheDisabled ;
+#	ozone:cachePartData			"true" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+add { ozone:VerticalAppletViewPart ozone:defaultViewClass	ozone:DefaultVerticalAppletView }
+
+method :defaultVerticalAppletViewGenerator ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (__context__.getLocalProperty ozone:underlying)
+	if (== underlying null)
+		return ozone:noResourceToViewVerticalAppletBox
+		
+	= content ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:viewPartClass		ozone:AppletViewPart ;
+		ozone:initialResource	underlying
+	}
+
+	= dimension (extract underlying ozone:defaultVerticalAppletDimension ?x)
+#	if (== dimension null)
+#		= dimension 150
+
+	:setupViewSwitcher content
+
+	return (ozone:createVerticalAppletBox underlying content dimension)
+
+method :setupViewSwitcher content
+	= underlying (data:getUnderlying)
+	= viewInstanceDataSource (__context__.getProperty ozone:viewInstanceDataSource)
+	if (!= null viewInstanceDataSource)
+		= operation (queryExtract { ?x rdf:type op:Operation ; rdf:type layout:ChangeViewOperation ; :viewInstanceDataSource viewInstanceDataSource ; :element underlying })
+	
+		if (!= operation null)
+			= operation operation[0]
+		else
+			= operation ${
+				rdf:type				op:Operation ;
+				rdf:type				layout:ChangeViewOperation ;
+				:viewInstanceDataSource	viewInstanceDataSource ;
+				dc:title				"Change view" ;
+				:element				underlying ;
+				hs:view ${
+					rdf:type								viewContainer:ChangeViewContextMenuItemView ;
+					viewContainer:viewPartClass				ozone:AppletViewPart ;
+					viewContainer:viewInstanceDataSource	viewInstanceDataSource ;
+					viewContainer:viewContainerPrescription	content ;
+					viewContainer:currentResource			underlying
+				}
+			}
+
+		= viewContainerPartData (__context__.getProperty ozone:hostingViewContainerPartData)
+		add { viewContainerPartData
+			contextMenu:contextOperation	operation
+		}
+	
+		add { content 
+			ozone:viewInstanceDataSource	viewInstanceDataSource
+		}
+
+#############################################################################################
+# defaultVerticalAppletViewPart2
+
+add { :defaultVerticalAppletViewPart2
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:VerticalAppletViewPart2 ;
+	ozone:viewDomain			ozone:DefaultVerticalAppletView2 ;
+	ozone:partDataGenerator		:defaultVerticalAppletViewGenerator2 ;
+	ozone:cacheStyle			ozone:cacheDisabled ;
+#	ozone:cachePartData			"true" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+add { ozone:VerticalAppletViewPart2 ozone:defaultViewClass	ozone:DefaultVerticalAppletView2 }
+
+method :defaultVerticalAppletViewGenerator2 ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (__context__.getLocalProperty ozone:underlying)
+	if (== underlying null)
+		return ozone:noResourceToViewVerticalAppletBox
+
+	= content ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:viewPartClass		ozone:AppletViewPart ;
+		ozone:initialResource	underlying
+	}
+
+	= dimension (extract underlying ozone:defaultVerticalAppletDimension ?x)
+#	if (== dimension null)
+#		= dimension 150
+
+	return (ozone:createVerticalAppletBox2 underlying content dimension)
+
+#############################################################################################
+# defaultVerticalAppletViewPart3
+
+add { :defaultVerticalAppletViewPart3
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:VerticalAppletViewPart3 ;
+	ozone:viewDomain			ozone:DefaultVerticalAppletView3 ;
+	ozone:template ${
+		rdf:type		slide:Block ;
+		slide:marginY	"3" ;
+		slide:child ${
+			rdf:type				slide:Block ;
+			slide:borderWidth		"1" ;
+			slide:margin			"1" ;
+			slide:borderColor		"lighterGray" ;
+			slide:fillParentWidth	"true" ;
+			slide:child ${
+				rdf:type		slide:RowSet ;
+				slide:pack		"bottom" ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:margin			"4" ;
+						slide:fontBold			"true" ;
+						slide:borderBottomWidth	"1" ;
+						slide:borderColor		"lighterGray" ;
+						slide:child ${
+							rdf:type			summary:DocumentType
+						}
+					}
+					${	rdf:type		slide:Block ;
+						slide:margin	"3" ;
+						slide:child ${
+							rdf:type				ozone:ViewContainer ;
+							ozone:viewPartClass		ozone:AppletViewPart ;
+							ozone:dataSource		data:underlyingSource
+						}
+					}
+				)
+			}
+		}		
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { ozone:VerticalAppletViewPart3 ozone:defaultViewClass	ozone:DefaultVerticalAppletView3 }
+
+#############################################################################################
+# defaultAppletViewPart2
+
+add { :defaultAppletViewPart2
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:AppletViewPart2 ;
+	ozone:viewDomain			ozone:DefaultAppletView2 ;
+	ozone:template ${
+		rdf:type				slide:Block ;
+		slide:borderWidth		"1" ;
+		slide:dropShadow		"true" ;
+		slide:margin			"1" ;
+		slide:borderColor		"lighterGray" ;
+		slide:bgcolor			"white" ;
+		slide:fillParentWidth	"true" ;
+		slide:child	${
+			rdf:type		slide:RowSet ;
+			slide:children @(
+				${	rdf:type				slide:Block ;
+					slide:marginBottom		"4" ;
+					slide:marginTop			"4" ;
+					slide:marginX			"4" ;
+					slide:borderBottomWidth	"1" ;
+					slide:borderBottomColor	"lighterGray" ;
+					slide:bgcolor			"#F0F0F0" ;
+					slide:child ${
+						rdf:type	summary:Title
+					}
+				}
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:viewPartClass		ozone:AppletViewPart ;
+					ozone:dataSource		data:underlyingSource
+				}
+			)
+		}		
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { ozone:AppletViewPart2 ozone:defaultViewClass	ozone:DefaultAppletView2 }
+
+#############################################################################################
+# defaultAppletViewPart3
+
+add { :defaultAppletViewPart3
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:AppletViewPart3 ;
+	ozone:viewDomain			ozone:DefaultAppletView3 ;
+	ozone:template ${
+		rdf:type				slide:Block ;
+		slide:borderWidth		"1" ;
+#		slide:dropShadow		"true" ;
+		slide:margin			"1" ;
+		slide:borderColor		"lighterGray" ;
+		slide:bgcolor			"white" ;
+		slide:fillParentWidth	"true" ;
+		slide:child	${
+			rdf:type		ozone:MultiplexPartContainer ;
+			ozone:children	@(
+				${	rdf:type		slide:RowSet ;
+					slide:children @(
+						${	rdf:type				slide:Block ;
+							ozone:onClick			ozone:showMultiplexPart1 ;
+							slide:marginBottom		"6" ;
+							slide:marginTop			"6" ;
+							slide:marginX			"6" ;
+							slide:borderBottomWidth	"1" ;
+							slide:borderBottomColor	"lighterGray" ;
+							slide:bgcolor			"#003366" ;
+							slide:color				"white" ;
+							slide:fontBold			"true" ;
+							slide:child ${
+								rdf:type	summary:Title
+							}
+						}
+						${	rdf:type				ozone:ViewContainer ;
+							ozone:viewPartClass		ozone:AppletViewPart ;
+							ozone:dataSource		data:underlyingSource
+						}
+					)
+				}
+				${	rdf:type				slide:Block ;
+					ozone:onClick			ozone:showMultiplexPart0 ;
+					slide:marginBottom		"6" ;
+					slide:marginTop			"6" ;
+					slide:marginX			"6" ;
+					slide:bgcolor			"#003366" ;
+					slide:color				"white" ;
+					slide:fontBold			"true" ;
+					slide:child ${
+						rdf:type	summary:Title
+					}
+				}
+			)
+		}		
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { ozone:AppletViewPart3 ozone:defaultViewClass	ozone:DefaultAppletView3 }
+
+#############################################################################################
+# defaultAppletViewPart
+
+add { :defaultAppletViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:AppletViewPart ;
+	ozone:viewDomain			ozone:DefaultAppletView ;
+	ozone:partDataGenerator		:defaultAppletViewGenerator ;
+#	ozone:cachePartData			"true" ;
+	ozone:cacheStyle			ozone:cacheDisabled ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+add { daml:Thing hs:classView ozone:DefaultAppletView }
+add { ozone:AppletViewPart ozone:defaultViewClass	ozone:DefaultAppletView }
+
+method :defaultAppletViewGenerator ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (__context__.getLocalProperty ozone:underlying)
+	if (== underlying null)
+		return ozone:noResourceToViewVerticalAppletBox
+		
+	= content ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:viewPartClass		ozone:InteractiveViewPart ;
+		ozone:initialResource	underlying
+	}
+
+	return content
+
+#############################################################################################
+# appletCollectionViewPart
+
+add { :appletCollectionViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:AppletViewPart ;
+	ozone:viewDomain			ozone:AppletCollectionView ;
+	ozone:partDataGenerator		:appletCollectionViewGenerator ;
+	viewContainer:toolbarCaption	"Show with collection elements" ;
+	ozone:cacheStyle			ozone:cacheDisabled ;
+#	ozone:cachePartData			"true" ;
+	dc:title					"List" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+	
+	hs:Collection hs:classView ozone:AppletCollectionView
+	hs:List hs:classView ozone:AppletCollectionView
+}
+
+add { ozone:noResourceToViewAppletBox
+	rdf:type slide:Paragraph ;
+	slide:children @(
+		${	rdf:type	slide:Text ;
+			slide:text	"No resource to view" ;
+		}
+	)
+}
+
+method ozone:createExpandableBox titlePart content dimension color bgcolor innerMargin initiallyExpanded ; adenine:preload "true" ; adenine:precompile "true"
+	if (== null color)
+#		= color "darkerGray"
+		= color "#274683"
+	if (== null bgcolor)
+#		= bgcolor "#F0F0F0"
+		= bgcolor "#ebeef5"
+	if (== null innerMargin)
+		= innerMargin 0
+	
+	= collapsed ${
+		rdf:type				slide:Block ;
+		slide:borderWidth		"1" ;
+		slide:margin			"1" ;
+		slide:borderColor		"darkGray" ;
+		slide:bgcolor			bgcolor ;
+		slide:color				color ;
+		slide:fillParentWidth	"true" ;
+		slide:child	${
+			rdf:type		slide:Block ;
+			slide:margin	"4" ;
+			ozone:onClick	ozone:showMultiplexPart1 ;
+			slide:child		titlePart
+		}
+	}
+		
+	= expanded ${
+		rdf:type			ozone:ResizablePartContainer ;
+		ozone:minDimension	"40" ;
+		ozone:child ${
+			rdf:type				slide:Block ;
+			slide:borderWidth		"1" ;
+			slide:margin			"1" ;
+			slide:borderColor		"darkGray" ;
+			slide:bgcolor			"white" ;
+			slide:fillParentWidth	"true" ;
+			slide:child	${
+				rdf:type		slide:RowSet ;
+				slide:pack		"bottom" ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:fillParentHeight	"true" ;
+						slide:child		${
+							rdf:type		slide:RowSet ;
+							slide:children	@(
+								${	rdf:type			slide:Block ;
+									slide:margin		"4" ;
+									slide:bgcolor		bgcolor ;
+									slide:color			color ;
+									ozone:onClick		ozone:showMultiplexPart2 ;
+									slide:child			titlePart
+								}
+								${	rdf:type		slide:Block ;
+									slide:margin	innerMargin ;
+									slide:child		content
+								}
+							)
+						}
+					}
+					${	rdf:type		slide:Block ;
+						slide:color		"darkGray" ;
+						slide:fontSize	"3" ;
+						slide:child ${
+							rdf:type		slide:Paragraph ;
+							slide:alignX	"center" ;
+							slide:children	@(
+								${	rdf:type		slide:Image ;
+									slide:textAlign	"bottom" ;
+									ozone:tooltip	"Drag here to resize this pane or click to reset size" ;
+									slide:source	<http://haystack.lcs.mit.edu/data/ozone/frame/horzResizeBars.gif>
+								}
+							)
+						}
+					}
+				)
+			}
+		}
+	}
+
+	if (!= null dimension)
+		add { expanded ozone:dimension dimension }
+
+	= initial expanded
+	if (!= null initiallyExpanded)
+		if (! initiallyExpanded)
+			= initial collapsed
+
+	return ${
+		rdf:type			slide:Block ;
+		slide:clearance		"10" ;
+#		slide:dropShadow	"true" ;
+		slide:child ${
+			rdf:type				ozone:MultiplexPartContainer ;
+			ozone:children			@( initial expanded collapsed )
+		}
+	}
+
+method ozone:createExpandableBox2 titlePart content dimension color bgcolor initiallyExpanded ; adenine:preload "true" ; adenine:precompile "true"
+	if (== null color)
+#		= color "darkerGray"
+		= color "#000080"
+	if (== null bgcolor)
+#		= bgcolor "#F0F0F0"
+		= bgcolor "#7b8ead"
+
+	= collapsed ${
+		rdf:type				slide:Block ;
+		slide:borderWidth		"1" ;
+		slide:margin			"1" ;
+		slide:borderColor		bgcolor ;
+		slide:bgcolor			bgcolor ;
+		slide:fillParentWidth	"true" ;
+		slide:fillParentHeight	"false" ;
+		slide:child	${
+			rdf:type	slide:ColumnSet ;
+			slide:children @(
+				${	rdf:type				slide:Block ;
+					slide:marginY			"4" ;
+					slide:width				"20" ;
+					slide:color				"white" ;
+					slide:fillParentHeight	"false" ;
+					ozone:onClick			ozone:showMultiplexPart1 ;
+					slide:child ${
+						rdf:type			slide:Paragraph ;
+						slide:alignX		"center" ;
+						slide:children @(
+							${	rdf:type		slide:Image ;
+								ozone:tooltip	"Expand" ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/plus.gif>
+							}
+						)
+					}
+				}
+				${	rdf:type				slide:Block ;
+					slide:bgcolor			"white" ;
+					slide:fontBold			"true" ;
+					slide:color				color ;
+					slide:margin			"4" ;
+					slide:fillParentHeight	"false" ;
+					slide:child ${
+						rdf:type			slide:Paragraph ;
+						slide:children @(
+							titlePart
+						)
+					}
+				}
+			)
+		}
+	}
+		
+	= expanded ${
+		rdf:type			ozone:ResizablePartContainer ;
+		ozone:minDimension	"40" ;
+		ozone:child ${
+			rdf:type				slide:Block ;
+			slide:borderWidth		"1" ;
+			slide:margin			"1" ;
+			slide:borderColor		bgcolor ;
+			slide:bgcolor			bgcolor ;
+			slide:fillParentWidth	"true" ;
+			slide:child	${
+				rdf:type	slide:ColumnSet ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:marginY			"4" ;
+						slide:width				"20" ;
+						slide:color				"white" ;
+						ozone:onClick			ozone:showMultiplexPart2 ;
+						slide:child ${
+							rdf:type			slide:Paragraph ;
+							slide:alignX		"center" ;
+							slide:children @(
+								${	rdf:type		slide:Image ;
+									ozone:tooltip	"Collapse" ;
+									slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/minus.gif>
+								}
+							)
+						}
+					}
+					${	rdf:type		slide:RowSet ;
+						slide:pack		"bottom" ;
+						slide:children @(
+							${	rdf:type				slide:Block ;
+								slide:fillParentHeight	"true" ;
+								slide:bgcolor			"white" ;
+								slide:margin			"4" ;
+								slide:child		${
+									rdf:type		slide:RowSet ;
+									slide:children	@(
+										${	rdf:type			slide:Block ;
+											slide:marginBottom	"5" ;
+											slide:child ${
+												rdf:type		slide:Paragraph ;
+												slide:fontBold	"true" ;
+												slide:color		color ;
+												slide:children @(
+													titlePart
+												)
+											}
+										}
+										content
+									)
+								}
+							}
+							${	rdf:type		slide:Block ;
+								slide:bgcolor	"white" ;
+								slide:color		"darkGray" ;
+								slide:fontSize	"3" ;
+								slide:child ${
+									rdf:type		slide:Paragraph ;
+									slide:alignX	"center" ;
+									slide:children	@(
+										${	rdf:type		slide:Image ;
+											slide:textAlign	"bottom" ;
+											ozone:tooltip	"Drag here to resize this pane or click to reset size" ;
+											slide:source	<http://haystack.lcs.mit.edu/data/ozone/frame/horzResizeBars.gif>
+										}
+									)
+								}
+							}
+						)
+					}
+				)
+			}
+		}
+	}
+
+	if (!= null dimension)
+		add { expanded ozone:dimension dimension }
+
+	= initial expanded
+	if (!= null initiallyExpanded)
+		if (! initiallyExpanded)
+			= initial collapsed
+
+	return ${
+		rdf:type				slide:Block ;
+		slide:clearance			"10" ;
+		slide:dropShadow		"true" ;
+		slide:fillParentHeight	"false" ;
+		slide:child ${
+			rdf:type				ozone:MultiplexPartContainer ;
+			ozone:children			@( initial expanded collapsed )
+		}
+	}
+
+method ozone:createVerticalAppletBox underlying content dimension innerMargin initiallyExpanded ; adenine:preload "true" ; adenine:precompile "true"
+	= color null
+	= bgcolor null
+	with __source__ __infosource__
+		if (contains underlying ozone:important "true")
+			= bgcolor "#003366"
+			= color "white"
+
+	var titleBar
+	if (instanceOf underlying Resource)
+		= titleBar ${
+			rdf:type				slide:Block ;
+			ozone:putLocalProperty	${ ozone:name ozone:underlying ; ozone:value underlying } ;
+			slide:child				:defaultTitleBar
+		}
+	else
+		= titleBar ${
+			rdf:type	slide:Text ;
+			slide:text	underlying
+		}
+
+	return (ozone:createExpandableBox titleBar content dimension color bgcolor innerMargin initiallyExpanded)
+
+method ozone:createVerticalAppletBox2 underlying content dimension innerMargin initiallyExpanded ; adenine:preload "true" ; adenine:precompile "true"
+	= color null
+	= bgcolor null
+	with __source__ __infosource__
+		if (contains underlying ozone:important "true")
+			= bgcolor "#003366"
+			= color "white"
+
+	var titleBar
+	if (instanceOf underlying Resource)
+		= titleBar ${
+			rdf:type				summary:Title ; 
+			ozone:putLocalProperty	${ ozone:name ozone:underlying ; ozone:value underlying } ;
+			ozone:onClick			${ rdf:type ozone:Hyperlink ; ozone:target underlying }
+		}
+	else
+		= titleBar ${
+			rdf:type	slide:Text ;
+			slide:text	underlying
+		}
+
+	return (ozone:createExpandableBox2 titleBar content dimension color bgcolor innerMargin initiallyExpanded)
+
+method :appletCollectionViewGenerator ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (__context__.getLocalProperty ozone:underlying)
+	if (== underlying null)
+		return ozone:noResourceToViewAppletBox
+
+	= viewInstance (__context__.getLocalProperty ozone:viewInstance)
+	= viewPartClass (extract viewInstance ozone:viewPartClass ?x)
+	if (== viewPartClass null)
+		= viewPartClass ozone:PhraseViewPart
+		
+	= layoutConstraint ${ 
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		viewPartClass ;
+		layout:defaultShowCount	"25"
+	}
+
+	var dataSource
+
+#[	if (contains underlying rdf:type hs:Collection)
+		add { layoutConstraint
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+
+		= dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			ozone:dataSource	data:underlyingSource ;
+			data:predicate		hs:member
+		}
+	else
+		= dataSource ${
+			rdf:type			data:HSListSource ;
+			ozone:dataSource	data:underlyingSource
+		}
+	]#
+	
+	return ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type	help:HelpMessageContainer ;
+				slide:child ${
+					rdf:type	ozone:PartContainer ;
+					ozone:dataSource ${
+						rdf:type			data:ResourcePropertySource ;
+						ozone:dataSource	data:underlyingSource ;
+						data:predicate		help:message ;
+						data:default		slide:null
+					}
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"5" ;
+				slide:child ${
+					rdf:type				layout:Layout ;
+					ozone:dataSource		cv:listDataSource ;
+					layout:layoutConstraint layoutConstraint
+				}
+			}
+		)
+	}
+
+#############################################################################################
+# appletCollectionDataSetViewPart
+
+add { :appletCollectionDataSetViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:AppletViewPart ;
+	ozone:viewDomain			ozone:AppletCollectionDataSetView ;
+	ozone:partDataGenerator		:appletCollectionDataSetViewGenerator ;
+#	ozone:cachePartData			"true" ;
+	ozone:cacheStyle			ozone:cacheDisabled ;
+	dc:title					"List" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+	
+	data:CollectionDataSet hs:classView ozone:AppletCollectionDataSetView
+}
+
+method :appletCollectionDataSetViewGenerator ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (__context__.getLocalProperty ozone:underlying)
+	if (== underlying null)
+		return ozone:noResourceToViewAppletBox
+		
+	= viewInstance (__context__.getLocalProperty ozone:viewInstance)
+	= viewPartClass (extract viewInstance ozone:viewPartClass ?x)
+	if (== viewPartClass null)
+		= viewPartClass ozone:PhraseViewPart
+		
+	= content ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource		(extract underlying data:dataSource ?x) ;
+		layout:layoutConstraint ${ 
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		viewPartClass ;
+			layout:defaultShowCount	"25" ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+	}
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:border	5 ;
+		slide:child		content
+	}

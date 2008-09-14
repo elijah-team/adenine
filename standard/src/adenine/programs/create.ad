@@ -1,0 +1,872 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Create UI
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/programs/create.ad,v 1.104 2004/05/15 15:18:55 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/programs/create>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix task:		<http://haystack.lcs.mit.edu/schemata/task#>
+@prefix editor:		<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix opui:		<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	chooser:	<http://haystack.lcs.mit.edu/ui/chooser#> 
+@prefix	serine:		<http://haystack.lcs.mit.edu/agents/serine#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix help:		<http://haystack.lcs.mit.edu/programs/help#>
+@prefix	:			<http://haystack.lcs.mit.edu/programs/create#> 
+@prefix contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#>
+@prefix modeless:	<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix eclipse:	<http://haystack.lcs.mit.edu/ui/eclipse#>
+@prefix organize:	<http://haystack.lcs.mit.edu/ui/organize#>
+@prefix	metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+add { ^ config:dependsOn <http://haystack.lcs.mit.edu/ui/frame> }
+
+#############################################################################################
+# hs:creatable converter
+
+add { :hsCreatableConverter	
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	hs:creatable ;
+			serine:object		"true"
+		}
+	} ;
+	serine:adenineMethod	:hsCreatableConverter
+}
+
+method :hsCreatableConverter klass ; adenine:preload "true"
+	if (!= null (extract ?x :originalClass klass))
+		return
+
+	uniqueMethod x
+		return (:create `klass)
+
+	add { x
+		adenine:preload			"true" ;
+		rdf:type				op:Operation ;
+		construct:targetType	klass ;
+		rdf:type				construct:Constructor ;
+		:originalClass			klass 
+	}
+
+	add { task:generalContext
+		task:associatedOperation	x
+	}
+	
+	= label (extract klass rdfs:label ?x)
+	if (!= label null)
+		add { x dc:title (append 'Create ' (label.getContent)) }
+
+#############################################################################################
+# Create a type operation
+
+add { organize:organizeActivity hs:member :createTypeOperation }
+add { opdata:inputOperations hs:member :createTypeOperation }
+
+add { task:generalContext
+	task:associatedOperation	:createTypeOperation
+}
+
+add { :title
+	rdf:type				op:Parameter ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	rdfs:label				"Title" ;
+	rdfs:range				xsd:string ;
+	editor:disallowBlanks	"true"
+}
+
+
+method :createTypeOperation :title = titles ; 
+rdf:type				op:Operation ;
+dc:title				"Create a new type" ;
+dc:description			"Create a new rdf:type. You can edit the title, description and properties after creating the new type" ;
+construct:targetType	rdf:type;
+rdf:type				construct:Constructor ;
+adenine:preload			"true"
+	= x (:create rdf:type)
+	with __target__ __infosource__
+		if (!= null titles)
+			if (== 1 (length titles))
+				replace x dc:title ?x titles[0]
+	return x
+	
+#############################################################################################
+# Add a property operation
+
+add { organize:organizeActivity hs:member :createPropertyOperation }
+add { opdata:inputOperations hs:member :createPropertyOperation }
+
+add { task:generalContext
+	task:associatedOperation	:createPropertyOperation
+}
+
+add {daml:ObjectProperty rdf:type :PropertyType }
+add {daml:DatatypeProperty rdf:type :PropertyType }
+
+add { :type
+	rdf:type				op:Parameter ;
+	rdf:type				daml:ObjectProperty ;
+	rdfs:label				"Property type" ;
+	rdfs:range				:PropertyType;
+	op:required				"true" ;
+	editor:disallowBlanks	"true"
+}
+
+
+add { :addTo
+	rdf:type				op:Parameter ;
+	rdf:type				daml:ObjectProperty ;
+	rdfs:label				"Target" ;
+	rdfs:label				"Add the property to" ;
+	rdfs:range				daml:Thing;
+	op:required				"true" ;
+	editor:disallowBlanks	"true"
+}
+
+
+method :createPropertyOperation :addTo = theThing :title = titles :type = typeOfProperty; 
+rdf:type				op:Operation ;
+dc:title				"Add a new property" ;
+dc:description			"Add a new property. You can edit the title, description and properties after creating the new property" ;
+construct:targetType	rdf:property;
+op:primaryParameter		:addTo;
+rdf:type				construct:Constructor ;
+adenine:preload			"true"
+	= target theThing[0]
+	= x (:create typeOfProperty[0])
+	with __target__ __infosource__
+		add {x rdfs:domain target}
+		if (!= null titles)
+			if (== 1 (length titles))
+				replace x dc:title ?x titles[0]
+		if (== typeOfProperty[0] daml:ObjectProperty)
+			add {target x ${}}
+		else
+			add {target x "null"}
+	return target		
+	
+
+#############################################################################################
+# Create document operation
+
+add { :asynchronousConstructors
+	rdf:type		data:CollectionDataSet ;
+	dc:title		"Constructors" ;
+	data:dataSource	:asynchronousConstructorsDataSource ;
+	hs:view ${ 
+		rdf:type		ozone:CollectionView
+	}
+}	
+
+add { :asynchronousConstructorsDataSource
+	rdf:type		data:PredicateSetSource ;
+	data:object		construct:Constructor ;
+	data:predicate	rdf:type
+}
+
+#############################################################################################
+# Create collection operation
+
+add { organize:organizeActivity hs:member :createCollectionOperation }
+add { opdata:inputOperations hs:member :createCollectionOperation }
+
+add { task:generalContext
+	task:associatedOperation	:createCollectionOperation
+}
+
+add { :title
+	rdf:type				op:Parameter ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	rdfs:label				"Title" ;
+	rdfs:range				xsd:string ;
+	editor:disallowBlanks	"true"
+}
+
+method :createCollectionOperation :title = titles ; 
+rdf:type				op:Operation ;
+dc:title				"Create a collection" ;
+dc:description			"Group a set of related items together." ;
+construct:targetType	hs:Collection ;
+rdf:type				construct:Constructor ;
+adenine:preload			"true"
+	= x (:create hs:Collection)
+	with __target__ __infosource__
+		if (!= null titles)
+			if (== 1 (length titles))
+				replace x dc:title ?x titles[0]
+	return x
+
+#############################################################################################
+# Create list operation
+
+add { organize:organizeActivity hs:member :createListOperation }
+add { opdata:inputOperations hs:member :createListOperation }
+
+add { task:generalContext
+	task:associatedOperation	:createListOperation
+}
+
+method :createListOperation :title = titles ; 
+rdf:type				op:Operation ;
+dc:title				"Create a list" ;
+dc:description			"Make an ordered list of items." ;
+construct:targetType	hs:List ;
+rdf:type				construct:Constructor ;
+adenine:preload			"true"
+	= x (:create hs:List)
+	with __target__ __infosource__
+		add { x hs:list @() }
+		if (!= null titles)
+			if (== 1 (length titles))
+				replace x dc:title ?x titles[0]
+	return x
+
+#############################################################################################
+# Create portal operation
+
+add { organize:organizeActivity hs:member :createPortalOperation }
+
+method :createPortalOperation :title = titles ; 
+rdf:type				op:Operation ;
+dc:title				"Create a portal" ;
+dc:description			"Group items to be viewed together on a single screen." ;
+construct:targetType	hs:List ;
+rdf:type				construct:Constructor ;
+adenine:preload			"true"
+	= x (:create hs:List)
+	with __target__ __infosource__
+		add { x hs:list @() ; hs:view ${ rdf:type cv:PortalView } }
+		if (!= null titles)
+			if (== 1 (length titles))
+				replace x dc:title ?x titles[0]
+	return x
+
+#############################################################################################
+# Create utility functions
+
+method :doCreate res ; adenine:preload "true"
+	ozone:navigate (:create (extract res :type ?x))
+
+method :create type title construct:unknown = unknown ; adenine:preload "true" ; dc:description "Creates a resource of the specified type."
+	var resNew
+	if unknown
+		= resNew (UnknownResource)
+	else
+		= resNew (UniqueResource)
+
+	return (:createFrom resNew type title)
+
+method :createFrom resNew type title ; adenine:preload "true" ; dc:description "Makes a resource of the specified type."
+	importjava "java.util" Date
+
+	= comment (extract type rdfs:label ?x)
+	if (== title null)
+		if (!= comment null)
+			= title (append 'Untitled ' (comment.getContent))
+		else
+			= title 'Untitled'
+
+	= user (__identity__.getResource)
+	with __target__ __infosource__
+		add { resNew
+			rdf:type	type ; 
+			dc:title	title ;
+			dc:creator	user ;
+			dc:date		(Date)
+		}
+
+	add { user info:knowsAbout resNew }
+
+	return resNew
+
+#############################################################################################
+# Add new item
+
+add { :collectionTarget
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Collection into which to place new item" ;
+	op:required			"true" ;
+	rdfs:range			hs:Collection ;
+	rdfs:range			hs:List
+}
+
+add { :constructorTarget
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Template to use" ;
+	op:required			"true" ;
+	rdfs:range			construct:Constructor ;
+	opui:dataSource		:asynchronousConstructorsDataSource
+}
+
+method :addNewOperation :collectionTarget = collectionTarget :constructorTarget = type ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:collectionTarget ;
+op:associatedAspect	:addNewAspect ;
+hs:view				${ rdf:type :AddNewMenuItemView } ;
+hs:view				${ rdf:type :AddNewEclipsePaneItemView } ;
+dc:title			"Add new item" ;
+adenine:preload 	"true"
+	= collectionTarget collectionTarget[0]
+	uniqueMethod x y
+		cv:addToCollectionOperation cv:collectionDNDDragSource = @(y) cv:collectionTarget = @(`collectionTarget)
+	__context__.putProperty op:continuation x
+	opui:startOperation type[0]
+
+#############################################################################################
+# Add new item aspect part
+
+add { :addNewAspectPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				:AspectPart ;
+	ozone:dataDomain		:AddNewAspect ;
+	
+	ozone:partDataGenerator	:presentAddNewAspect ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentAddNewAspect aspect ; adenine:preload "true"
+	= lvc (UniqueResource)
+	= constructor <http://haystack.lcs.mit.edu/ui/note#createNote>
+
+	with __target__ __infosource__
+		add { lvc :closure ${ rdf:type op:OperationClosure ; op:operation constructor } }
+
+	uniqueMethod doCreate res
+		# Construct destination data source
+		importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+		= dataProvider (DataUtilities.createDataProvider lensui:underlyingSource __context__ __source__)
+
+		# Perform add
+		with __target__ __infosource__
+			add { (dataProvider.getData data:resource null) hs:member res }
+		dataProvider.dispose
+
+		var closure
+		with __source__ __infosource__
+			= closure (extract `lvc :closure ?x)
+		with __target__ __infosource__
+			replace `lvc :closure ?x ${ rdf:type op:OperationClosure ; op:operation (extract closure op:operation ?x) }
+
+	= typeDataSource ${
+		rdf:type		data:ResourcePropertySource ;
+		ozone:dataSource ${
+			rdf:type		data:ResourcePropertySource ;
+			data:subject	lvc ;
+			data:predicate	:closure
+		} ;
+		data:predicate	op:operation
+	}
+
+#[	= typesPane ${
+		rdf:type		slide:Block ;
+		slide:bgcolor	"#7e969c" ;
+		slide:color		"white" ;
+		slide:margin	4 ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ;
+			slide:pack	"right" ;
+			ozone:onClick		${
+				rdf:type 			ozone:AdenineCall ;
+				ozone:method		:changeType ;
+				ozone:parameters 	@( typeDataSource )
+			} ;
+			slide:children	@(
+				${	rdf:type				ozone:ViewContainer ;
+					slide:inline			"true" ;
+					ozone:viewPartClass		ozone:InlineViewPart ;
+					ozone:dataSource		typeDataSource
+				}
+				${	rdf:type	slide:Block ;
+					slide:child ${
+						rdf:type	slide:Train ;
+						slide:children @(
+							${	rdf:type		slide:Text ;
+								slide:text		"other choices" ;
+								slide:fontBold	"true"
+							}
+							slide:space
+							${	rdf:type			slide:Image ;
+								slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif> ;
+								ozone:tooltip		"Select another template"
+							}
+						)
+					}
+				}
+			)
+		}
+	}]#
+
+	= createPane ${
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:child ${
+			rdf:type				ozone:ViewContainer ;
+			ozone:dataSource ${
+				rdf:type		data:ResourcePropertySource ;
+				data:subject	lvc ;
+				data:predicate	:closure
+			} ;
+			ozone:registerService	lvc ;
+			ozone:viewPartClass		opui:InlineClosureViewPart ;
+			ozone:putProperty		${ ozone:name op:continuation ; ozone:value doCreate }
+		}
+	}
+
+	uniqueMethod flip x changeType change
+		= m (__context__.getProperty `createPane)
+		if (== changeType data:booleanChange)
+			if change
+				m.setPartByIndex 1
+			else
+				m.setPartByIndex 0
+
+	return ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type				ozone:MultiplexPartContainer ;
+				ozone:registerService	createPane ;
+				ozone:children	@(
+					:noCollection
+					${	rdf:type		slide:RowSet ;
+						slide:children	@(
+							${	rdf:type	help:HelpMessageContainer ;
+								slide:child ${
+									rdf:type		slide:Block ;
+									slide:margin	"4" ;
+									slide:bgcolor	"#F0F0F0" ;
+									slide:color		"#000080" ;
+									slide:child ${
+										rdf:type		slide:Paragraph ;
+										slide:children @(
+											${	rdf:type		slide:Image ;
+												slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/information.gif>
+											}
+											slide:space
+											${	rdf:type	slide:Text ;
+												slide:text	"Use the controls below to add a new item to the"
+											}
+											slide:space
+											${	rdf:type			ozone:ViewContainer ;
+												ozone:viewPartClass	ozone:InlineViewPart ;
+												ozone:dataSource	lensui:underlyingSource
+											}
+											slide:space
+											${	rdf:type	slide:Text ;
+												slide:text	"collection."
+											}
+										)
+									}
+								}
+							}
+#							typesPane
+							${	rdf:type	slide:Paragraph ;
+								slide:children @(
+									createPane
+									slide:space
+									${	rdf:type					slide:Button ;
+										slide:backgroundHighlight	"90%" ;
+										slide:margin				"3" ;
+										slide:borderWidth			"1" ;
+										slide:clearance				"5" ;
+										ozone:onClick ${
+											rdf:type 			ozone:AdenineCall ;
+											ozone:method		:changeType ;
+											ozone:parameters 	@( typeDataSource )
+										} ;
+										slide:child ${
+											rdf:type	slide:Train ;
+											slide:children @(
+												${	rdf:type		slide:Text ;
+													slide:text		"Other choices"
+												}
+												slide:space
+												${	rdf:type			slide:Image ;
+													ozone:tooltip		"Select another template" ;
+													slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+												}
+											)
+										}
+									}
+								)
+							}
+						)
+					}
+				)
+			}
+			${	rdf:type			ozone:DataConsumer ;
+				ozone:onDataChanged	flip ;
+				ozone:dataSource ${
+					rdf:type			data:ExclusiveStatementExistenceSource ;
+					ozone:dataSource	lensui:underlyingSource ;
+					data:predicate		rdf:type ;
+					data:object			hs:Collection
+				}
+			}
+		)
+	}
+
+add { :noCollection
+	rdf:type		slide:Slide ;
+	slide:margin	"5" ;
+	slide:child ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type	slide:Text ;
+				slide:text	"The selected item is not a collection."
+			}
+		)
+	}
+}
+
+method :changeType typeDataSource ; adenine:preload "true"
+	chooser:showChooser chooser:destinationDataSource = typeDataSource chooser:selectionsDataSource = :inContextConstructorsDataSource
+
+add { :inContextConstructorsDataSource
+	rdf:type	data:MergeSetSource ;
+	ozone:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		ozone:dataSource	lensui:underlyingSource ;
+		data:predicate		:associatedConstructor
+	} ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?y ?z ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subjectDataSource	data:currentUserSource ;
+			data:predicate			task:activeTask ;
+			data:object				?y
+		} ;
+		data:statement ${
+			data:subject	?y ;
+			data:predicate	task:context ;
+			data:object		?z
+		} ;
+		data:statement ${
+			data:subject	?z ;
+			data:predicate	task:associatedOperation ;
+			data:object		?x
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	rdf:type ;
+			data:object		construct:Constructor
+		}
+	} ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	rdf:type ;
+			data:object		construct:Constructor
+		} ;
+		data:statement ${
+			data:subject	task:generalContext ;
+			data:predicate	task:associatedOperation ;
+			data:object		?x
+		}
+	}
+}
+
+add { :addNewAspect
+	rdf:type	:AddNewAspect ; 
+	dc:title	"Add new item" 
+}
+
+add { :addNewEclipsePaneItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				eclipse:EclipsePaneItemViewPart ;
+	ozone:viewDomain		:AddNewEclipsePaneItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"2" ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ; 
+			slide:pack	"right" ;
+			slide:children	@(
+				${	rdf:type			ozone:ViewContainer ;	
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:PhraseViewPart
+				}
+				${	rdf:type					slide:Button ;
+					slide:marginY				"5" ;
+					slide:marginX				"7" ;
+					slide:backgroundHighlight	"95%" ;
+					ozone:onClick				:showDropdown2 ;
+					slide:child ${
+						rdf:type		slide:Train ;
+						slide:children @(
+							${	rdf:type			slide:Image ;
+								slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+method :showDropdown2
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	= y (lensui:getUnderlying)
+	uniqueMethod doAdd x
+		cv:addToCollectionOperation cv:collectionDNDDragSource = @(x) cv:collectionTarget = @(`y)
+	context.putProperty op:continuation doAdd
+
+	modelessCreator.createModelessPart :addNewModeless ((__context__.getLocalProperty ozone:parentPart).getBounds) false false context
+
+add { :addNewMenuItemViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					contextMenu:ContextMenuItemViewPart ;
+	ozone:viewDomain			:AddNewMenuItemView ;
+	ozone:partDataGenerator		:presentAddNewMenuItemViewPart ;
+	hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+add { :menuItem
+	rdf:type					slide:MenuItem ;
+	slide:marginX				"3" ;
+	slide:marginY				"2" ;
+	slide:backgroundHighlight	"lightestGray" ;
+	slide:child ${
+		rdf:type			slide:ColumnSet ;
+		slide:pack			"right" ;
+		slide:children @(
+			${	rdf:type			slide:Train ;
+				ozone:onClick		contextMenu:startOperation ;
+				slide:children		@(
+					${	rdf:type			summary:IconBlank ;
+					}
+					slide:space
+					${	rdf:type	slide:Paragraph ;
+						slide:children @(
+							${	rdf:type			summary:Title
+							}
+						)
+					}
+				)
+			}
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+			}
+		)
+	} ;
+	slide:submenu			:addNewModeless
+}
+
+add { :addNewModeless
+	rdf:type		modeless:Modeless ;
+	modeless:child ${
+		rdf:type			slide:Block ;
+		slide:bgcolor		"white" ;
+		slide:borderWidth	"1" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"1" ;
+		slide:child ${
+			rdf:type				layout:Layout ;
+			layout:layoutConstraint ${
+				rdf:type			layout:RowStackerConstraint ;
+				ozone:viewPartClass	contextMenu:ContextMenuItemViewPart ;
+				layout:sortBy		summary:titleSortingSource
+			} ;
+			ozone:dataSource		:inContextConstructorsDataSource
+		}
+	}
+}
+
+method :presentAddNewMenuItemViewPart
+	= y (__context__.getProperty contextMenu:underlying)
+	uniqueMethod doAdd x
+		cv:addToCollectionOperation cv:collectionDNDDragSource = @(x) cv:collectionTarget = @(`y)
+
+	return ${
+		rdf:type			slide:Block ;
+		slide:child			:menuItem ;
+		ozone:putProperty	${ ozone:name op:continuation ; ozone:value doAdd }
+	}
+	
+#############################################################################################
+# Information input modalities
+
+#add { opdata:inputOperations
+#	hs:member	:createOperation
+#	hs:member	:describeInProse ;
+#	hs:member	:drawDiagram ;
+#	hs:member	:fillInFormCategory
+#}
+
+#############################################################################################
+# Inline closure part
+
+add { :inlineClosureContainerPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		:InlineClosureContainer ;
+	
+	ozone:partDataGenerator	:presentInlineClosureContainer ;
+#	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :doCreate2 x
+	= lvc (__context__.getProperty :lvc)
+	= continuation (__context__.getProperty :continuation)
+	continuation x
+
+	var closure
+	with __source__ __infosource__
+		= closure (extract lvc :closure ?x)
+		with __target__ __infosource__
+			= operation (extract closure op:operation ?x)
+			= newClosure ${ rdf:type (:getClosureType operation) ; op:operation operation }
+			replace lvc :closure ?x newClosure
+			= viewContainer (__context__.getProperty lvc)
+			viewContainer.navigate newClosure
+
+method :presentInlineClosureContainer partData ; adenine:preload "true"
+	= operation (extract partData :initialOperation ?x)
+	if (== null operation)
+		= operation ((extract partData :initialOperationChooser ?x))
+	= closure ${ op:operation operation ; rdf:type (:getClosureType operation) }
+	= lvc ${ :closure closure }
+	= constructorsDataSource (extract partData :operationDataSource ?x)
+	= continuation (extract partData :continuation ?x)
+	= typeDataSource ${
+		rdf:type		data:ResourcePropertySource ;
+		ozone:dataSource ${
+			rdf:type		data:ResourcePropertySource ;
+			data:subject	lvc ;
+			data:predicate	:closure
+		} ;
+		data:predicate	op:operation
+	}
+	= buttons @(
+		${	rdf:type					slide:Button ;
+			slide:backgroundHighlight	"90%" ;
+			slide:margin				"3" ;
+			slide:borderWidth			"1" ;
+			slide:clearance				"5" ;
+			ozone:onClick ${
+				rdf:type 			ozone:AdenineCall ;
+				ozone:method		:changeType2 ;
+				ozone:parameters 	@( typeDataSource constructorsDataSource lvc )
+			} ;
+			slide:child ${
+				rdf:type	slide:Train ;
+				slide:children @(
+					${	rdf:type		slide:Text ;
+						slide:text		"Other choices"
+					}
+					slide:space
+					${	rdf:type			slide:Image ;
+						ozone:tooltip		"Select another template" ;
+						slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+					}
+				)
+			}
+		}
+	)
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	"10" ;
+		ozone:putProperty ${
+			ozone:name	lensui:readOnly ;
+			ozone:value	"false"
+		} ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	closure ;
+					ozone:putProperty		${ ozone:name op:continuation ; ozone:value :doCreate2 } ;
+					ozone:putProperty		${ ozone:name :continuation ; ozone:value continuation } ;
+					ozone:putProperty		${ ozone:name :lvc ; ozone:value lvc } ;
+					ozone:viewPartClass		opui:InlineClosureViewPart ;
+					ozone:registerService	lvc
+				}
+				slide:space
+				${	rdf:type		slide:Train ;
+					slide:children	buttons
+				}
+			)
+		}
+	}
+
+method :getClosureType operation
+	= customClosureDomain (extract operation op:closureDomain ?z)
+	if (!= null customClosureDomain)
+		return customClosureDomain
+	else
+		return op:OperationClosure
+
+method :changeType2 typeDataSource constructorsDataSource lvc ; adenine:preload "true"
+	uniqueMethod cont x
+		with __target__ __infosource__
+			= closure ${ rdf:type (:getClosureType x) ; op:operation x }
+			replace `lvc :closure ?x closure
+			(__context__.getProperty `lvc).navigate closure
+		
+	chooser:showChooser chooser:continuation = cont chooser:selectionsDataSource = constructorsDataSource
+

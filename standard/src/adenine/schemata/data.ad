@@ -1,0 +1,760 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone data ontology
+# Written by David Huynh and Dennis Quan
+# $Header: 
+
+@base <http://haystack.lcs.mit.edu/schemata/dataProvider>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+
+#############################################################################################
+# Data Ontology
+
+add { ^
+	rdf:type	daml:Ontology ;
+	dc:title	"Data Provider Ontology"
+}
+
+add { 
+	data:DataProvider	
+	rdf:type				rdfs:Class ;
+		rdf:type			daml:Class ;
+		rdfs:subClassOf		ozone:Part ;
+		rdfs:isDefinedBy	^ ;
+		rdfs:label			"Data Provider"
+				
+	data:StringDataProvider	
+	rdf:type				rdfs:Class ;
+		rdf:type			daml:Class ;
+		rdfs:subClassOf		data:DataProvider ;
+		rdfs:isDefinedBy	^ ;
+		rdfs:label			"String Data Provider"
+				
+	data:ResourceDataProvider	
+	rdf:type				rdfs:Class ;
+		rdf:type			daml:Class ;
+		rdfs:subClassOf		data:DataProvider ;
+		rdfs:isDefinedBy	^ ;
+		rdfs:label			"Resource Data Provider"
+
+	data:ListDataProvider	
+	rdf:type				rdfs:Class ;
+		rdf:type			daml:Class ;
+		rdfs:subClassOf		data:DataProvider ;
+		rdfs:isDefinedBy	^ ;
+		rdfs:label			"List Data Provider"
+
+	data:SetDataProvider	
+	rdf:type				rdfs:Class ;
+		rdf:type			daml:Class ;
+		rdfs:subClassOf		data:DataProvider ;
+		rdfs:isDefinedBy	^ ;
+		rdfs:label			"Set Data Provider"
+}
+
+#############################################################################################
+# Data set
+
+add { data:CollectionDataSet
+	rdf:type				rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Collection data set" ;
+	rdfs:comment	"Represents the collections of items retrieved from a data set at any point" ;
+	rdfs:isDefinedBy ^
+}
+
+add { data:dataSource
+	rdf:type	daml:ObjectProperty ;
+	rdfs:domain	:DataSet ;
+	rdfs:label	"Data source" ;
+	rdfs:isDefinedBy ^
+}
+
+#############################################################################################
+# Literal property data provider
+
+add {
+	data:literalPropertyDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:StringDataProvider ;
+		ozone:dataDomain		data:LiteralPropertySource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.LiteralPropertyDataProvider" }
+}
+
+#############################################################################################
+# Current date/time data provider
+
+add {
+	data:smartDateTimeDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:StringDataProvider ;
+		ozone:dataDomain		data:SmartDateSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.SmartDateDataProvider" }
+}
+
+#############################################################################################
+# Resource property data provider
+
+add {
+	data:resourcePropertyDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		data:ResourcePropertySource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ResourcePropertyDataProvider" }
+}
+
+#############################################################################################
+# Sticky resource data provider
+
+add {
+	data:stickyResourceDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		data:StickyResourceSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.StickyResourceDataProvider" }
+}
+
+#############################################################################################
+# Merge set data provider
+
+add {
+	data:mergeSetDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:SetDataProvider ;
+		ozone:dataDomain		data:MergeSetSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.MergeSetDataProvider" }
+}
+
+#############################################################################################
+# Set difference data provider
+
+add {
+	data:setDifferenceDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:SetDataProvider ;
+		ozone:dataDomain		data:SetDifferenceSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.SetDifferenceDataProvider" }
+}
+
+#############################################################################################
+# RDF query data provider
+
+add {
+	data:rdfQueryDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:SetDataProvider ;
+		ozone:dataDomain		data:RDFQuerySetSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.RDFQueryDataProvider" }
+}
+
+#############################################################################################
+# Set size data provider
+
+add {
+	data:setSizeDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:StringDataProvider ;
+		ozone:dataDomain		data:SetSizeSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.SetSizeDataProvider" }
+}
+
+#############################################################################################
+# Predicate set data provider
+
+add {
+	data:predicateSetDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:SetDataProvider ;
+		ozone:dataDomain		data:PredicateSetSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.PredicateSetDataProvider" }
+}
+	
+#############################################################################################
+# DAML Object Property set data provider (treats a daml:ObjectProperty as a data source)
+
+add {
+	data:damlObjectPropertySetDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				data:SetDataProvider ;
+		rdf:type				data:ConnectionDataProvider ;
+		ozone:dataDomain		daml:ObjectProperty ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.DAMLObjectPropertySetDataProvider" }
+}
+
+#############################################################################################
+# RDF graph query aspect data provider
+
+add {
+	data:rdfQueryAspectSetDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				data:SetDataProvider ;
+		rdf:type				data:ConnectionDataProvider ;
+		ozone:dataDomain		data:RDFQueryAspect ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.RDFQueryDataProvider" }
+}
+
+#############################################################################################
+# DAML list data provider
+
+add {
+	data:damlListDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ListDataProvider ;
+		ozone:dataDomain		data:DAMLListSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.DAMLListDataProvider" }
+}
+
+#############################################################################################
+# HS list data provider
+
+add {
+	data:hsListDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ListDataProvider ;
+		ozone:dataDomain		data:HSListSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.HSListDataProvider" }
+}
+
+#############################################################################################
+# Visible resource list data provider
+
+add {
+	data:visibleResourceListPropertyDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ListDataProvider ;
+		ozone:dataDomain		data:VisibleResourceListSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.layout.VisibleResourceListDataProvider" }
+}
+
+#############################################################################################
+# Sorting list data provider
+
+add {
+	data:sortingDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ListDataProvider ;
+		ozone:dataDomain		data:SortingListSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.SortingDataProvider" }
+}
+
+#############################################################################################
+# Ordered data provider
+
+add {
+	data:orderedDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ListDataProvider ;
+		ozone:dataDomain		data:OrderedSetSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.OrderedDataProvider" }
+}
+
+#############################################################################################
+# Sorting list data provider
+
+add {
+	data:listHeadDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ListDataProvider ;
+		ozone:dataDomain		data:ListHeadSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ListHeadDataProvider" }
+}
+
+#############################################################################################
+# Set to list data provider
+
+add {
+	data:setToListDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ListDataProvider ;
+		ozone:dataDomain		data:SetToListSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.SetToListDataProvider" }
+}
+
+#############################################################################################
+# Mapping list data provider
+
+add {
+	data:mappingDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		rdf:type				data:LiteralDataProvider ;
+		ozone:dataDomain		data:MappingSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.MappingDataProvider" }
+}
+
+#############################################################################################
+# Statement existence data provider
+
+add {
+	:statementExistenceDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:BooleanDataProvider ;
+		ozone:dataDomain		data:StatementExistenceSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.StatementExistenceDataProvider" }
+}
+
+#############################################################################################
+# Exclusive statement existence data provider
+
+add {
+	:exclusiveStatementExistenceDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:BooleanDataProvider ;
+		ozone:dataDomain		data:ExclusiveStatementExistenceSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ExclusiveStatementExistenceDataProvider" }
+}
+
+#############################################################################################
+# Boolean data providers
+
+add {
+	:booleanNotDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:BooleanDataProvider ;
+		ozone:dataDomain		data:BooleanNotSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.BooleanNotDataProvider" }
+
+	:booleanAndDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:BooleanDataProvider ;
+		ozone:dataDomain		data:BooleanAndSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.BooleanAndDataProvider" }
+
+	:booleanOrDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:BooleanDataProvider ;
+		ozone:dataDomain		data:BooleanOrSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.BooleanOrDataProvider" }
+}
+
+#############################################################################################
+# Context property data provider
+
+add {
+	:contextPropertyDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		ozone:dataDomain		data:ContextPropertySource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ContextPropertyDataProvider" }
+}
+
+#############################################################################################
+# Single resource data providers
+
+add { :singleResourceDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	ozone:dataDomain		data:SingleResourceSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.SingleResourceDataProvider" }
+}
+
+add {
+	:singleResourceSetDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		ozone:dataDomain		data:SingleResourceSetSource ;
+		data:initialize			:singleResourceSetSourceInitialize ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.AdenineDataProvider" }
+}
+
+method :singleResourceSetSourceInitialize dataProvider ; adenine:precompile "true" ; adenine:preload "true"
+	= partData (__context__.getLocalProperty ozone:partData)
+	= resource (extract partData data:resource ?x)
+
+	importjava "java.util" HashSet
+
+	= set (HashSet)
+	set.add resource
+
+	dataProvider.cacheData set
+
+	__context__.putLocalProperty data:onConsumerRegistered	:singleResourceSetSourceOnConsumerRegistered
+
+method :singleResourceSetSourceOnConsumerRegistered dataProvider dataConsumer ; adenine:precompile "true" ; adenine:preload "true"
+	= data (dataProvider.getCachedData)
+	if (!= null data)
+		dataConsumer.onDataChanged data:setAddition data
+
+add {
+	:singleResourceListDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		ozone:dataDomain		data:SingleResourceListSource ;
+		data:initialize			:singleResourceListSourceInitialize ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.AdenineDataProvider" }
+}
+
+method :singleResourceListSourceInitialize dataProvider ; adenine:precompile "true" ; adenine:preload "true"
+	= partData (__context__.getLocalProperty ozone:partData)
+	= resource (extract partData data:resource ?x)
+
+	importjava "java.util" LinkedList
+
+	= list (LinkedList)
+	list.add resource
+
+	dataProvider.cacheData list
+
+	__context__.putLocalProperty data:onConsumerRegistered	:singleResourceListSourceOnConsumerRegistered
+	__context__.putLocalProperty data:getData :singleResourceListSourceGetData
+
+method :singleResourceListSourceOnConsumerRegistered dataProvider dataConsumer ; adenine:precompile "true" ; adenine:preload "true"
+	= data (dataProvider.getCachedData)
+	if (!= null data)
+		importjava "edu.mit.lcs.haystack.ozone.data" ListDataChange
+		= change (ListDataChange 0 1 null)
+		dataConsumer.onDataChanged data:listAddition change
+
+method :singleResourceListSourceGetData dataProvider dataType specifications ; adenine:precompile "true" ; adenine:preload "true"
+	if (== dataType data:list)
+		return (dataProvider.getCachedData)
+	if (== dataType data:listElement)
+		if (== (specifications.intValue) 0)
+			return ((dataProvider.getCachedData).get 0)
+		else
+			return null
+	if (== dataType data:listElements)
+		= start specifications[0]
+		= count specifications[1]
+
+		if (and (== start 0) (== count 1))
+			return (dataProvider.getCachedData)
+		else
+			return null
+
+	return null
+
+#############################################################################################
+# Provider constructor data provider
+
+add { :providerConstructorDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	ozone:dataDomain		data:ProviderConstructorSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ProviderConstructorDataProvider" }
+}
+
+#############################################################################################
+# Context data provider
+
+add {
+	:contextDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		ozone:dataDomain		data:ContextSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ContextDataProvider" }
+}
+
+#############################################################################################
+# Context hosted data providers
+
+add {
+	:contextHostedResourceDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		ozone:dataDomain		data:ContextHostedResourceSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ContextHostedResourceDataProvider" }
+}
+
+#############################################################################################
+# Underlying resource data provider
+
+add {
+	:underlyingResourceDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		data:UnderlyingSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.UnderlyingResourceDataProvider" }
+
+	data:underlyingSource
+		rdf:type				data:UnderlyingSource
+
+	data:secondUnderlyingSource
+		rdf:type				data:UnderlyingSource ;
+		data:depth				"2"
+
+	data:thirdUnderlyingSource
+		rdf:type				data:UnderlyingSource ;
+		data:depth				"3"
+}
+
+method data:getUnderlying
+	# Construct destination data source
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider data:underlyingSource __context__ __source__)
+
+	# Obtain selected object
+	= object (dataProvider.getData data:resource null)
+	dataProvider.dispose
+
+	return object
+
+method data:getSecondUnderlying
+	# Construct destination data source
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider data:secondUnderlyingSource __context__ __source__)
+
+	# Obtain selected object
+	= object (dataProvider.getData data:resource null)
+	dataProvider.dispose
+
+	return object
+
+method data:getThirdUnderlying
+	# Construct destination data source
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider data:thirdUnderlyingSource __context__ __source__)
+
+	# Obtain selected object
+	= object (dataProvider.getData data:resource null)
+	dataProvider.dispose
+
+	return object
+
+#############################################################################################
+# Part data data provider
+
+add {
+	:partDataDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		data:PartDataSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.PartDataDataProvider" }
+
+	data:partDataSource
+		rdf:type				data:PartDataSource
+}
+
+#############################################################################################
+# View instance data provider
+
+add {
+	:viewInstanceDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		data:ViewInstanceSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ViewInstanceDataProvider" }
+
+	data:viewInstanceSource
+		rdf:type				data:ViewInstanceSource
+}
+
+method data:getViewInstance
+	# Construct destination data source
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider data:viewInstanceSource __context__ __source__)
+
+	# Obtain selected object
+	= object (dataProvider.getData data:resource null)
+	dataProvider.dispose
+
+	return object
+
+#############################################################################################
+# Default data provider
+
+add {
+	:defaultDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		ozone:dataDomain		data:DefaultSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.DefaultDataProvider" }
+}
+
+#############################################################################################
+# Current user data provider
+
+add {
+	:currentUserDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		data:CurrentUserSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.CurrentUserDataProvider" }
+
+	data:currentUserSource rdf:type data:CurrentUserSource
+}
+
+#############################################################################################
+# Key value pair data provider
+
+add { :keyValuePairDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ResourceDataProvider ;
+	ozone:dataDomain		data:KeyValuePairSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.KeyValuePairDataProvider" }
+}
+
+#############################################################################################
+# Member of set data provider
+
+add { :memberOfSetDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:BooleanDataProvider ;
+	ozone:dataDomain		data:MemberOfSetSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.MemberOfSetDataProvider" }
+}
+
+#############################################################################################
+# Data providers used by plugins other than the standard plugin]
+
+add { data:currentDateTimeDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:StringDataProvider ;
+	ozone:dataDomain		data:CurrentDateTimeSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.CurrentDateTimeDataProvider" }
+}
+
+add { data:contentStringDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:StringDataProvider ;
+	ozone:dataDomain		data:ContentStringSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ContentStringDataProvider" }
+}
+
+add { data:randomAccessDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ResourceDataProvider ;
+	ozone:dataDomain		data:RandomAccessSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.RandomAccessDataProvider" }
+}
+
+add { data:concatenateListDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ListDataProvider ;
+	ozone:dataDomain		data:ConcatenateListSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ConcatenateListDataProvider" }
+}
+
+add { data:typeSetDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:SetDataProvider ;
+	ozone:dataDomain		data:TypeSetSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.TypeSetDataProvider" }
+}
+
+
+add { data:transformDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ResourceDataProvider ;
+	ozone:dataDomain		data:TransformSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.TransformDataProvider" }
+}
+	
+add { data:equalDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:BooleanDataProvider ;
+	ozone:dataDomain		data:EqualSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.EqualDataProvider" }
+}
+
+add { data:setProviderConstructorDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:SetDataProvider ;
+	ozone:dataDomain		data:SetProviderConstructorSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.SetProviderConstructorDataProvider" }
+}
+
+add { data:listProviderConstructorDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ListDataProvider ;
+	ozone:dataDomain		data:ListProviderConstructorSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ListProviderConstructorDataProvider" }
+}
+
+add { data:containingDAMLListSetDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	ozone:dataDomain		data:ContainingDAMLListSetSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ContainingDAMLListSetDataProvider" }
+}
+
+add { data:contextHostedSetDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	ozone:dataDomain		data:ContextHostedSetSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ContextHostedSetDataProvider" }
+}
+
+add { data:transformSetDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	ozone:dataDomain		data:TransformSetSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.TransformSetDataProvider" }
+}
+
+add { data:viewContainerDataProvider
+	rdf:type				ozone:Part ;
+	rdf:type				data:DataProvider ;
+	rdf:type				data:ListDataProvider ;
+	ozone:dataDomain		data:ViewContainerDataSource ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.ViewContainerDataProvider" }
+	}
+

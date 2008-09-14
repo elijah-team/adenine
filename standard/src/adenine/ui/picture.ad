@@ -1,0 +1,1009 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Picture UI
+# Written by Dennis Quan and David Huynh
+
+@base <http://haystack.lcs.mit.edu/ui/picture>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	picture:		<http://haystack.lcs.mit.edu/schemata/picture#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	style:			<http://haystack.lcs.mit.edu/ui/style#> 
+@prefix	op:				<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	metadata:		<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	vc:				<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	cv:				<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix	content:		<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	cont:			<http://haystack.lcs.mit.edu/schemata/continuation#> 
+@prefix	contui:			<http://haystack.lcs.mit.edu/ui/continuation#> 
+@prefix	task:			<http://haystack.lcs.mit.edu/schemata/task#> 
+@prefix	pictureui:		<http://haystack.lcs.mit.edu/ui/picture#>
+@prefix	lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:			<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix activity:		<http://haystack.lcs.mit.edu/schemata/activity#>
+@prefix setupui:		<http://haystack.lcs.mit.edu/ui/setup#>
+
+#############################################################################################
+# Photos activity
+
+add { pictureui:photosActivity
+	rdf:type							task:Task ;
+	rdf:type							hs:Collection ;
+	rdf:type							activity:Activity ;
+	dc:title							"Photos" ;
+	dc:description						"Manage and work with your photos." ;
+	activity:relatedType				picture:Picture ;
+	activity:relatedType				hs:Person ;
+	task:context						pictureui:photosContext ;
+	hs:view								${ rdf:type	setupui:CollectionView } ;
+	ozone:icon							<http://haystack.lcs.mit.edu/data/ozone/icons/types/photomanager.gif>
+}
+
+add { pictureui:photosContext
+	rdf:type	task:Context ;
+	dc:title	"Photos context"
+}
+
+#add { opdata:startingPoints hs:member pictureui:photosActivity }
+
+#############################################################################################
+# Picture UI
+
+add { picture:Picture
+	hs:possibleClassView	:PictureView ;
+	hs:classView			:PictureAppletView ;
+	vowl:hasLens			pictureui:pictureAspect ;
+	vowl:hasLens			pictureui:pictureDetailsAspect
+}
+
+add { pictureui:pictureAspect
+	rdf:type				lensui:SlideAspect ;
+	lensui:spansAllColumns	"true" ;
+	vowl:priority		"a" ;
+	dc:title				"Picture" ;
+	lensui:slide ${
+		rdf:type				slide:Image ;
+		slide:scaleToFit		"true" ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			ozone:dataSource	lensui:underlyingSource ;
+			data:predicate		picture:content
+		}
+	}
+}
+
+add { pictureui:containingPhotosAspect
+	rdf:type			lensui:DataSetAspect ;
+	dc:title			"Photos" ;
+	vowl:domain		hs:Person ;
+	vowl:forContext	pictureui:photosContext ;
+	lensui:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:reverse		"true" ;
+		data:predicate		picture:contains ;
+		ozone:dataSource	lensui:underlyingSource
+	} ;
+	lensui:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	}
+}
+
+add { pictureui:pictureDetailsAspect
+	rdf:type			metadata:MetadataAspect ;
+	dc:title			"Picture details" ;
+	vowl:priority	"b" ;
+	metadata:propertiesToDisplay ${
+		rdf:type		data:DAMLListSource ;
+		data:damlList @(
+			dc:title
+			dc:date
+			dc:creator
+			picture:contains
+			picture:width
+			picture:height
+		)
+	}
+}
+
+add { :pictureViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+	rdf:type				ozone:RawViewPart ;
+	ozone:viewDomain		:PictureView ;
+	vc:toolbarCaption 		"Picture" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:Slide ;
+		slide:fillParentWidth	"true" ;
+		slide:margin			"15" ;
+		slide:child ${
+			rdf:type				slide:Image ;
+			slide:scaleToFit		"true" ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		picture:content
+			}
+		}
+	}
+}
+
+add { :pictureAppletViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	ozone:viewDomain		:PictureAppletView ;
+	vc:toolbarCaption 		"Picture" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type		slide:Paragraph ;
+		slide:alignX	"center" ;
+		slide:alignY	"center" ;
+		slide:children @(
+			${	rdf:type				slide:Image ;
+				slide:scaleToFit		"true" ;
+				ozone:dataSource ${
+					rdf:type			data:ResourcePropertySource ;
+					ozone:dataSource	data:underlyingSource ;
+					data:predicate		picture:content
+				}
+			}
+			slide:break
+			${	rdf:type				summary:Title
+			}
+		)
+	}
+}
+
+#############################################################################################
+# Album view part
+
+add { :albumViewPart
+	rdf:type			ozone:SWTPart ;
+	rdf:type			ozone:Part ;
+	rdf:type			ozone:ViewPart ;
+	rdf:type			ozone:InteractiveViewPart ;
+	ozone:viewDomain	pictureui:AlbumView ;
+	vc:toolbarCaption	"Photo album" ;
+	ozone:template ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource	cv:listDataSource ;
+		layout:layoutConstraint ${
+			rdf:type						layout:VerticalFlowConstraint ;
+			ozone:viewPartClass				ozone:ThumbnailViewPart ;
+			layout:minColumnWidth			"150" ;
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { hs:Collection
+	hs:possibleClassView	pictureui:AlbumView
+}
+
+#############################################################################################
+# Picture thumbnail presenter
+
+add {
+	:PictureThumbnailView rdfs:label "Picture Thumbnail View"
+	:pictureThumbnailViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:ThumbnailViewPart ;
+		ozone:viewDomain		:PictureThumbnailView ;
+		ozone:template ${
+			rdf:type			slide:Block ;
+			slide:width			"150" ;
+			slide:height		"150" ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"gray" ;
+			slide:bgcolor		"white" ;
+			slide:color			"darkestGray" ;
+			slide:dropShadow	"true" ;
+			slide:margin		"5" ;
+			slide:child ${
+				rdf:type					slide:Paragraph ;
+				slide:alignX				"center" ;
+				slide:alignY				"center" ;
+				slide:children	@(
+					${	rdf:type			ozone:Thumbnail
+					}
+					slide:break
+					${	rdf:type			summary:Title
+					}
+				)
+			} ;
+			ozone:onClick		ozone:underlyingHyperlink
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	picture:Picture hs:classView :PictureThumbnailView
+
+	:InactivePictureThumbnailView rdfs:label "Inactive Picture Thumbnail View"
+	:inactivePictureThumbnailViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InactiveThumbnailViewPart ;
+		ozone:viewDomain		:InactivePictureThumbnailView ;
+		ozone:template ${
+			rdf:type			slide:Block ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"gray" ;
+			slide:bgcolor		"white" ;
+			slide:color			"darkestGray" ;
+			slide:dropShadow	"true" ;
+			slide:margin		"5" ;
+			slide:child ${
+				rdf:type					slide:Paragraph ;
+				slide:alignX				"center" ;
+				slide:alignY				"center" ;
+				slide:children	@(
+					${	rdf:type			ozone:Thumbnail
+					}
+					slide:break
+					${	rdf:type			summary:Title
+					}
+				)
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	picture:Picture hs:classView :InactivePictureThumbnailView
+}
+
+#############################################################################################
+# Picture operations
+
+add { pictureui:pictureTarget
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Picture Target" ;
+	op:required			"true" ;
+	rdfs:range			picture:Picture
+}
+
+add { 
+	pictureui:rotateContinuationOf
+		rdf:type	hs:CachedProperty
+	pictureui:cropContinuationOf
+		rdf:type	hs:CachedProperty
+	pictureui:resizeContinuationOf
+		rdf:type	hs:CachedProperty
+	pictureui:adjustBrightnessContrastContinuationOf
+		rdf:type	hs:CachedProperty
+}
+
+method :rotatePicture pictureui:pictureTarget = res ; 
+adenine:preload 	"true" ; 
+rdf:type			op:Operation ;
+op:primaryParameter	pictureui:pictureTarget ;
+dc:title			"Rotate Picture" ;
+ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/rotate.gif>
+	= picture res[0]
+	= cont (extract ?x :rotateContinuationOf picture)
+	if (== cont null)
+		= cont ${
+			rdf:type				cont:Continuation ;
+			rdf:type				task:Task ;
+			dc:title				"Rotate picture task" ;
+			cont:origin				picture ;
+			:rotateContinuationOf	picture ;
+			hs:view					${ rdf:type :RotatePictureContinuationPhraseSummaryView }
+		}
+
+	contui:addContinuation cont
+
+method :cropPicture pictureui:pictureTarget = res ; 
+adenine:preload 	"true" ; 
+rdf:type			op:Operation ;
+op:primaryParameter	pictureui:pictureTarget ;
+dc:title			"Crop Picture" ;
+ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/crop.gif>
+	= picture res[0]
+	= cont (extract ?x :cropContinuationOf picture)
+	if (== cont null)
+		= cont ${
+			rdf:type				task:Task ;
+			rdf:type				cont:Continuation ;
+			dc:title				"Crop picture task" ;
+			cont:origin				picture ;
+			:cropContinuationOf		picture ;
+			hs:view					${ rdf:type :CropPictureContinuationPhraseSummaryView }
+		}
+
+	contui:addContinuation cont
+
+method :resizePicture pictureui:pictureTarget = res ; 
+adenine:preload 	"true" ; 
+rdf:type			op:Operation ;
+op:primaryParameter	pictureui:pictureTarget ;
+dc:title			"Resize Picture" ;
+ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/resize.gif>
+	= picture res[0]
+	= cont (extract ?x :resizeContinuationOf picture)
+	if (== cont null)
+		= cont ${
+			rdf:type				task:Task ;
+			rdf:type				cont:Continuation ;
+			dc:title				"Resize picture task" ;
+			cont:origin				picture ;
+			:resizeContinuationOf	picture ;
+			hs:view					${ rdf:type :ResizePictureContinuationPhraseSummaryView }
+		}
+
+	contui:addContinuation cont
+
+method :adjustPictureBrightnessContrast pictureui:pictureTarget = res ; 
+adenine:preload 	"true" ; 
+rdf:type			op:Operation ;
+op:primaryParameter	pictureui:pictureTarget ;
+dc:title			"Adjust Brightness & Contrast" ;
+ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/brightnesscontrast.gif>
+	= picture res[0]
+	= cont (extract ?x :adjustBrightnessContrastContinuationOf picture)
+	if (== cont null)
+		= cont ${
+			rdf:type				task:Task ;
+			rdf:type				cont:Continuation ;
+			dc:title				"Adjust brightness/contrast task" ;
+			cont:origin				picture ;
+			:adjustBrightnessContrastContinuationOf	picture ;
+			hs:view					${ rdf:type :AdjustPictureBrightnessContrastContinuationPhraseSummaryView }
+		}
+
+	contui:addContinuation cont
+
+method :undoLastEditing pictureui:pictureTarget = res ; 
+dc:title			"Undo last picture operation" ; 
+rdf:type			op:Operation ;
+op:primaryParameter	pictureui:pictureTarget ;
+ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/undo.gif> ;
+adenine:preload 	"true" 
+	with __source__ __infosource__
+		with __target__ __infosource__
+			= picture res[0]
+			= transformation (extract picture picture:transformedFrom ?x)
+			if (!= transformation null)
+				= oldPicture (extract transformation picture:transformationSource ?x)
+				= oldTransformation (extract oldPicture picture:transformedFrom ?x)
+				= oldContent (extract oldPicture picture:content ?x)
+				= oldThumbnail (extract oldPicture picture:thumbnail ?x)
+
+				remove transformation ?x ?y
+				remove oldPicture ?x ?y
+
+				replace picture picture:content ?x oldContent
+
+				if (!= oldTransformation null)
+					replace picture picture:transformedFrom ?x oldTransformation
+				else
+					remove picture picture:transformedFrom ?x
+
+				if (!= oldThumbnail null)
+					replace picture picture:thumbnail ?x oldThumbnail
+				else
+					remove picture picture:thumbnail ?x
+
+#############################################################################################
+# Rotate picture operation UI
+
+add {
+	:rotatePictureContinuationPhraseSummaryViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:AppletViewPart ;
+		rdf:type				ozone:InteractiveViewPart ;
+
+		ozone:viewDomain		:RotatePictureContinuationPhraseSummaryView ;
+		ozone:partDataGenerator	:presentRotatePictureContinuationPhrase ;
+#		ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentRotatePictureContinuationPhrase continuation 
+#; adenine:precompile "true" ; adenine:preload "true"
+	with __target__ __infosource__
+		replace continuation :rotation ?x "90cw"
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:child ${
+			rdf:type			slide:Paragraph ;
+			ozone:putProperty	${ ozone:name :continuation	; ozone:value continuation } ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Rotate"
+				}
+				slide:space
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	(extract continuation cont:origin ?x) ;
+					ozone:viewPartClass		ozone:InlineViewPart
+				}
+				slide:colon
+				slide:break
+
+				${	rdf:type			slide:Option ;
+					ozone:dataSource ${
+						rdf:type		data:ExclusiveStatementExistenceSource ;
+						data:subject	continuation ;
+						data:predicate	:rotation ;
+						data:object		"90cw"
+					} ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"90 degrees clockwise"
+						}
+					)
+				}
+				slide:newLine
+				${	rdf:type			slide:Option ;
+					ozone:dataSource ${
+						rdf:type		data:ExclusiveStatementExistenceSource ;
+						data:subject	continuation ;
+						data:predicate	:rotation ;
+						data:object		"90ccw"
+					} ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"90 degrees counter-clockwise"
+						}
+					)
+				}
+				slide:newLine
+				${	rdf:type			slide:Option ;
+					ozone:dataSource ${
+						rdf:type		data:ExclusiveStatementExistenceSource ;
+						data:subject	continuation ;
+						data:predicate	:rotation ;
+						data:object		"180"
+					} ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"180 degrees"
+						}
+					)
+				}
+				slide:newLine
+
+
+				${	rdf:type		slide:Paragraph ;
+					slide:alignX	"right" ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							slide:text		"Rotate" ;
+							ozone:onClick	pictureui:onRotate
+						}
+						style:pipe
+						${	rdf:type		slide:Text ;
+							slide:text		"Cancel" ;
+							ozone:onClick	pictureui:onCancel
+						}
+					)
+				}
+			)
+		}
+	}
+
+method pictureui:onRotate 
+#; adenine:precompile "true" ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.ozone.core.utils.graphics" GraphicsUtilities
+
+	= continuation (__context__.getProperty :continuation)
+
+	function handler content cs
+		= rotation (extract continuation :rotation ?x)
+		return (GraphicsUtilities.rotateImage content cs __source__ __serviceaccessor__ (rotation.getContent))
+
+	pictureui:transform continuation handler
+
+	contui:removeContinuation continuation
+
+#############################################################################################
+# Crop picture operation UI
+
+add {
+	:cropPictureContinuationPhraseSummaryViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:AppletViewPart ;
+		rdf:type				ozone:InteractiveViewPart ;
+
+		ozone:viewDomain		:CropPictureContinuationPhraseSummaryView ;
+		ozone:partDataGenerator	:presentCropPictureContinuationPhrase ;
+#		ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentCropPictureContinuationPhrase continuation 
+#; adenine:precompile "true" ; adenine:preload "true"
+	= editLeft ${
+		rdf:type				ozone:Edit ;
+		ozone:text				"0" ;
+		ozone:onEnterPressed	pictureui:onCrop
+	}
+	= editRight ${
+		rdf:type				ozone:Edit ;
+		ozone:text				"0" ;
+		ozone:onEnterPressed	pictureui:onCrop
+	}
+	= editTop ${
+		rdf:type				ozone:Edit ;
+		ozone:text				"0" ;
+		ozone:onEnterPressed	pictureui:onCrop
+	}
+	= editBottom ${
+		rdf:type				ozone:Edit ;
+		ozone:text				"0" ;
+		ozone:onEnterPressed	pictureui:onCrop
+	}
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:child ${
+			rdf:type			slide:Paragraph ;
+			ozone:putProperty	${ ozone:name :continuation ; ozone:value continuation } ;
+			ozone:putProperty	${ ozone:name :editLeft ; ozone:value editLeft } ;
+			ozone:putProperty	${ ozone:name :editRight ; ozone:value editRight } ;
+			ozone:putProperty	${ ozone:name :editTop ; ozone:value editTop } ;
+			ozone:putProperty	${ ozone:name :editBottom ; ozone:value editBottom } ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Crop"
+				}
+				slide:space
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	(extract continuation cont:origin ?x) ;
+					ozone:viewPartClass		ozone:InlineViewPart
+				}
+				slide:space
+				${	rdf:type				slide:Text ;
+					slide:text				"(by pixels):"
+				}
+				slide:break
+
+				${	rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Left:"
+						}
+						editLeft
+					)
+				}
+				slide:break
+				${	rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Right:"
+						}
+						editRight
+					)
+				}
+				slide:break
+				${	rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Top:"
+						}
+						editTop
+					)
+				}
+				slide:break
+				${	rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Bottom:"
+						}
+						editBottom
+					)
+				}
+				slide:break
+
+
+				${	rdf:type		slide:Paragraph ;
+					slide:alignX	"right" ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							slide:text		"Crop" ;
+							ozone:onClick	pictureui:onCrop
+						}
+						style:pipe
+						${	rdf:type		slide:Text ;
+							slide:text		"Cancel" ;
+							ozone:onClick	pictureui:onCancel
+						}
+					)
+				}
+			)
+		}
+	}
+
+method pictureui:onCrop
+#; adenine:precompile "true" ; adenine:preload "true"
+	importjava "java.lang" Integer
+	importjava "edu.mit.lcs.haystack.ozone.core.utils.graphics" GraphicsUtilities
+
+	= continuation (__context__.getProperty :continuation)
+
+	function handler content cs
+		= editLeft (__context__.getProperty :editLeft)
+		= editRight (__context__.getProperty :editRight)
+		= editTop (__context__.getProperty :editTop)
+		= editBottom (__context__.getProperty :editBottom)
+
+		= left (Integer.parseInt ((extract editLeft ozone:text ?x).getContent))
+		= right (Integer.parseInt ((extract editRight ozone:text ?x).getContent))
+		= top (Integer.parseInt ((extract editTop ozone:text ?x).getContent))
+		= bottom (Integer.parseInt ((extract editBottom ozone:text ?x).getContent))
+
+		return (GraphicsUtilities.cropImage content cs __source__ __serviceaccessor__ left right top bottom)
+
+	pictureui:transform continuation handler
+
+	contui:removeContinuation continuation
+
+#############################################################################################
+# Resize picture operation UI
+
+add {
+	:resizePictureContinuationPhraseSummaryViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:AppletViewPart ;
+		rdf:type				ozone:InteractiveViewPart ;
+
+		ozone:viewDomain		:ResizePictureContinuationPhraseSummaryView ;
+		ozone:partDataGenerator	:presentResizePictureContinuationPhrase ;
+#		ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentResizePictureContinuationPhrase continuation 
+#; adenine:precompile "true" ; adenine:preload "true"
+
+	= picture (extract continuation cont:origin ?x)
+	= content (extract picture picture:content ?x)
+	= width (extract content picture:width ?x)
+	= height (extract content picture:height ?x)
+	if (== width null)
+		= width ""
+	if (== height null)
+		= height ""
+
+	= editResizeToPercents ${
+		rdf:type				ozone:Edit ;
+		ozone:text				"100" ;
+		ozone:onEnterPressed	pictureui:onResizeToPercents ;
+		ozone:width				"50"
+	}
+
+	= editResizeToFitWidth ${
+		rdf:type				ozone:Edit ;
+		ozone:text				width ;
+		ozone:onEnterPressed	pictureui:onResizeToFit
+	}
+	= editResizeToFitHeight ${
+		rdf:type				ozone:Edit ;
+		ozone:text				height ;
+		ozone:onEnterPressed	pictureui:onResizeToFit
+	}
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:child ${
+			rdf:type			slide:Paragraph ;
+			ozone:putProperty	${ ozone:name :continuation	; ozone:value continuation } ;
+			ozone:putProperty	${ ozone:name :editResizeToPercents	; ozone:value editResizeToPercents } ;
+			ozone:putProperty	${ ozone:name :editResizeToFitWidth	; ozone:value editResizeToFitWidth } ;
+			ozone:putProperty	${ ozone:name :editResizeToFitHeight ; ozone:value editResizeToFitHeight } ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Resize"
+				}
+				slide:space
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	(extract continuation cont:origin ?x) ;
+					ozone:viewPartClass		ozone:InlineViewPart
+				}
+				slide:colon
+				slide:break
+
+
+
+				${	rdf:type				slide:Text ;
+					slide:text				"To exactly"
+				}
+				slide:space
+				editResizeToPercents
+				slide:space
+				${	rdf:type				slide:Text ;
+					slide:text				"percent"
+				}
+				slide:newLine
+				${	rdf:type		slide:Paragraph ;
+					slide:alignX	"right" ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							slide:text		"Resize" ;
+							ozone:onClick	pictureui:onResizeToPercents
+						}
+						style:pipe
+						${	rdf:type		slide:Text ;
+							slide:text		"Cancel" ;
+							ozone:onClick	pictureui:onCancel
+						}
+					)
+				}
+
+
+				${	rdf:type				slide:Text ;
+					slide:text				"Or to fit in an area of"
+				}
+				slide:break
+				${	rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Width:"
+						}
+						editResizeToFitWidth
+					)
+				}
+				slide:break
+				${	rdf:type	slide:ColumnSet ;
+					slide:scale	"percent" ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Height:"
+						}
+						editResizeToFitHeight
+					)
+				}
+				slide:break
+				${	rdf:type		slide:Paragraph ;
+					slide:alignX	"right" ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							slide:text		"Resize" ;
+							ozone:onClick	pictureui:onResizeToFit
+						}
+						style:pipe
+						${	rdf:type		slide:Text ;
+							slide:text		"Cancel" ;
+							ozone:onClick	pictureui:onCancel
+						}
+					)
+				}
+			)
+		}
+	}
+
+method pictureui:onResizeToPercents
+#; adenine:precompile "true" ; adenine:preload "true"
+	importjava "java.lang" Integer
+	importjava "edu.mit.lcs.haystack.ozone.core.utils.graphics" GraphicsUtilities
+
+	= continuation (__context__.getProperty :continuation)
+
+	function handler content cs
+		= edit (__context__.getProperty :editResizeToPercents)
+		= text (extract edit ozone:text ?x)
+		= percents (Integer.parseInt (text.getContent))
+
+		return (GraphicsUtilities.scaleImageToPercents content cs __source__ __serviceaccessor__ percents)
+
+	pictureui:transform continuation handler
+
+	contui:removeContinuation continuation
+
+method pictureui:onResizeToFit
+#; adenine:precompile "true" ; adenine:preload "true"
+	importjava "java.lang" Integer
+	importjava "edu.mit.lcs.haystack.ozone.core.utils.graphics" GraphicsUtilities
+
+	= continuation (__context__.getProperty :continuation)
+
+	function handler content cs
+		= editWidth (__context__.getProperty :editResizeToFitWidth)
+		= editHeight (__context__.getProperty :editResizeToFitHeight)
+
+		= width (Integer.parseInt ((extract editWidth ozone:text ?x).getContent))
+		= height (Integer.parseInt ((extract editHeight ozone:text ?x).getContent))
+
+		return (GraphicsUtilities.scaleImageToFit content cs __source__ __serviceaccessor__ width height)
+
+	pictureui:transform continuation handler
+
+	contui:removeContinuation continuation
+
+#############################################################################################
+# Crop picture operation UI
+
+add {
+	:adjustPictureBrightnessContrastContinuationPhraseSummaryViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:AppletViewPart ;
+		rdf:type				ozone:InteractiveViewPart ;
+
+		ozone:viewDomain		:AdjustPictureBrightnessContrastContinuationPhraseSummaryView ;
+		ozone:partDataGenerator	:presentAdjustPictureBrightnessContrastContinuationPhrase ;
+#		ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentAdjustPictureBrightnessContrastContinuationPhrase continuation 
+#; adenine:precompile "true" ; adenine:preload "true"
+
+	= picture (extract continuation cont:origin ?x)
+
+	= editBrightness ${
+		rdf:type				ozone:Edit ;
+		ozone:text				"0" ;
+		ozone:onEnterPressed	:onAdjust
+	}
+	= editContrast ${
+		rdf:type				ozone:Edit ;
+		ozone:text				"0" ;
+		ozone:onEnterPressed	:onAdjust
+	}
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:child ${
+			rdf:type			slide:Paragraph ;
+			ozone:putProperty	${ ozone:name :continuation	; ozone:value continuation } ;
+			ozone:putProperty	${ ozone:name :editBrightness ; ozone:value editBrightness } ;
+			ozone:putProperty	${ ozone:name :editContrast ; ozone:value editContrast } ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Adjust"
+				}
+				slide:space
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	(extract continuation cont:origin ?x) ;
+					ozone:viewPartClass		ozone:InlineViewPart
+				}
+				slide:space
+				${	rdf:type		slide:Text ;
+					slide:text		"(-100 to 100):"
+				}
+				slide:break
+
+
+
+				${	rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Brightness:"
+						}
+						editBrightness
+					)
+				}
+				slide:break
+				${	rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Contrast:"
+						}
+						editContrast
+					)
+				}
+				slide:break
+				${	rdf:type		slide:Paragraph ;
+					slide:alignX	"right" ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							slide:text		"Adjust" ;
+							ozone:onClick	:onAdjust
+						}
+						style:pipe
+						${	rdf:type		slide:Text ;
+							slide:text		"Cancel" ;
+							ozone:onClick	pictureui:onCancel
+						}
+					)
+				}
+			)
+		}
+	}
+
+method :onAdjust
+#; adenine:precompile "true" ; adenine:preload "true"
+	importjava "java.lang" Integer
+	importjava "edu.mit.lcs.haystack.ozone.core.utils.graphics" GraphicsUtilities
+
+	= continuation (__context__.getProperty :continuation)
+
+	function handler content cs
+		= editBrightness (__context__.getProperty :editBrightness)
+		= editContrast (__context__.getProperty :editContrast)
+
+		= brightness (Integer.parseInt ((extract editBrightness ozone:text ?x).getContent))
+		= contrast (Integer.parseInt ((extract editContrast ozone:text ?x).getContent))
+
+		return (GraphicsUtilities.adjustBrightnessContrast content cs __infosource__ __serviceaccessor__ brightness contrast)
+
+	pictureui:transform continuation handler
+
+	contui:removeContinuation continuation
+
+
+
+
+method pictureui:transform continuation handler
+#; adenine:precompile "true" ; adenine:preload "true"
+	with __source__ __infosource__
+		with __target__ __infosource__
+			= picture (extract continuation cont:origin ?x)
+			= content (extract picture picture:content ?x)
+			= cs (content:getContentService)
+			= result (handler content cs)
+
+			if (!= result null)
+				= oldPicture ${
+					rdf:type			picture:Picture ;
+					picture:content		content
+				}
+
+				= oldTransformation (extract picture picture:transformedFrom ?x)
+				if (!= oldTransformation null)
+					add { oldPicture picture:transformedFrom oldTransformation }
+
+				= oldThumbnail (extract picture picture:thumbnail ?x)
+				if (!= oldThumbnail null)
+					add { oldPicture picture:thumbnail oldThumbnail }
+
+				= newTransformation ${
+					rdf:type						picture:Transformation ;
+					picture:transformationSource	oldPicture
+				}
+				
+				replace picture picture:transformedFrom ?x newTransformation
+				replace picture picture:content ?x result
+				remove picture picture:thumbnail ?x
+
+method pictureui:onCancel ; adenine:precompile "true" ; adenine:preload "true"
+	= continuation (__context__.getProperty :continuation)
+	contui:removeContinuation continuation

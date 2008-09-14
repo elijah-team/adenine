@@ -1,0 +1,100 @@
+# Copyright (c) 1998-2005 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Packages
+# Written by Dennis Quan and David Huynh
+
+@base <http://haystack.lcs.mit.edu/bootstrap/web>
+
+@prefix config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+
+
+add { <http://haystack.lcs.mit.edu/bootstrap/web>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Haystack web operation package" ;
+	rdf:type					content:NullContent ;
+	hs:pluginName				"edu.mit.csail.haystack.web" ;
+	adenine:precompile			"true" ;
+
+	config:includes	<http://haystack.lcs.mit.edu/programs/wrapperinduction> ;
+	config:includes	<http://haystack.lcs.mit.edu/programs/wrapperView> ;
+	config:includes	<http://haystack.lcs.mit.edu/schemata/wrapperinduction> ;  # ahogue: need this?
+
+	config:includes	<http://haystack.lcs.mit.edu/programs/WebOperation> ;
+	config:includes	<http://haystack.lcs.mit.edu/schemata/WebOperation> ;
+	config:includes <http://haystack.lcs.mit.edu/ui/weboperation>
+	# Inclusion of  <http://haystack.lcs.mit.edu/schemata/web> is in /bootstrap/ui.ad (in standard plugin)
+}
+
+add { <http://haystack.lcs.mit.edu/programs/wrapperinduction>
+	rdf:type				config:OntologyPackage ;
+	dc:description			"Wrapper Induction tools" ;
+	rdf:type				content:JavaClasspathContent ;
+	content:path		 	"/programs/wrapperinduction.ad";
+	hs:pluginName			"edu.mit.csail.haystack.web"
+}
+
+add { <http://haystack.lcs.mit.edu/programs/wrapperView>
+	rdf:type				config:OntologyPackage ;
+	dc:description			"Wrapper Induction Views" ;
+	rdf:type				content:JavaClasspathContent ;
+	content:path		 	"/programs/wrapperView.ad" ;
+	hs:pluginName			"edu.mit.csail.haystack.web"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/wrapperinduction>
+	rdf:type				config:OntologyPackage ;
+	dc:description			"Wrapper Induction schemata" ;
+	rdf:type				content:JavaClasspathContent ;
+	content:path		 	"/schemata/wrapperinduction.ad";
+	hs:pluginName			"edu.mit.csail.haystack.web"
+}
+
+add { <http://haystack.lcs.mit.edu/programs/WebOperation>
+	rdf:type				config:OntologyPackage ;
+	dc:description			"Web Operation Tools" ;
+	rdf:type				content:JavaClasspathContent ;
+	content:path		 	"/programs/WebOperation.ad" ;
+	hs:pluginName			"edu.mit.csail.haystack.web"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/WebOperation>
+	rdf:type				config:OntologyPackage ;
+	dc:description			"Web Operation schemata" ;
+	rdf:type				content:JavaClasspathContent ;
+	content:path		 	"/schemata/WebOperation.ad" ;
+	hs:pluginName			"edu.mit.csail.haystack.web"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/weboperation>
+	rdf:type				config:OntologyPackage ;
+	dc:description			"Web Operation UI" ;
+	rdf:type				content:JavaClasspathContent ;
+	content:path		 	"/ui/weboperation.ad" ;
+	hs:pluginName			"edu.mit.csail.haystack.web"
+}
+

@@ -1,0 +1,197 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Content ontology
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/schemata/content.ad,v 1.19 2004/05/15 15:19:00 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/schemata/content>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+
+add { ^
+	rdf:type	daml:Ontology ;
+	dc:title	"Haystack Content Ontology"
+}
+
+#############################################################################################
+# Content service
+
+add { content:ContentService
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Content service" ;
+	rdfs:subClassOf		config:Service
+}
+
+#############################################################################################
+# Service backed content
+
+add { content:ServiceBackedContent
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Service backed content" ;
+	rdfs:subClassOf		content:Content
+}
+
+add { content:service
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			content:ServiceBackedContent ;
+	rdfs:range			content:ContentService ;
+	rdfs:label			"Service"
+}
+
+#############################################################################################
+# Content base class
+
+add { content:Content
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Content" 
+}
+
+#############################################################################################
+# Filesystem content
+
+add { content:FilesystemContent	
+	rdf:type				rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:isDefinedBy ^ ;
+	rdfs:label		"Filesystem Content" ;
+	rdfs:subClassOf	content:Content ;
+	hs:classView	lensui:AspectView
+}
+
+add { content:filename
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:isDefinedBy ^ ;
+	rdfs:label		"Filename" ;
+	rdfs:domain		content:FilesystemContent ;
+	rdfs:range		xsd:string
+}
+
+add { content:hostname
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:isDefinedBy ^ ;
+	rdfs:label		"Hostname" ;
+	rdfs:domain		content:FilesystemContent ;
+	rdfs:range		xsd:string
+}
+
+#############################################################################################
+# HTTP content
+
+add { content:HttpContent	
+	rdf:type				rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"HTTP Content" ;
+	rdfs:isDefinedBy ^ ;
+	rdfs:subClassOf	content:Content
+}
+
+#############################################################################################
+# Java classpath content
+
+add { content:JavaClasspathContent
+	rdf:type				rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:isDefinedBy ^ ;
+	rdfs:label		"Java Classpath Content" ;
+	rdfs:subClassOf	content:Content
+}
+
+add { content:path
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:isDefinedBy ^ ;
+	rdfs:label		"Path" ;
+	rdfs:domain		content:JavaClasspathContent ;
+	rdfs:range		xsd:string
+}
+
+#############################################################################################
+# Literal content
+
+add { content:LiteralContent	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Literal Content" ;
+	rdfs:subClassOf		content:Content
+}
+
+add { content:content
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Content" ;
+	rdfs:domain			content:LiteralContent ;
+	rdfs:range			xsd:string
+}
+
+#############################################################################################
+# Null content
+
+add { content:NullContent	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Null Content" ;
+	rdfs:subClassOf		content:Content
+}
+
+#############################################################################################
+# Utility functions
+
+method content:readContent res ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.content" ContentClient
+	return ((ContentClient.getContentClient res __source__ __serviceaccessor__).getContentAsString)
+
+method content:getContentSize res ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.content" ContentClient
+	return ((ContentClient.getContentClient res __source__ __serviceaccessor__).getContentSize)
+
+method content:allocateContent suffix ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.content" ContentClient
+	= x (ContentClient.getContentService __source__ __serviceaccessor__ (__identity__.getResource))
+	if (!= null suffix)
+		return (x.allocateContent suffix)
+	else
+		return (x.allocateContent)
+
+method content:getContentService ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.content" ContentClient
+	return (ContentClient.getContentService __source__ __serviceaccessor__ (__identity__.getResource))
+
+method content:writeContent res data ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.content" ContentClient
+	return ((ContentClient.getContentClient res __source__ __serviceaccessor__).setContent data)
+

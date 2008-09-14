@@ -1,0 +1,1 @@
+g++296 Database.cpp StdAfx.cpp Log.cpp JNI.cpp -g  -I/usr/include/mozilla-1.7.3/ -I/usr/include/mozilla-1.7.3/nspr/ -I../sgi-stl -I$JDK_HOME/include -I$JDK_HOME/include/linux/ -DNO_SUBJECT_OBJECT -DLINUX -DDEBUG -D_DEBUG -D_REENTRANT -DDEBUG_LOGGING -UWIN32 -lpthread -o libcholesterollib.so -shared -Wl,-soname,libcholsterol.so -static -lc

@@ -1,0 +1,246 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Setup UI
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/setup.ad,v 1.10 2004/02/01 19:15:15 garland Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/setup>
+
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	vc:			<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix setupui:	<http://haystack.lcs.mit.edu/ui/setup#>
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix :			<http://haystack.lcs.mit.edu/ui/setup#>
+
+#############################################################################################
+# Large setup summary view part
+
+add { daml:Thing hs:classView setupui:LargeSummaryView }
+
+add { :largeSummaryViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				setupui:LargeSummaryViewPart ;
+	ozone:viewDomain		setupui:LargeSummaryView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:Block ;
+		slide:marginY			"5" ;
+		slide:marginX			"20" ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ;
+			slide:children @(
+				${	rdf:type		slide:Block ;
+					slide:child ${
+						rdf:type	summary:MediumIconBlank
+					}
+				}
+				${	rdf:type		slide:Block ;
+					slide:marginX	"10" ;
+					slide:child ${
+						rdf:type			slide:Paragraph ;
+						slide:children @(
+							${	rdf:type			slide:Span ;
+								slide:fontSize		"150%" ;
+								slide:fontFamily	"Arial" ;
+								slide:children @(
+									${	rdf:type			ozone:ViewContainer ;
+										ozone:dataSource	data:underlyingSource ;
+										ozone:viewPartClass	ozone:InlineViewPart
+									}
+								)
+							}
+							slide:break
+							${	rdf:type		slide:Span ;
+								slide:color		"lightGray" ;
+								slide:children @(
+									${	rdf:type	summary:Description
+									}
+								)
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+#############################################################################################
+# Small setup summary view part
+
+add { daml:Thing hs:classView setupui:SmallSummaryView }
+
+add { :smallSummaryViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				setupui:SmallSummaryViewPart ;
+	ozone:viewDomain		setupui:SmallSummaryView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:Block ;
+		slide:margin			"3" ;
+		slide:borderBottomWidth	"1" ;
+		slide:borderBottomColor	"lightestGray" ;
+		slide:child ${
+			rdf:type	slide:RowSet ;
+			slide:children @(
+				${	rdf:type			slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type	summary:Icon
+						}
+						slide:space
+						${	rdf:type		slide:Paragraph ;
+							slide:fontBold	"true" ;
+							slide:children @(
+								${	rdf:type			ozone:ViewContainer ;
+									ozone:dataSource	data:underlyingSource ;
+									ozone:viewPartClass	ozone:InlineViewPart
+								}
+							)
+						}
+					)
+				}
+				${	rdf:type			slide:Block ;
+					slide:margin		"5" ;
+					slide:marginLeft	"20" ;
+					slide:child ${
+						rdf:type		slide:Paragraph ;
+						slide:fontSize	"8" ;
+						slide:color		"70%" ;
+						slide:children @(
+							${	rdf:type	summary:Description
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+#############################################################################################
+# Large setup collection view part
+
+add { hs:Collection hs:classView setupui:CollectionView }
+add { hs:List hs:classView setupui:CollectionView }
+add { data:CollectionDataSet hs:classView setupui:CollectionView }
+
+add { :largeCollectionViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+	vc:toolbarCaption		"Browse" ;
+	ozone:cacheStyle		ozone:cacheDisabled ;
+	ozone:viewDomain		setupui:CollectionView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:Slide ;
+		slide:cropChildWidth	"true" ;
+		slide:child ${
+			rdf:type				slide:RowSet ;
+			slide:children @(
+				${	rdf:type				slide:Block ;
+					slide:background		<http://haystack.lcs.mit.edu/data/ozone/frame/horizontalBlocks.png> ;
+					slide:backgroundRepeat	"both" ;
+					slide:height			"15" ;
+					slide:cropChildWidth	"true" ;
+					slide:child				slide:null
+				}
+				${	rdf:type				slide:Block ;
+					slide:color				"#274683" ;
+					slide:fontBold			"true" ;
+					slide:fontSize			"200%" ;
+					slide:marginX			"13" ;
+					slide:marginTop			"13" ;
+					slide:marginBottom		"13" ;
+					slide:cropChildWidth	"true" ;
+					slide:bgcolor			"#fffef9" ;
+					slide:child ${
+						rdf:type	slide:ColumnSet ;
+						slide:children @(
+							${	rdf:type	summary:LargeIcon
+							}
+							${	rdf:type			slide:Block ;
+								slide:marginLeft	"10" ;
+								slide:marginTop		"20" ;
+								slide:child ${
+									rdf:type	slide:Paragraph ;
+									slide:children @(
+										${	rdf:type			ozone:ViewContainer ;
+											ozone:dataSource	data:underlyingSource ;
+											ozone:viewPartClass	ozone:InactiveInlineViewPart
+										}
+									)
+								}
+							}
+						)
+					}
+				}
+				${	rdf:type				slide:Block ;
+					slide:bgcolor			"#fffef9" ;
+					slide:cropChildWidth	"true" ;
+					slide:color				"#274683" ;
+					slide:child ${
+						rdf:type			layout:Layout ;
+						ozone:dataSource	cv:listDataSource ;
+						layout:layoutConstraint ${
+							rdf:type				layout:VerticalFlowConstraint ;
+							ozone:viewPartClass		setupui:LargeSummaryViewPart ;
+							layout:minColumnWidth	"300" ;
+							slide:maxWidth			"640" ;
+						}
+					}
+				}
+			)
+		}
+	}
+}
+
+#############################################################################################
+# Small setup collection view part
+
+add { :smallCollectionViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+#	rdf:type				ozone:AppletViewPart ;
+#	vc:toolbarCaption		"Show in browse view" ;
+#	ozone:viewDomain		setupui:CollectionView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource	cv:listDataSource ;
+		layout:layoutConstraint ${
+			rdf:type			layout:RowStackerConstraint ;
+			ozone:viewPartClass	setupui:SmallSummaryViewPart
+		}
+	}
+}
+

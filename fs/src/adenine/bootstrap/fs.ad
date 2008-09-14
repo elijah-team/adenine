@@ -1,0 +1,66 @@
+# Copyright (c) 1998-2005 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+
+# Haystack file system plugin description
+# Written by Stephen Garland
+
+@base				<http://haystack.lcs.mit.edu/bootstrap/fs>
+
+@prefix config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+
+add { ^
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Haystack file system master package" ;
+	rdf:type					content:NullContent ;
+	config:includes				<http://haystack.lcs.mit.edu/agents/fs> ;
+	config:includes				<http://haystack.lcs.mit.edu/schemata/fs> ;
+	config:includes				<http://haystack.lcs.mit.edu/ui/fs> ;
+	hs:pluginName				"edu.mit.csail.haystack.fs"
+}
+	
+add { <http://haystack.lcs.mit.edu/agents/fs>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"File System Agent" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/agents/fs.ad" ;
+	hs:pluginName				"edu.mit.csail.haystack.fs"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/fs>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"File System Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/fs.ad" ;
+	hs:pluginName				"edu.mit.csail.haystack.fs"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/fs>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"File System UI" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/ui/fs.ad" ;
+	hs:pluginName				"edu.mit.csail.haystack.fs"
+}

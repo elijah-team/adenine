@@ -1,0 +1,74 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Mercury agent
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/agents/mercury.ad,v 1.5 2003/12/17 17:34:26 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/agents/mercury>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	config:			<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	wsdl:			<http://schemas.xmlsoap.org/wsdl/>
+@prefix	mercury:		<http://haystack.lcs.mit.edu/agents/mercury#>
+
+#############################################################################################
+# Mercury agent
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	if (== (queryExtract { ?x rdf:type mercury:MercuryAgent ; hs:user user }) null)
+		= mercuryAgent ${
+			dc:title	"Mercury Agent" ;
+			rdf:type	config:Service ;
+			rdf:type	mercury:MercuryAgent ;
+			hs:user		user ;
+			wsdl:port ${
+				rdf:type wsdl:Port ;
+				wsdl:binding ${
+					rdf:type	wsdl:Binding ;
+					rdf:type	config:JavaBinding ;
+					wsdl:type ${
+						rdf:type wsdl:PortType ;
+						config:javaInterface ${
+							rdf:type hs:JavaClass ;
+							hs:className "edu.mit.lcs.haystack.server.mercury.IMercuryAgent"
+						}
+					}
+				}
+			} ;
+			config:singleton "true" ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:className "edu.mit.lcs.haystack.server.standard.mercury.MercuryAgent" 
+			} 
+		}
+		add { server config:hostsService mercuryAgent }
+
+method mercury:getMercuryAgent ; adenine:preload "true"
+	return (connect (queryExtract { ?x rdf:type mercury:MercuryAgent ?x hs:user (__identity__.getResource) })[0])
+

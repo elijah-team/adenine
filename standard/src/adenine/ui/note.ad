@@ -1,0 +1,275 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone Note UI
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/note.ad,v 1.61 2004/05/15 15:18:56 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/note>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	note:		<http://haystack.lcs.mit.edu/schemata/note#> 
+@prefix	editor:		<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix person:		<http://haystack.lcs.mit.edu/ui/person#>
+@prefix task:		<http://haystack.lcs.mit.edu/schemata/task#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/note#> 
+@prefix setupui:	<http://haystack.lcs.mit.edu/ui/setup#>
+@prefix eclipse:	<http://haystack.lcs.mit.edu/ui/eclipse#>
+@prefix opui:	<http://haystack.lcs.mit.edu/ui/operation#>
+
+#############################################################################################
+# Note aspects
+
+add { :noteHeaderFields
+	rdf:type		data:OrderedSetSource ;
+	data:damlList @(
+		dc:title
+		dc:date
+	)
+}
+
+add { note:Note
+	hs:classView		lensui:AspectView ;
+	vowl:hasLens		:noteSummaryAspect ;
+	vowl:hasLens		:contentAspect ;
+	lensui:appletAspect	:contentAspect
+}
+
+add { :contentAspect
+	rdf:type				lensui:SlideAspect ;
+	lensui:spansAllColumns	"true" ;
+	vowl:priority		"a" ;
+	dc:title				"Content" ;
+	lensui:slide ${
+		rdf:type			slide:RowSet ;
+		ozone:putProperty	${ ozone:name opui:useAspectUnderlying ; ozone:value "true" } ;
+		slide:pack			"bottom" ;
+		slide:children @(
+			${	rdf:type			ozone:ViewContainer ;
+				ozone:dataSource	lensui:underlyingSource ;
+				ozone:viewPartClass	ozone:RawViewPart
+			}
+			${	rdf:type		slide:Block ;
+				slide:fontBold	"true" ;
+				slide:marginTop	"10" ;
+				slide:child ${
+					rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	eclipse:launchDocument ;
+					ozone:viewPartClass		ozone:InlineViewPart
+				}
+			}
+		)
+	}
+}
+
+add { :noteSummaryAspect
+	rdf:type						metadata:MetadataAspect ;
+	dc:title						"Note summary" ;
+	vowl:priority				"b" ;
+	metadata:propertiesToDisplay	:noteHeaderFields
+}
+
+add { note:Todo
+	hs:classView		lensui:AspectView ;
+	vowl:hasLens ${
+		rdf:type						metadata:MetadataAspect ;
+		dc:title						"Todo summary" ;
+		metadata:propertiesToDisplay	:noteHeaderFields ;
+		vowl:priority				"b" ;
+	}
+}
+
+add { :whoWasPresentAspect
+	rdf:type			lensui:DataSetAspect ;
+	dc:title			"Who was present" ;
+	vowl:priority	"c" ;
+	lensui:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		note:present ;
+		ozone:dataSource	lensui:underlyingSource
+	} ;
+	lensui:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	} ;
+	lensui:constructor	person:personConstructor ;
+	lensui:constructorsDataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	rdf:type ;
+			data:object		construct:Constructor
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	construct:targetType ;
+			data:object		hs:Person
+		}
+	}
+}
+
+add { note:MeetingMinutes
+	hs:classView	lensui:AspectView ;
+	vowl:hasLens ${
+		rdf:type						metadata:MetadataAspect ;
+		dc:title						"Meeting Minutes Summary" ;
+		metadata:propertiesToDisplay	:noteHeaderFields
+	} ;
+	vowl:hasLens		:bodyAspect ;
+	lensui:appletAspect	:bodyAspect ;
+	vowl:hasLens		:whoWasPresentAspect ;
+	lensui:appletAspect	:whoWasPresentAspect
+}
+
+#############################################################################################
+# Note read only view part
+
+add { :noteReadOnlyViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ReadOnlyViewPart ;
+	rdf:type				ozone:ViewPart ;
+	ozone:viewDomain		:NoteReadOnlyView ;
+	ozone:template ${
+		rdf:type		slide:Paragraph ;
+		slide:children	@(
+			${	rdf:type	slide:Text ;
+				ozone:dataSource ${
+					rdf:type			data:ContentStringSource ;
+					ozone:dataSource	data:underlyingSource
+				}
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { note:Note hs:classView :NoteReadOnlyView }
+
+#############################################################################################
+# Note body view part
+
+add { :noteBodyViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				<http://haystack.lcs.mit.edu/ui/messageView#BodyViewPart> ;
+	rdf:type				ozone:ViewPart ;
+	ozone:viewDomain		:NoteBodyView ;
+	ozone:cacheStyle		ozone:cachePerResource ;
+	ozone:template ${
+		rdf:type			ozone:ViewContainer ;
+		ozone:dataSource	data:underlyingSource ;
+		ozone:viewPartClass	ozone:RawViewPart
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { note:Note hs:classView :NoteBodyView }
+
+#############################################################################################
+# Constructors
+
+add { opdata:inputOperations hs:member :createNote }
+add { opdata:compositionalOperations hs:member :createNote }
+add { opdata:inputOperations hs:member :createMeetingMinutes }
+
+add { :title
+	rdf:type				op:Parameter ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	editor:disallowBlanks	"true" ;
+	rdfs:label				"Title" ;
+	rdfs:range				xsd:string
+}
+
+add { :body
+	rdf:type				op:Parameter ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	editor:multiline		"true" ;
+	editor:disallowBlanks	"true" ;
+	rdfs:label				"Body" ;
+	rdfs:range				xsd:string
+}
+
+add { task:generalContext
+	task:associatedOperation	:createNote ;
+	task:associatedOperation	:createMeetingMinutes
+}
+
+method :createNote :title = titles :body = bodies ;
+adenine:preload "true" ;
+rdf:type				op:Operation ;
+construct:targetType	note:Note ;
+rdf:type				construct:Constructor ;
+dc:title				"Create a note"
+	= x (content:allocateContent '.txt')
+	= body ''
+	if (!= null bodies)
+		if (== 1 (length bodies))
+			= body (bodies[0].getContent)
+	content:writeContent x body
+	with __target__ __infosource__
+		add { x rdf:type note:Note }
+		if (!= null titles)
+			if (== 1 (length titles))
+				replace x dc:title ?x titles[0]
+			else
+				add { x dc:title "Untitled Note" }
+		else
+			add { x dc:title "Untitled Note" }
+	return x
+
+method :createMeetingMinutes ;
+adenine:preload			"true" ;
+rdf:type				op:Operation ;
+construct:targetType	note:Note ;
+construct:targetType	note:MeetingMinutes ;
+rdf:type				construct:Constructor ;
+dc:title				"Create meeting minutes"
+	= x (content:allocateContent '.txt')
+	content:writeContent x ''
+	with __target__ __infosource__
+		add { x rdf:type note:MeetingMinutes }
+	return x
+

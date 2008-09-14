@@ -1,0 +1,209 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Text processing agents
+# Written by Dennis Quan and David Huynh
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	verb:		<http://haystack.lcs.mit.edu/schemata/verb#>
+@prefix	web:		<http://haystack.lcs.mit.edu/schemata/web#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	text:		<http://haystack.lcs.mit.edu/agents/text#> 
+@prefix	:			<http://haystack.lcs.mit.edu/agents/text#> 
+
+add {
+	:extractedText rdf:type daml:DatatypeProperty ; rdfs:label "Extracted Text"
+
+	:extractText	rdf:type		verb:Verb ;
+			rdf:type			ozone:Part ;
+			verb:domain			daml:Thing ;
+			dc:title			"Extract Text" ;
+			verb:adenineService	:extractTextService ;
+			ozone:dataDomain	verb:ExtractText ;
+			ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/extracttext.gif> ;
+			hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.verbs.AdenineVerb" }
+
+	text:extractedText	
+			rdf:type			rdfs:Class ;
+			rdf:type			daml:Class ;
+			rdfs:label			"Extracted Text"
+}
+
+method :extractTextService input ; adenine:preload "true"
+	= extractor (connect (extract ?x rdf:type :TextExtractionAgent))
+	= text (extractor.extractText input)
+	= nm (__context__.getProperty ozone:navigationMaster)
+	nm.requestViewing text
+
+main
+	= user (__identity__.getResource)
+	= server (__serviceaccessor__.getResource)
+
+	add { server
+		config:hostsService random:textExtractionAgent
+	}
+
+	add {
+	
+	random:textExtractionAgent dc:title "Text Extraction Agent" ;
+			rdf:type config:Service ;
+			rdf:type :TextExtractionAgent ;
+			hs:user  user ;
+			wsdl:port ${
+				rdf:type wsdl:Port ;
+				wsdl:binding ${
+					rdf:type	wsdl:Binding ;
+					rdf:type	config:JavaBinding ;
+					wsdl:type ${
+						rdf:type wsdl:PortType ;
+						config:javaInterface ${
+							rdf:type hs:JavaClass ;
+							hs:className "edu.mit.lcs.haystack.server.extensions.text.ITextExtractionAgent"
+						}
+					}
+				}
+			} ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:className "edu.mit.lcs.haystack.server.extensions.text.TextExtractionAgent" 
+			}
+
+	:lookUp	rdf:type				verb:Verb ;
+			rdf:type				ozone:Part ;
+			verb:partDomain			slide:Text ;
+			dc:title				"Look Up" ;
+			ozone:dataDomain 		:LookUp ;
+			ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif> ;
+			verb:adenineService		:lookUpVerb ;
+			verb:instantiator		:lookUpActionInstantiator ;
+			hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.verbs.AdenineVerb" }
+
+	:copyText	rdf:type			verb:Verb ;
+			rdf:type				ozone:Part ;
+			verb:partDomain			slide:Text ;
+			dc:title				"Copy Text" ;
+			ozone:dataDomain 		:CopyText ;
+			ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif> ;
+			verb:adenineService		:copyTextVerb ;
+			verb:instantiator		:copyTextActionInstantiator ;
+			hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.verbs.AdenineVerb" }
+	}
+
+method :lookUpVerb ; adenine:preload "true" ; adenine:precompile "true"
+	= action (__context__.getLocalProperty ozone:partData)
+	= url (append 'http://www.m-w.com/cgi-bin/dictionary?va=' ((extract action :word ?x).getContent))
+	= res (Resource url)
+	
+	add { res
+		rdf:type	web:WebPage ;
+		rdf:type	content:HttpContent
+	}
+	
+	= nm (__context__.getProperty ozone:navigationMaster)
+	nm.requestViewing res
+
+method :lookUpActionInstantiator context ; adenine:preload "true" ; adenine:precompile "true"
+	= partData (context.getLocalProperty ozone:partData)
+	= word (context.getProperty :clickedWord)
+
+	if (== word null)
+		return null
+
+	= title (Literal (append 'Look up "' word '"'))
+	= action (queryExtract { ?x rdf:type :LookUp ; verb:context partData })
+	if (!= action null)
+		= action action[0]
+
+		replace action dc:title ?x title
+		replace action :word ?x (Literal word)
+	else
+		= action ${
+			rdf:type		verb:Action ;
+			rdf:type		:LookUp ;
+			verb:context	partData ;
+			dc:title		title ;
+			:word			(Literal word)
+		}
+
+	return action
+
+method :copyTextVerb ; adenine:preload "true" ; adenine:precompile "true"
+	= action (__context__.getLocalProperty ozone:partData)
+
+	importjava "org.eclipse.swt.dnd" Clipboard TextTransfer
+	importjava "edu.mit.lcs.haystack.ozone.core" Ozone
+
+	= clipboard (Clipboard Ozone.s_display)
+	= data @( ((extract action :text ?x).getContent) )
+	= transfers @( (TextTransfer.getInstance) )
+	
+	clipboard.setContents data transfers
+
+
+method :copyTextActionInstantiator context ; adenine:preload "true" ; adenine:precompile "true"
+	= partData (context.getLocalProperty ozone:partData)
+	if (== partData null)
+		return null
+
+	= text (extract partData slide:text ?x)
+	if (== text null)
+		return null
+
+	= text (text.getContent)
+	= text2 text
+
+	importjava "java.util" StringTokenizer
+	= tokenizer (StringTokenizer text)
+	if (gt (tokenizer.countTokens) 2)
+		= text2 (tokenizer.nextToken)
+
+		while (tokenizer.hasMoreTokens)
+			= token (tokenizer.nextToken)
+			if (! (tokenizer.hasMoreTokens))
+				= text2 (append text2 ' ... ' token)
+				break
+	
+	= title (Literal (append 'Copy "' text2 '"'))
+
+	= action (queryExtract { ?x rdf:type :CopyText ; verb:context partData })
+	if (!= action null)
+		= action action [0]
+
+		replace action dc:title ?x title
+		replace action :text ?x (Literal text)
+	else
+		= action ${
+			rdf:type		verb:Action ;
+			rdf:type		:CopyText ;
+			verb:context	partData ;
+			dc:title		title ;
+			:text			(Literal text)
+		}
+
+	return action

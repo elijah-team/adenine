@@ -1,0 +1,770 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Navigation Pane (and Launching code)
+# $Header: /home/stefano/haystack/src/adenine/ui/navigationPane.ad,v 1.17 2004/03/13 21:02:09 vineet Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/navigationPane>
+
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix navView:	<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix navFake:	<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix navAgent:	<http://haystack.lcs.mit.edu/programs/navigationSupport#>
+@prefix	navPane:	<http://haystack.lcs.mit.edu/ui/navigationPane#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix viewContainer:  <http://haystack.lcs.mit.edu/ui/viewContainer#>
+@prefix collRefExperts: <http://haystack.lcs.mit.edu/navigaion/collectionRefinementExperts#>
+@prefix frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix navSupport:	<http://haystack.lcs.mit.edu/programs/navigationSupport#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/navigationPane#>
+
+
+#############################################################################################
+# Navigation pane part and source
+
+add {
+	:navigationPanePart
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		navView:NavigationPane ;
+		ozone:partDataGenerator :navigationPaneGenerator ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+
+	navView:NavigationPane hs:classView navView:NavigationPaneView
+	navView:NavigationPaneView rdfs:label "Navigation Pane View"
+	:navigationPaneViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:AppletViewPart ;
+		ozone:viewDomain		navView:NavigationPaneView ;
+		ozone:partDataGenerator :navigationPaneViewPartGenerator ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+		
+	#navView:SideNavigationPane hs:classView navView:SideNavigationPane
+	#navView:TaskNavigationPaneView rdfs:label "Navigation Pane View"
+	:sideNavigationPanePart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		#rdf:type				ozone:AppletViewPart ;
+		ozone:dataDomain		navView:SideNavigationPane ;
+		#ozone:viewDomain		navView:TaskNavigationPaneView ;
+		ozone:partDataGenerator :sideNavigationPaneViewPartGenerator ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+		
+
+	:navigationPaneDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		navView:NavigationPaneSource ;
+		data:initialize			:navigationPaneSourceInitialize ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.AdenineDataProvider" }
+
+	:sideNavigationPaneDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		navView:SideNavigationPaneSource ;
+		data:initialize			:navigationPaneSourceInitialize ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.AdenineDataProvider" }
+
+}
+
+method :navigationPaneGenerator
+	# code for the pane being shown on top
+	= pane (__context__.getLocalProperty ozone:partData)
+
+	return ${
+		rdf:type				slide:Slide ;
+		slide:margin			"15" ;
+		slide:bgcolor			"lightestGray" ;
+		slide:color				"darkestGray" ;
+		slide:borderTopShadow	"true" ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children	@(
+				${	rdf:type			ozone:AdeninePartContainer ;
+					ozone:dataSource ${
+						rdf:type 			navView:NavigationPaneSource ;
+						ozone:dataSource	(extract pane frame:navigationSource ?x)
+					}
+				}
+				slide:break
+				${	rdf:type				slide:Block ;
+					ozone:onClick			:dockNavPane ;
+					slide:child ${
+						rdf:type	slide:Paragraph ;
+						slide:children @(
+							${	rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/pin.gif>
+							}
+							slide:space
+							${	rdf:type	slide:Text ;
+								slide:text	"Show in side pane"
+							}
+						)
+					}
+				}
+			) ;
+		}
+	}
+
+
+method :dockNavPane
+	navAgent:addNavPane
+	= navigatePane (__context__.getProperty <http://haystack.lcs.mit.edu/ui/frame#navigatePane>)
+	replace navigatePane ozone:visible ?x "false"
+
+method :navigationPaneViewPartGenerator
+	# code for the pane being shown on the left/right
+	= pane (__context__.getLocalProperty ozone:underlying)
+		
+	return ${
+		rdf:type			slide:Slide ;
+		slide:margin		"15" ;
+		slide:child ${
+			rdf:type			ozone:AdeninePartContainer ;
+			ozone:dataSource ${
+				rdf:type 			navView:NavigationPaneSource ;
+				ozone:dataSource	(extract pane frame:navigationSource ?x)
+			}
+		}
+	}
+
+method :sideNavigationPaneViewPartGenerator
+	# code for the pane being shown on the left/right
+	= pane (__context__.getLocalProperty ozone:partData)
+
+	return ${
+		#rdf:type			slide:Slide ;
+		rdf:type			slide:Block ;
+		#slide:margin		"15" ;
+		slide:fillParent	"false" ;
+		slide:child ${
+			rdf:type			ozone:AdeninePartContainer ;
+			ozone:dataSource ${
+				rdf:type 			navView:SideNavigationPaneSource ;
+				ozone:dataSource	(extract pane frame:navigationSource ?x)
+			}
+		}
+	}
+
+method :navigationPaneSourceInitialize dataProvider
+	= viewPart (__context__.getLocalProperty ozone:part)
+	= navPaneConsumerMethod :getNavigationPaneUI
+	if (== viewPart :sideNavigationPaneDataProvider)
+		= navPaneConsumerMethod :getSideNavigationPaneUI
+		
+	:initializeNavigationChainedDataProviderSource (:conumerForOnDataChained navPaneConsumerMethod) dataProvider
+
+
+method :initObjDefFromSummaryData resDefColl res getExpert closeExpert
+	= expColl (getExpert :initObjDefFromSummaryData navFake:summary)
+
+	# copy data
+	for x in (query {expColl hs:member ?x})
+		add { resDefColl hs:member x[0] }
+
+	# we are done with expert
+	closeExpert expColl
+
+method :getNavigationPaneUI resource
+	if (== resource null)
+		return :noNavigationPane
+
+	= ui (extract ?x :navigationPaneUIOf resource)
+	if (!= null ui)
+		= navigationMethods (extract ui :navigationMethods ?x)
+		:launchNavFramework resource navigationMethods
+		return ui
+		
+	= navMethods (UniqueResource)
+	= sortBy ${
+		rdf:type				data:SortingListSource ;
+		ozone:debug				"true" ;
+		#[
+		data:sortDataSource ${
+			rdf:type		data:LiteralPropertySource ;
+			data:predicate :order 
+		} ;
+		]#
+		data:sortDataSource ${ rdf:type summary:TitleSource }
+	}
+	= listViewStackerConstraint (UniqueResource)
+	= rowStackerConstraint (UniqueResource)
+	= layout (UniqueResource)
+
+
+	add { listViewStackerConstraint
+		rdf:type				layout:ListViewConstraint ;
+		ozone:viewPartClass		ozone:LineSummaryViewPart ;
+		layout:sortBy			sortBy
+	}
+
+	#uniqueMethod showScrollbar
+	#	replace `layout layout:layoutConstraint ?x `listViewStackerConstraint
+	add { rowStackerConstraint
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:LineSummaryViewPart ;
+		layout:sortBy			sortBy ;
+		#layout:morePartData ${
+		#	rdf:type		slide:Text ;
+		#	slide:text		"More..." ;
+		#	ozone:onClick	showScrollbar
+		#} ;
+	}
+	add { layout
+		rdf:type				layout:Layout ;
+		# change default to show in list view, we really want the more to show
+		#  only within the grouped view (but all the groups should be always 
+		#  visible)
+		layout:layoutConstraint rowStackerConstraint ;
+		#layout:layoutConstraint listViewStackerConstraint ;
+		ozone:dataSource ${
+			rdf:type		data:PredicateSetSource ;
+			data:subject	navMethods ;
+			data:predicate	hs:member ;
+		}
+	}
+	
+	= navHeader (:getNavHeader resource)
+
+	= ui ${
+		rdf:type				slide:Slide ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children	@(
+				navHeader
+				slide:break
+				#${	rdf:type				slide:Text ;
+				#	slide:text				"Suggested Links" ;
+				#	slide:fontSize			"120%" ;
+				#	slide:fontBold			"true"
+				#}
+				#slide:break
+				layout
+			)
+		} ;
+		:navigationPaneUIOf resource ;
+		:navigationMethods navMethods
+	}
+
+	= navigationMethods (extract ui :navigationMethods ?x)
+	
+	:launchNavFramework resource navigationMethods
+
+	return ui
+
+method :getSideNavigationPaneUI resource
+	if (== resource null)
+		return :noNavigationPane
+
+	= ui (extract ?x :navigationPaneUIOf resource)
+	if (!= null ui)
+		= navigationMethods (extract ui :navigationMethods ?x)
+		:launchNavFramework resource navigationMethods
+		return ui
+		
+	= navMethods (UniqueResource)
+	
+	= navHeader (:getNavHeader resource)
+
+	#[
+	= ui ${
+		rdf:type				slide:Slide ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children	@(
+				navHeader
+			)
+		} ;
+		:navigationPaneUIOf resource ;
+		:navigationMethods navMethods
+	}
+	]#
+	= ui navHeader
+	add { ui 
+		:navigationPaneUIOf resource ;
+		:navigationMethods navMethods
+	}
+
+	= navigationMethods (extract ui :navigationMethods ?x)
+	:launchNavFramework resource navigationMethods
+
+	return ui
+
+
+add { <-- -- -- -- Refactor Above -- -- -- --> }
+
+
+
+#############################################################################################
+# Navigation pane shown in full page (for large collections)
+
+add { 
+	navPane:CollectionView	rdfs:label					"Navigation:Collection View" ;
+							navPane:embedsNavOptions	"true"
+
+	:collectionViewPart
+		rdf:type						ozone:SWTPart ;
+		rdf:type						ozone:Part ;
+		rdf:type						ozone:ViewPart ;
+		rdf:type						ozone:InteractiveViewPart ;
+		ozone:viewDomain				navPane:CollectionView ;
+		ozone:dataDomain				ozone:Collection ;
+		viewContainer:toolbarCaption	"Show options for refining collection" ;
+		ozone:partDataGenerator			:presentNavCollectionView ;
+		ozone:cachePartData				"true" ;
+		ozone:requiresViewInstance		"true" ;
+		hs:javaImplementation			${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	ozone:CollectionView ozone:viewPartResolver :collectionViewPartResolver ; hs:classView :CollectionView
+}
+
+method :collectionViewPartResolver collection
+	with __source__ __infosource__
+		if (gt (querySize { collection hs:member ?x }) 100)
+			return :collectionViewPart
+		else
+			return cv:collectionViewPart
+
+
+method :presentNavCollectionView resColl ; rdfs:comment "Presents a collection view as an Ozone Slide"
+	#print '******************************* :presentNavCollectionView'
+	#= viewInstance (__context__.getLocalProperty ozone:viewInstance)
+
+	= refinementOptions (extract resColl navView:cachedRefinementData ?x)
+	if (== null refinementOptions)
+		add { resColl navView:cachedRefinementData 
+			${	rdf:type	navView:PromptNavigationMode ;
+				dc:title	"Please wait, updating navigation options!" ;
+				:order		"0" ;
+			} 
+		}
+		fork -2 collRefExperts:cacheCollectionRefinementOptions resColl
+
+    return	${ 	rdf:type				ozone:ViewContainer ;
+				ozone:viewPartClass		navView:CollectionViewEmbeddedViewPart ;
+				ozone:dataSource ${
+					rdf:type			data:ResourcePropertySource ;
+					data:subject		resColl ;
+					data:predicate		navView:cachedRefinementData
+				}
+	}
+
+	
+	
+#############################################################################################
+# Navigation progress stuff
+
+add { :navSuggProgressItem
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				frame:ToolbarViewPart ;
+	ozone:viewDomain		:NavSuggProgressItemView ;
+	hs:view					${ rdf:type :NavSuggProgressItemView } ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:fillParent	"true" ;
+		slide:margin		"3" ;
+		slide:child ${
+			rdf:type		slide:Train ;
+			slide:children	@(
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/browseto.gif>
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:text	"Analyzing for providing navigation suggestions..." ;
+				}
+			)
+		}
+	}
+}
+
+###############################################################################
+# Schema
+
+add { 
+	:navigationPaneUIOf			rdf:type	hs:CachedProperty
+	:navigationPaneUIHeaderOf	rdf:type	hs:CachedProperty
+}
+
+###############################################################################
+# Common Support
+
+add {
+	:noNavigationPane
+		rdf:type				slide:Block ;
+		slide:margin			"15" ;
+		slide:bgcolor			"#426496" ;
+		slide:color				"lighterGray" ;
+		slide:borderTopWidth	"1" ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"There is no object in the current view from which to navigate."
+				}
+			)
+		}
+}
+
+method :getNavHeader resource
+	= typeTxt null
+	for x in (query {resource rdf:type ?x})
+		= typeTxt (navSupport:intelliStringAppend typeTxt ', ' (navView:getTitle x[0]))
+	if (== typeTxt null)
+		= typeTxt ''
+
+	= colDefTypes @()
+
+	for x in (query {resource rdf:type ?x})
+		if (gt (colDefTypes.size) 0)
+			colDefTypes.add slide:comma
+		colDefTypes.add ${
+					rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	x[0] ;
+					ozone:viewPartClass		ozone:InactiveInlineViewPart
+		}
+
+
+	= collDefChildren @(
+		${	rdf:type		slide:Span ;
+			slide:fontBold	"true" ;
+			slide:children colDefTypes
+		}
+	)
+
+	= memCnt (length (query {resource hs:member ?x}))
+	if (!= 0 memCnt)
+		collDefChildren.addAll @(
+			slide:space
+			${	rdf:type		slide:Text ;
+				slide:text		(append '(' memCnt ' items)')
+			}
+		)
+		
+	collDefChildren.addAll @(
+		slide:colon
+		slide:space
+	)
+	
+	#if (gt (length (query {collDef hs:member ?x})) 1)
+	if (contains resource rdf:type hs:Collection)
+		if (!= null (extract resource navView:collDef ?x))
+			collDefChildren.addAll @(
+				${	rdf:type				layout:Layout ;
+					layout:layoutConstraint ${
+						rdf:type			layout:InlineConstraint ;
+						ozone:viewPartClass	navView:CollectionDefinitionViewPart ;
+						layout:sortBy ${
+							rdf:type			data:SortingListSource ;
+							data:sortDataSource ${ rdf:type summary:TitleSource }
+						} ;
+						layout:separator		slide:space ;
+						layout:lastSeparator	slide:space
+					} ;
+					ozone:dataSource ${
+						rdf:type			data:PredicateSetSource ;
+						data:subject		(extract resource navView:collDef ?x) ;
+						data:predicate		hs:member
+					}
+				}
+			)
+	else
+		#[
+		# build collDef based on children
+		= collDef (extract resource navView:collDef ?x)
+		if (== null collDef)
+			= collDef ${}
+			uniqueMethod initObjDefFromSummaryData res  nav:getExpert = getExpert nav:closeExpert = closeExpert
+				:initObjDefFromSummaryData `collDef res getExpert closeExpert
+			navCleanAgents.add initObjDefFromSummaryData
+			
+		collDefChildren.addAll @(
+			${	rdf:type				layout:Layout ;
+				layout:layoutConstraint ${
+					rdf:type			layout:InlineConstraint ;
+					ozone:viewPartClass	navView:CollectionDefinitionViewPart ;
+					layout:sortBy ${
+						rdf:type			data:SortingListSource ;
+						data:sortDataSource ${ rdf:type summary:TitleSource }
+					} ;
+					layout:separator		slide:space ;
+					layout:lastSeparator	slide:space
+				} ;
+				ozone:dataSource ${
+					rdf:type			data:PredicateSetSource ;
+					data:subject		collDef ;
+					data:predicate		hs:member
+				}
+			}
+		)
+		]#
+			
+	return	${	
+		rdf:type		slide:Paragraph ;
+		slide:children	collDefChildren
+	}
+
+
+
+###############################################################################
+# Chained provider support code
+
+# expects the dataSource to contain an ozone:dataSource to a chained provider
+#  (typically of type navigator:NavigationSource)
+method :initializeNavigationChainedDataProviderSource navPaneConsumerMethod dataProvider
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	
+	= dataSource (__context__.getLocalProperty ozone:partData)
+	= navigationSource (extract dataSource ozone:dataSource ?x)
+
+	= chainedDataProvider (DataUtilities.createDataProvider navigationSource __context__ __source__)
+	if (== chainedDataProvider null)
+		return
+
+	dataProvider.cacheData :noNavigationPane
+
+	= dataConsumer (AdenineDataConsumer __source__ __context__ navPaneConsumerMethod null null)
+
+	__context__.putLocalProperty :dataProvider				dataProvider
+	__context__.putLocalProperty :chainedDataProvider		chainedDataProvider
+	__context__.putLocalProperty :dataConsumer				dataConsumer
+
+	__context__.putLocalProperty data:onConsumerRegistered	:navigationChainedDataProviderOnConsumerRegistered
+	__context__.putLocalProperty data:dispose				:navigationChainedDataProviderDispose
+
+	chainedDataProvider.registerConsumer dataConsumer
+
+method :conumerForOnDataChained methToCall
+	uniqueMethod chainedDataProviderOnDataChanged dataConsumer changeType change
+		var ui
+		if (== changeType data:resourceChange)
+			= ui (`methToCall change)
+		else
+			= ui (`methToCall null)
+
+		= dataProvider (__context__.getLocalProperty :dataProvider)
+		dataProvider.cacheData ui
+
+		for dc in (dataProvider.getDataConsumers)
+			dc.onDataChanged data:resourceChange ui
+
+	#add { chainedDataProviderOnDataChanged <a> methToCall }
+	return chainedDataProviderOnDataChanged
+
+method :navigationChainedDataProviderOnConsumerRegistered dataProvider dataConsumer
+	dataConsumer.onDataChanged data:resourceChange (dataProvider.getCachedData)
+
+method :navigationChainedDataProviderDispose dataProvider
+	= chainedDataProvider (__context__.getLocalProperty :chainedDataProvider)
+	= dataConsumer (__context__.getLocalProperty :dataConsumer)
+
+	chainedDataProvider.unregisterConsumer dataConsumer
+	chainedDataProvider.dispose
+
+
+###############################################################################
+# Navigation pane split into a header and the methods (for the side (where the 
+# header will always be visible)
+
+
+# the header part
+add {
+	:navigationPaneHeaderPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		ozone:dataDomain		navView:NavigationPaneHeader ;
+		ozone:partDataGenerator :navigationPaneHeaderPartGenerator ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	:navigationPaneHeaderDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		navView:NavigationPaneHeaderSource ;
+		data:initialize			:navigationPaneHeaderInitialize ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.AdenineDataProvider" }
+}
+
+method :navigationPaneHeaderPartGenerator
+	# code for the pane being shown on the left/right
+	= pane (__context__.getLocalProperty ozone:partData)
+
+	return ${
+		rdf:type			slide:Block ;
+		#slide:fillParent	"false" ;
+		slide:child ${
+			rdf:type			ozone:AdeninePartContainer ;
+			ozone:dataSource ${
+				rdf:type 			navView:NavigationPaneHeaderSource ;
+				ozone:dataSource	(extract pane frame:navigationSource ?x)
+			}
+		}
+	}
+
+method :navigationPaneHeaderInitialize dataProvider
+	:initializeNavigationChainedDataProviderSource (:conumerForOnDataChained :getNavigationPaneHeaderUI) dataProvider
+
+method :getNavigationPaneHeaderUI resource
+	if (== resource null)
+		return :noNavigationPane
+
+	= ui (extract ?x :navigationPaneUIHeaderOf resource)
+	if (!= null ui)
+		return ui
+
+	= ui (:getNavHeader resource)
+	add { ui :navigationPaneUIHeaderOf resource }
+
+	return ui
+
+
+
+#############################################################################################
+# Navigation Schemas
+
+#[
+below is going to result in 
+${	rdf:type		navFake:GroupedNavigationExpert ; 
+	navFake:NavigationExpertType :similarItemsByContent ;
+	...
+}
+# will therefore need to change the rdf:type to be more appropriate
+# NOTE: navFake:NavigationExpert === navView:NavigationMode
+# need to figure out what to do with navFake:GroupedNavigationExpertType as well
+]#
+add {
+	navFake:similarItems
+		dc:title				"Similar Items" ;
+		rdf:type				navFake:NavigationExpertType ;
+		rdf:type				navFake:GroupedNavigationExpertType ;
+}
+
+add {
+	navFake:contraryItems
+		dc:title				"Contrary" ;
+		rdf:type				navFake:NavigationExpertType ;
+		rdf:type				navFake:GroupedNavigationExpertType ;
+}
+
+add {
+	navFake:otherItems
+		dc:title				"Other" ;
+		rdf:type				navFake:NavigationExpertType ;
+		rdf:type				navFake:GroupedNavigationExpertType ;
+}
+
+add {
+	navFake:history
+		dc:title				"History" ;
+		rdf:type				navFake:NavigationExpertType ;
+		rdf:type				navFake:GroupedNavigationExpertType ;
+}
+
+add {
+	navFake:summary
+		dc:title				"Similar Items by Properties" ;
+		rdf:type				navFake:NavigationExpertType ;
+		navFake:nestedToExpert	navFake:similarItems ;
+		navFake:nestedTitle		"by Properties" ;
+}
+
+
+add {
+	navFake:similarItemsByContent
+		dc:title				"Similar Items by Content" ;
+		rdf:type				navFake:NavigationExpertType ;
+		navFake:nestedToExpert	navFake:similarItems ;
+		navFake:nestedTitle		"by Content" ;
+}
+
+
+
+
+#############################################################################################
+# Navigation pane logic
+method navPane:callNavMethod navMethProvider resObj navMethods navFmwk ;
+rdfs:comment "Actually calls the navigation method and sets it up for display"
+	print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+	print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+	importjava "java.lang" Exception
+	= e (Exception ':printStackTrace')
+	e.printStackTrace
+	print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+	print '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+
+
+method navPane:setNavMethods resObj navMethods updateOnlyNonCachedResults navCleanAgents ;
+rdfs:comment "Goes through the various nav methods and calls them for adding options on the current object" 
+
+	importjava "edu.mit.lcs.haystack.server.extensions.navigation" NavigationFramework
+	= fmwk (NavigationFramework __source__ __context__ resObj navMethods updateOnlyNonCachedResults navCleanAgents)
+	fmwk.setNavMethods
+
+
+
+method :launchNavFramework resObj navMethods navCleanAgents ;
+rdfs:comment "Launched the processing thread that gets run when the nav pane is shown"
+
+	#[
+	don't need to calculate navigation options if they are being calculated for the main pane. Ideally we want to see
+	the current type of view of resObj, but for now we will see if any of the views of resObj have the property
+	]#
+	= navOptionView (queryExtract {resObj hs:view ?x ?x rdf:type ?y ?y navPane:embedsNavOptions "true"} @(?y))
+	if (!= null navOptionView)
+		if (== null (extract navMethods hs:member ?x))
+			add { navMethods hs:member ${
+					rdf:type	navView:PromptNavigationMode ;
+					dc:title	"Navigation options are shown in the main pane!" ;
+					:order		"0" ;
+				}
+			}
+		return
+
+	#[
+	TODO[vineet]: ideally we want to mark all of the current ones as old, and then remove the old ones when the new ones
+	are available, but for now we do not update cached data
+	]#
+	= updateOnlyNonCachedResults false
+	if (!= null (extract navMethods hs:member ?x))
+		= updateOnlyNonCachedResults true
+		#return
+	
+	# disable chaching for debugging purposes
+	#= updateOnlyNonCachedResults false
+	
+	print 'supposed to do:' :setNavMethods resObj navMethods updateOnlyNonCachedResults navCleanAgents
+	fork -2 :setNavMethods resObj navMethods updateOnlyNonCachedResults navCleanAgents
+

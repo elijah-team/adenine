@@ -1,0 +1,20 @@
+<html>
+	<body background="loginsplash.gif">
+		<DIV style="position: absolute; top: 175px; width: 375px;">
+		<TABLE id="Table1" cellSpacing="4" cellPadding="0" border="0" style="font-size: 10pt; font-family: Arial; color: blue;">
+			<TR>
+				<TD width="199" style="text-align: right">Haystack Server:</TD>
+				<TD><INPUT size="18" id="server" value="http://localhost:8100/servlet/edu.mit.lcs.haystack.server.transport.http.DirectServlet?service=urn:haystack:rdfstore" style="border: 1px solid blue; font-size: 10pt; font-family: Arial; height: 14pt;" onchange="this.setAttribute('value', this.value); alert(this.getAttribute('value'))"></TD>
+			</TR>
+			<TR>
+				<TD width="199" style="text-align: right">Personal URI:</TD>
+				<TD><INPUT size="18" id="username" style="border: 1px solid blue; font-size: 10pt; font-family: Arial; height: 14pt;" onchange="this.setAttribute('value', this.value); alert(this.getAttribute('value'))"></TD>
+			</TR>
+			<TR>
+				<TD width="199" style="text-align: right">Password:</TD>
+				<TD><INPUT size="18" id="password" style="border: 1px solid blue; font-size: 10pt; font-family: Arial; height: 14pt;" type="password" onchange="this.setAttribute('value', this.value); alert(this.getAttribute('value'))"></TD>
+			</TR>
+		</TABLE>
+		</DIV>
+	</body>
+</html>

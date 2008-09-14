@@ -1,0 +1,214 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Melatonin agent
+# Written by Dennis Quan
+# $Header$
+
+@base <http://haystack.lcs.mit.edu/agents/melatonin> 
+
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#>
+@prefix slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix metadata:	<http://haystack.lcs.mit.edu/ui/metadataEditor#>
+@prefix editor:		<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix op:			<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix	:			<http://haystack.lcs.mit.edu/agents/melatonin#> 
+
+#############################################################################################
+# Melatonin agent
+
+add { :MelatoninAgent
+	rdfs:label		"Melatonin agent" ;
+	rdfs:subClassOf	config:Service ;
+	vowl:hasLens	:jobsAspect ;
+	vowl:hasLens	:configAspect
+}
+
+add { :threadCount
+	rdfs:label				"Number of threads" ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	editor:disallowBlanks	"true" ;
+	rdfs:domain				:MelatoninAgent ;
+	rdfs:range				xsd:int
+}
+
+add { :pauseBetweenJobs
+	rdfs:label				"Pause between jobs (msec)" ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	editor:disallowBlanks	"true" ;
+	rdfs:domain				:MelatoninAgent ;
+	rdfs:range				xsd:int
+}
+
+add { :configAspect
+	rdf:type			metadata:MetadataAspect ;
+	dc:title			"Configuration" ;
+	vowl:priority	"b" ;
+	metadata:propertiesToDisplay ${
+		rdf:type		data:DAMLListSource ;
+		data:damlList @(
+			:threadCount
+			:pauseBetweenJobs
+		)
+	}
+}
+
+add { :jobsAspect
+	rdf:type			lensui:SlideAspect ;
+	vowl:priority	"c" ;
+	dc:title			"Job status" ;
+	lensui:slide ${
+		rdf:type		slide:Block ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"There are currently"
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					ozone:dataSource ${
+						rdf:type	data:SetSizeSource ;
+						ozone:dataSource ${
+							rdf:type				data:RDFQuerySetSource ;
+							data:existentials		@( ?job ) ;
+							data:targetExistential	?job ;
+							data:statement ${
+								data:subject	?job ;
+								data:predicate	rdf:type ;
+								data:object		:Job
+							} ;
+							data:statement ${
+								data:subject	?job ;
+								data:predicate	:state ;
+								data:object		:waitingToStart
+							}
+						}
+					}
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:text	"jobs outstanding and"
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					ozone:dataSource ${
+						rdf:type	data:SetSizeSource ;
+						ozone:dataSource ${
+							rdf:type				data:RDFQuerySetSource ;
+							data:existentials		@( ?job ) ;
+							data:targetExistential	?job ;
+							data:statement ${
+								data:subject	?job ;
+								data:predicate	rdf:type ;
+								data:object		:Job
+							} ;
+							data:statement ${
+								data:subject	?job ;
+								data:predicate	:state ;
+								data:object		:failed
+							}
+						}
+					}
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:text	"failed jobs."
+				}
+			)
+		}
+	}
+}
+
+#############################################################################################
+# Job class
+
+add { :Job
+	rdfs:label		"Job" ;
+	rdf:type		daml:Class ;
+	rdf:type		rdfs:Class
+}
+
+#############################################################################################
+# Default Melatonin agent instance
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	if (== null (extract ?x rdf:type :MelatoninAgent))
+		= agent ${
+			dc:title			"Background processing agent" ;
+			rdf:type			config:Service ;
+			rdf:type			:MelatoninAgent ;
+			hs:user				user ;
+			:pauseBetweenJobs	"100" ;
+			:threadCount		"3" ;
+			config:singleton	"true" ;
+			dc:description		"Runs background processes that keep Haystack in sync with your information sources." ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:className "edu.mit.lcs.haystack.server.standard.melatonin.MelatoninAgent" 
+			} 
+		}
+		add { server config:hostsService agent }
+		add { opdata:setupOperations hs:member agent }
+
+#############################################################################################
+# Pause and resume operations
+
+add { :agentParam
+	rdf:type	op:Parameter;
+	rdf:type	daml:ObjectProperty ;
+	op:required	"true" ;
+	rdfs:label	"Melatonin agent" ;
+	rdfs:range	:MelatoninAgent
+}
+
+method :pause :agentParam = agents ;
+adenine:preload			"true" ;
+dc:title				"Pause jobs" ;
+rdf:type				op:Operation ;
+op:primaryParameter		:agentParam
+	for x in agents
+		(connect x).stopThreads
+		
+method :resume :agentParam = agents ;
+adenine:preload			"true" ;
+dc:title				"Resume jobs" ;
+rdf:type				op:Operation ;
+op:primaryParameter		:agentParam
+	for x in agents
+		(connect x).startThreads
+		

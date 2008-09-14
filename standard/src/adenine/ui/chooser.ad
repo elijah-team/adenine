@@ -1,0 +1,228 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone chooser UI
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/chooser.ad,v 1.17 2004/01/16 16:33:37 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/chooser>
+
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	modeless:		<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	chooser:		<http://haystack.lcs.mit.edu/ui/chooser#> 
+@prefix	contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#> 
+
+#############################################################################################
+# Chooser part
+
+add { :chooserPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		chooser:Chooser ;
+	ozone:partDataGenerator	:presentChooser ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentChooser data ; adenine:preload "true"
+	= dataSource (extract data ozone:dataSource ?x)
+	= choices (extract data chooser:choicesDataSource ?x)
+
+	return ${
+		rdf:type		slide:Train ;
+		slide:children	@(
+			${	rdf:type			ozone:ViewContainer ;
+				ozone:dataSource	dataSource ;
+				ozone:viewPartClass	ozone:InlineViewPart
+			}
+			slide:space
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif> ;
+				ozone:onClick		${
+					rdf:type 			ozone:AdenineCall ;
+					ozone:method		:change ;
+					ozone:parameters 	@( dataSource choices )
+				}
+			}
+		)
+	}
+	
+method :change dataSource choices ; adenine:preload "true"
+	chooser:showChooser chooser:destinationDataSource = dataSource chooser:selectionsDataSource = choices
+
+#############################################################################################
+# showChooser
+
+add { :underlyingChooserSectionOf rdf:type hs:CachedProperty }
+
+method chooser:showChooser point chooser:none = none chooser:more = more chooser:title = title chooser:selectionsDataSource = selectionsDataSource chooser:destinationDataSource = destinationDataSource chooser:continuation = continuation; adenine:preload "true" ; adenine:precompile "true"
+	if (== point null)
+		importjava "org.eclipse.swt.widgets" Display
+		= point ((Display.getDefault).getCursorLocation)
+
+	if (== title null)
+		= title 'Choices'
+
+	= children @(
+		(contextMenu:makeSectionUI ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${ rdf:type slide:Text ; slide:text title }
+			)
+		} ${
+			rdf:type			layout:Layout ;
+			layout:layoutConstraint ${
+				rdf:type			layout:RowStackerConstraint ;
+				ozone:viewPartClass	chooser:ChooserViewPart ;
+				layout:sortBy ${
+					rdf:type			data:SortingListSource ;
+					data:sortDataSource ${ rdf:type summary:TitleSource }
+				}
+			} ;
+			ozone:dataSource	selectionsDataSource
+		})
+	)
+
+	if (!= null more)
+		= x (contextMenu:makeItemUI ${
+			rdf:type	slide:Text ;
+			slide:text	"More..."
+		})
+
+		add { x ozone:onClick more }
+
+		children.addAll @(
+			slide:line
+			x
+		)
+
+	if (!= null none)
+		= x (contextMenu:makeItemUI ${
+			rdf:type	slide:Text ;
+			slide:text	none
+		})
+
+		add { x ozone:onClick :doNone }
+
+		children.addAll @(
+			slide:line
+			x
+		)
+
+	= modelessChild ${
+		rdf:type			slide:Block ;
+		ozone:putProperty	${ ozone:name :destination ; ozone:value destinationDataSource } ;
+		slide:alignX		"left" ;
+		slide:fontBold		"false" ;
+		slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+		slide:fontSize		"8" ;
+		slide:bgcolor		"white" ;
+		slide:color			"#3B5377" ;
+		slide:borderWidth	"1" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"2" ;
+		slide:width			"200" ;
+		slide:child			${
+			rdf:type		slide:Paragraph ;
+			slide:children	children
+		}
+	}
+
+	if (!= continuation null)
+		add { modelessChild
+			ozone:putProperty	${ ozone:name :continuation ; ozone:value continuation }
+		}
+
+	= chooser ${
+		rdf:type		modeless:Modeless ;
+		modeless:child	modelessChild
+	}
+
+	(__context__.getProperty modeless:modelessCreator).createModelessPart chooser point __context__
+
+#############################################################################################
+# chooser:ChooserView
+
+add { chooser:ChooserViewPart	ozone:defaultViewClass	chooser:ChooserView }
+
+add {
+	:chooserViewPart
+		rdf:type					ozone:SWTPart ;
+		rdf:type					ozone:Part ;
+		rdf:type					ozone:ViewPart ;
+		rdf:type					chooser:ChooserViewPart ;
+		ozone:viewDomain			chooser:ChooserView ;
+		ozone:partDataGenerator		:chooserViewGenerator ;
+		ozone:cachePartData			"true" ;
+		ozone:synchronous			"true" ;
+		hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :chooserViewGenerator ; adenine:preload "true" ; adenine:precompile "true"
+	= body ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type			summary:IconBlank
+			}
+			slide:space
+			${	rdf:type			summary:Title
+			}
+		)
+	}
+	= ui (contextMenu:makeItemUI body)
+	add { ui
+		ozone:onClick	:select
+	}
+
+	return ui
+
+method :select ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (data:getUnderlying)
+	(__context__.getProperty modeless:modelessParent).dispose
+	
+	= destination (__context__.getProperty :destination)
+	= continuation (__context__.getProperty :continuation)
+
+	if (and (!= destination "null") (!= destination 'null'))
+		# Construct destination data source
+		importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+		= dataProvider (DataUtilities.createDataProvider destination __context__ __source__)
+
+		if (== null underlying)
+			dataProvider.requestChange data:resourceDeletion null
+		else
+			dataProvider.requestChange data:resourceChange underlying
+
+		dataProvider.dispose
+
+	if (!= continuation null)
+		continuation underlying
+
+method :doNone ; adenine:preload "true"
+	:select null

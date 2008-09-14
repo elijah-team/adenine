@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src/java" />
+    <classpathentry exported="true" kind="lib" path="jars/loadfirst/xercesImpl.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/bcel.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/commons-httpclient.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/icu4j.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/jena.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/log4j-1.2.7.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/lucene-1.4.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/axis.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/dnsjava-1.3.2.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/commons-discovery.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/jaxrpc.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/saaj.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/wsdl4j.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/activation.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/castor-0.9.5.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/mail.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/soap.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/xml-apis.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/lsid-client.jar" />
+    <classpathentry exported="true" kind="lib" path="jars/commons-logging.jar" />
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" />
+    <classpathentry kind="output" path="out/" />
+</classpath>
+

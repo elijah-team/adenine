@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY a 'http://www.w3.org/2000/01/rdf-schema#'>
+]>
+<rdf:RDF xmlns:rdf="&rdf;"
+	 xmlns:a="&a;">
+<a:Class rdf:about="&rdf;Alt"
+	 a:comment="A collection of alternatives"/>
+<a:Class rdf:about="&rdf;Bag"
+	 a:comment="An unordered collection"/>
+<a:Class rdf:about="&rdf;Property">
+	<a:comment>A name of a property, defining specific meaning for the property</a:comment>
+</a:Class>
+<a:Class rdf:about="&rdf;Seq"
+	 a:comment="An ordered collection"/>
+<a:Class rdf:about="&rdf;Statement">
+	<a:comment>A triple consisting of a predicate, a subject, and an object.</a:comment>
+</a:Class>
+<rdf:Property rdf:about="&rdf;object">
+	<a:comment>Identifies the object of a statement when representing the statement in reified form</a:comment>
+</rdf:Property>
+<rdf:Property rdf:about="&rdf;predicate">
+	<a:comment>Identifies the property used in a statement when representing the statement in reified form</a:comment>
+	<a:range rdf:resource="&rdf;Property"/>
+	<a:domain rdf:resource="&rdf;Statement"/>
+</rdf:Property>
+<rdf:Property rdf:about="&rdf;subject">
+	<a:comment>Identifies the resource that a statement is describing when representing the statement in reified form</a:comment>
+	<a:domain rdf:resource="&rdf;Statement"/>
+</rdf:Property>
+<rdf:Property rdf:about="&rdf;type"
+	 a:comment="Identifies the Class of a resource"/>
+<rdf:Property rdf:about="&rdf;value">
+	<a:comment>Identifies the principal value (usually a string) of a property when the property value is a structured resource</a:comment>
+</rdf:Property>
+</rdf:RDF>

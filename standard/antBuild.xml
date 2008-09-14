@@ -1,0 +1,360 @@
+<project name="Haystack" default="help">
+
+  <!-- *************************************************************** -->    
+  <target name="configure">
+	<property environment="env"/>
+	<condition property="platform" value="macosx"><os name ="Mac OS X"/></condition> 
+	<condition property="platform" value="linux"><os name="Linux"/></condition> 
+	<condition property="platform" value="win32"><os family="windows"/></condition>
+	<condition property="unix"><os family = "unix"/></condition>
+	<property name="${platform}" value="true"/>
+	<echo message="Detected platform ${platform}"/>
+	
+	<!-- Set up jdk.home -->
+	<condition property="jdk.home" value="${env.JDK_HOME}">
+	  <isset property="env.JDK_HOME"/></condition>
+	<condition property="jdk.home" value="/usr/local/java">
+	  <isset property="linux"/></condition>
+	<condition property="jdk.home" 
+	  value="/Library/Java/Home">
+	  <isset property="macosx"/></condition>
+	<echo message = "Set jdk.home to ${jdk.home}"/>
+	
+	<!-- set up haystack.home -->
+	<condition property="haystack.home" value="${env.HAYSTACK_HOME}">
+	  <isset property="env.HAYSTACK_HOME"/></condition>
+	<property name="haystack.home" value="${basedir}"/>
+	<echo message = "Set haystack.home to ${haystack.home}"/>
+	
+	<!-- set up haystack.user.home -->
+	<condition property="haystack.user.home" value="${env.HAYSTACK_USER_HOME}">
+	  <isset property="env.HAYSTACK_USER_HOME"/></condition>
+	<property name="haystack.user.home" value="${haystack.home}"/>
+	<echo message = "Set haystack.user.home to ${haystack.user.home}"/>
+	
+	<!-- set up hay.library.path -->
+	<path id="hay.library.path">
+      <pathelement location="lib/${platform}"/>
+      <pathelement path="${java.library.path}"/>
+	</path>
+	<pathconvert property="hay.library.path" refid="hay.library.path" dirsep="/"/>
+	<echo message = "Set hay.library.path to ${hay.library.path}"/>
+	
+	<!-- set up hay.class.path -->
+	<path id="hay.class.path">
+	  <pathelement location="src/resource" />
+	  <pathelement location="src/adenine" />
+	  <pathelement location="out" />
+	  <pathelement location="lib/${platform}/swt.jar" />
+	  <pathelement location="lib/${platform}/swt-pi.jar" />
+	  <pathelement location="lib/${platform}/swt-mozilla.jar" />
+          <pathelement location="${jdk.home}/jre/lib/rt.jar" />
+	  <fileset dir="lib/java/loadfirst">
+	      <include name="*.jar" />
+	  </fileset>
+	  <fileset dir="lib/java">
+          <include name="*.jar" />
+	  </fileset>
+	</path>
+	<pathconvert property="hay.class.path" refid="hay.class.path" dirsep="/" />
+  	<!-- <echo message = "Set hay.class.path to ${hay.class.path}"/> -->
+  		
+	<!-- set up platform exclusions -->
+    <condition property="platform-exclude"
+	  value="**/win32/* **/combridge/* **/dom/ie/* **/InternetExplorer.java **/WindowsMediaPlayer.java  **/HaystackBrowser.java **/haystack/eclipse/* **/marble/* **/Eclipse* **/wrapperinduction/test/* **/infoextraction/*">
+	  <isset property="unix"/>
+    </condition>
+
+	<condition property="platform-exclude" value="${unix-exclude} ${mac-exclude}">
+	  <isset property="macosx" />
+	</condition>
+
+    <condition property="platform-exclude"
+	  value="**/Mozilla.java **/eclipse/* **/Eclipse* **/marble/*"> 
+	  <isset property="win32"/>
+    </condition>
+
+  </target>
+  
+  <!-- *************************************************************** -->    
+  <target name="clean" depends="configure" description="Removes all compiled code">
+	<delete>
+	  <fileset dir="${haystack.home}/out"/>
+	</delete>
+  </target>
+
+  <!-- *************************************************************** -->    
+  <target name="purge" depends="configure" 
+     description="Removes all haystack runtime/data files">
+	<delete failonerror="false" includeEmptyDirs="true">
+	  <fileset dir="${haystack.user.home}">
+		<include name="haystack-keys"/>
+		<include name="bootstrap.rdf"/>
+		<include name="usercontent.*"/>
+	  </fileset>
+	  <fileset dir="${haystack.user.home}/data" includes="**"/>
+	  <fileset dir="${haystack.user.home}/usercontent" includes="**"/>
+	  <fileset dir="${haystack.user.home}/precompile" includes="**"/>
+	  <fileset dir="${haystack.home}">
+		<include name="log.txt"/>
+		<include name="hs_err_*"/>
+	  </fileset>
+	</delete>
+  </target>
+
+<!-- *************************************************************** -->    
+  <target name="javadoc" depends="configure" 
+     description="Builds Haystack Java Documentation">
+	<mkdir dir="docs/java" />
+	<javadoc sourcepath="src/java" packagenames="*" destdir="docs/java"
+	  author="true" additionalparam="-breakiterator" version="true" 
+      windowtitle="Haystack API" classpathref="hay.class.path" 
+      maxmemory="128m"/>
+  </target>
+	
+<!-- *************************************************************** -->    
+  <target name="build-db" description="Builds Cholesterol database" depends="configure">
+      <echo message="Building Cholesterol for ${platform}..."/>
+      <antcall target="build-db-unix"/>
+  </target>
+  <target name="build-db-win32" if="win32">
+      <echo message="The build script doesn't (yet) support building cholesterol on win32."/>
+  </target>
+  <target name="build-db-unix" if="unix">
+      <condition property="gcc2" value="g++296"><isset property="linux"/></condition>
+      <condition property="gcc2" value="g++2"><isset property="macosx"/></condition>
+
+      <condition property="libfile" value="${basedir}/lib/linux/libCholesterol3.so">
+            <isset property="linux"/></condition>
+      <condition property="libfile" value="${basedir}/lib/macosx/libCholesterol3.jnilib">
+   	    <isset property="macosx"/></condition>
+
+      <condition property="otherargs" 
+       value="-I${jdk.home}/include/linux -Isgi-stl -shared -Wl,-soname,libCholesterol3.so -static">
+	    <isset property="linux"/></condition>
+      <condition property="otherargs" value=" -bundle">
+   	    <isset property="macosx"/></condition>
+
+      <condition property="extraincludes"
+       value="-I/usr/include/mozilla-1.7.3 -I/usr/include/mozilla-1.7.3/nspr">
+	    <isset property="linux"/></condition>
+      <condition property="extraincludes" value="">
+   	    <isset property="macosx"/></condition>
+
+      <exec executable="${gcc2}" dir="src/cpp/cholesterol4" failonerror="true">
+        <arg value="Database.cpp"/>
+        <arg value="JNI.cpp"/>
+	<arg value="Log.cpp"/>
+	<arg value="StdAfx.cpp"/>
+<!--	<arg value="Test.cpp"/>-->
+        <arg line="-D_REENTRANT -O3 -DLINUX -UWIN32 -I${jdk.home}/include "/>
+        <arg line="${extraincludes}"/>
+	<arg line="-o ${libfile}"/>
+        <arg line="${otherargs} -lc"/>
+      </exec>
+  </target>
+
+<!-- *************************************************************** -->    
+  <target name="build-core" depends="configure"> <!--,build-luceneQueryParser"-->
+	<property name="build.compiler" value="modern" />
+	<mkdir dir="out" />
+	<javac srcdir="src/java" destdir="out" 
+           optimize="on" debug="on" classpathref="hay.class.path" 
+	   excludes="${platform-exclude}" />
+  </target>
+<!-- *************************************************************** -->    
+	
+<target name="build" 
+   depends="build-core"
+   description="Builds the Haystack source">
+</target>
+  
+<!-- *************************************************************** -->    
+ <target name="genkey" depends="build" unless="unix">
+	<java classpathref="hay.class.path" fork="yes" classname="edu.mit.lcs.haystack.GenerateUserID">
+		<sysproperty key="java.library.path" value="${hay.library.path}" />
+	</java>
+ </target>
+
+<!-- *************************************************************** -->    
+
+	<target name="adeninec" depends="build"
+	   description="Runs Adenine compiler on input">
+		<java classpathref="hay.class.path" classname="edu.mit.lcs.haystack.adenine.compiler.Compiler">
+			<arg value="${input}" />
+		</java>
+	</target>
+	
+	<target name="adeninepp" depends="build"
+	   description="Runs Adenine pretty printer on input (use -Dinput= to specify for these)">
+		<java classpathref="hay.class.path" classname="edu.mit.lcs.haystack.adenine.parser.Parser">
+			<arg value="${input}" />
+		</java>
+	</target>
+	
+	<target name="adenine" depends="build" 
+	   description="Run the adenine console">
+		<java classpathref="hay.class.path" classname="edu.mit.lcs.haystack.adenine.SWTConsole" fork="yes">
+			<sysproperty key="java.library.path" value="${hay.library.path}" />
+		</java>
+	</target>
+		
+<!-- *************************************************************** -->    
+
+	<target name="CholesterolTest" depends="build">
+		<java classpathref="hay.class.path" classname="edu.mit.lcs.haystack.server.rdfstore.CholesterolTest">
+			<sysproperty key="java.library.path" value="${hay.library.path}" />
+		</java>
+	</target>
+
+	<target name="LuceneIndexTest" depends="configure">
+		<javac 	srcdir="src/java/org/apache" 
+				destdir="out"
+				optimize="on"
+				debug="on"
+				classpathref="hay.class.path" />
+		<java classpathref="hay.class.path" classname="org.apache.lucene.IndexTest">
+			<sysproperty key="java.library.path" value="${hay.library.path}" />
+		</java>
+	</target>
+
+<!-- *************************************************************** -->    
+	<target name="fullscreen" description="Runs Haystack server fullscreen">
+		<property name="ozone.fullscreen" value="true" />
+		<antcall target="haystack" />
+	</target>
+
+	<target name="fullscreen-batch">
+		<property name="ozone.fullscreen" value="true" />
+		<antcall target="haystack-batch" />
+	</target>
+
+	<target name="haystack-batch">
+		<property name="ozone.fullscreen" value="false" />
+		<property name="haystack.ui" value="edu.mit.lcs.haystack.ozone.core.Ozone" />
+		<property name="haystack.packageSet" value="http://haystack.lcs.mit.edu/bootstrap/user" />
+		<antcall target="haystack-launcher-batch" />
+	</target>
+
+	<target name="haystack" description="Run Haystack server with Ozone client">
+		<property name="ozone.fullscreen" value="false" />
+		<property name="haystack.ui" value="edu.mit.lcs.haystack.ozone.core.Ozone" />
+		<property name="haystack.packageSet" value="http://haystack.lcs.mit.edu/bootstrap/user" />
+		<antcall target="haystack-launcher" />
+	</target>
+
+	<target name="server">
+		<property name="ozone.fullscreen" value="false" />
+		<property name="haystack.ui" value="edu.mit.lcs.haystack.Haystack" />
+		<property name="haystack.packageSet" value="http://haystack.lcs.mit.edu/bootstrap/user" />
+		<antcall target="haystack-launcher" />
+	</target>
+
+	<target name="server-batch">
+		<property name="ozone.fullscreen" value="false" />
+		<property name="haystack.ui" value="edu.mit.lcs.haystack.Haystack" />
+		<property name="haystack.packageSet" value="http://haystack.lcs.mit.edu/bootstrap/user" />
+		<antcall target="haystack-launcher-batch" />
+	</target>
+
+	<target name="haystack-launcher" depends="build,genkey">
+	    <property name="javafork" value = "yes"/>
+		<java fork="${javafork}" classpathref="hay.class.path" classname="${haystack.ui}">
+			<sysproperty key="edu.mit.lcs.haystack.ozone.fullscreen" value="${ozone.fullscreen}" />
+			<sysproperty key="java.library.path" value="${hay.library.path}" />
+			<sysproperty key="edu.mit.lcs.haystack.basepath" value="${haystack.home}" />
+			<sysproperty key="edu.mit.lcs.haystack.userpath" value="${haystack.user.home}" />
+			<sysproperty key="edu.mit.lcs.haystack.packageSet" value="${haystack.packageSet}" />
+			<sysproperty key="edu.mit.lcs.haystack.graphVizPath" value="${graphviz}" />
+			<sysproperty key="edu.mit.lcs.haystack.hostname" value="${haystack.hostname}" />
+		</java>
+	</target>
+
+
+	<target name="haystack-launcher-batch" depends="build">
+		<antcall target="genkey" />
+		<echo file="hormiga" message="java" />
+		<echo file="hormiga" message=" -cp ${hay.class.path}" append="true" />
+		<echo file="hormiga" message=" -Dedu.mit.lcs.haystack.ozone.fullscreen=${ozone.fullscreen}" append="true" />
+<!--		<echo file="hormiga" message=" -Djava.class.path=${hay.class.path}" append="true" />-->
+		<echo file="hormiga" message=" -Djava.library.path=${hay.library.path}" append="true" />
+		<echo file="hormiga" message=" -Dedu.mit.lcs.haystack.basepath=${haystack.home}" append="true" />
+		<echo file="hormiga" message=" -Dedu.mit.lcs.haystack.userpath=${haystack.user.home}" append="true" />
+		<echo file="hormiga" message=" -Dedu.mit.lcs.haystack.packageSet=${haystack.packageSet}" append="true" />
+		<echo file="hormiga" message=" -Dedu.mit.lcs.haystack.graphVizPath=${graphviz}" append="true" />
+		<echo file="hormiga" message=" -Dedu.mit.lcs.haystack.hostname=${haystack.hostname}" append="true" />
+<!--		<echo file="hormiga" message=" -Xrunhprof:cpu=samples,thread=y" append="true" /> -->
+
+		<echo file="hormiga" message=" -Xmx512m ${haystack.ui}" append="true" />
+	</target>
+
+<!-- *************************************************************** -->    
+  <target name="mac-adenine" depends="build">
+    <exec executable="src/macosx/appbuilder.py" dir="${basedir}">
+	  <arg value="Adenine"/>
+	  <arg value="edu.mit.lcs.haystack.adenine.Console"/>
+	  <arg value="${hay.class.path}"/>
+	  <arg value="${hay.library.path}"/>
+    </exec>  
+  </target>
+
+<!-- *************************************************************** -->    
+  <target name="mac-haystack" description="Runs a Haystack with the user build" depends="build">
+    <property name="shortname" value="Macstack"/>
+    <property name="haystack.packageSet" value="http://haystack.lcs.mit.edu/bootstrap/user" />
+	<antcall target="mac-appbuilder" />
+  </target>
+
+<!-- *************************************************************** -->    
+  <target name="mac-appbuilder">
+    <exec executable="src/macosx/appbuilder.py" dir="${basedir}">
+      <arg value="${shortname}"/>
+	  <arg value="edu.mit.lcs.haystack.ozone.core.Ozone"/>
+	  <arg value="${hay.class.path}"/>
+	  <arg value="${hay.library.path}"/>
+	  <arg value="edu.mit.lcs.haystack.packageSet"/>
+	  <arg value="${haystack.packageSet}"/>
+    </exec>  
+  </target>
+
+<!-- *************************************************************** -->    
+
+  <target name="adeninejar" depends="build">
+  <jar destfile="adenine.jar">
+	<fileset dir="out" includes="edu/mit/lcs/haystack/proxy/**,edu/mit/lcs/haystack/adenine/**,edu/mit/lcs/haystack/rdf/**,edu/mit/lcs/haystack/*.class" />
+	<fileset dir="src/adenine" includes="schemata/adenine.ad" />
+  </jar>
+</target>
+
+<!-- ****************************************************************** -->    
+
+<target name="help">
+<echo>
+The following targets are available:
+
+help	Displays this message.
+
+Build targets:
+	build-db	Builds the cholesterol database
+	build		Builds the Haystack source
+	javadoc		Builds Haystack Java Documentation
+
+Clean Targets:
+	clean		Removes all compiled code
+	purge		Removed all haystack runtime/data files
+
+Run targets:
+	haystack	Runs Haystack server with Ozone client
+	fullscreen	Runs Haystack server fullscreen
+	server		Runs Haystack server with attached Adenine console
+
+Utility targets:
+	adenine		Runs Adenine command line.
+	adeninec	Runs Adenine compiler on file (use -Dinput=fileName to specify file)
+	adeninepp	Runs Adenine pretty printer on file (use -Dinput=fileName to specify file)
+
+For example, to run Haystack, type "ant haystack".</echo>
+</target>
+
+
+</project>

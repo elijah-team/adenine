@@ -1,0 +1,408 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Adenine Ontology
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/schemata/adenine.ad,v 1.14 2004/05/15 15:19:00 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/schemata/adenine>
+
+@prefix	hs:		<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	adenineAgent:	<http://haystack.lcs.mit.edu/agents/adenine#>
+
+#############################################################################################
+# Adenine method
+
+add { adenine:Method
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	hs:classView		<http://haystack.lcs.mit.edu/ui/lens#LensView> ;
+	rdfs:label      	"Adenine Method" ;
+	rdfs:isDefinedBy	^
+}
+
+add { adenine:debug
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:label			"Debug" ;
+	rdfs:comment		"Specifies whether this method should be run from the debugger." ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			adenine:Method ;
+	rdfs:range			xsd:boolean 
+}
+
+add { adenine:preload
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:label			"Preload" ;
+	rdfs:comment		"Specifies whether this method should be preloaded; do not use for self-modifying code." ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			adenine:Method ;
+	rdfs:range			xsd:boolean 
+}
+
+add { adenine:precompile
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:label			"Precompile" ;
+	rdfs:comment		"Specifies whether this method should be precompiled; do not use for self-modifying code." ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			adenine:Method ;
+	rdfs:range			xsd:boolean 
+}
+
+add { adenine:start
+	rdf:type			daml:ObjectProperty ;
+    rdf:type   			hs:ProprietalProperty ;
+	rdfs:label			"Start" ;
+	rdfs:comment		"Specifies the first instruction in the method." ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			adenine:Method ;
+	rdfs:range			adenine:Instruction 
+}
+
+add { adenine:source
+	rdf:type			daml:ObjectProperty ;
+    rdf:type   			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Source" ;
+	rdfs:comment		"The original Adenine source code from which the resource was compiled." 
+}
+
+add { adenine:parameters
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:label			"Parameters" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			adenine:Method ;
+	rdfs:range			rdf:List 
+}
+
+add { adenine:namedParameter
+	rdf:type			daml:ObjectProperty ;
+    rdf:type   			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Named parameter" ;
+	rdfs:domain			adenine:Method ;
+	rdfs:range			adenine:NamedParameterSpec
+}
+
+add { adenine:parameterName
+	rdf:type			daml:ObjectProperty ;
+    rdf:type   			adenine:NamedParameterSpec ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Parameter name" ;
+	rdfs:domain			adenine:NamedParameterSpec ;
+	rdfs:range			adenine:Parameter
+}
+
+add { adenine:Parameter
+	rdf:type				rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Parameter" ;
+	rdfs:subClassOf		rdf:Property ;
+	rdfs:isDefinedBy	^
+}
+
+add {
+adenine:compileTime	rdf:type						daml:DatatypeProperty ;
+    				rdf:type   				    hs:ProprietalProperty ;
+					rdfs:isDefinedBy	^ ;
+					rdfs:label				"Compile time" ;
+					rdfs:comment			"The date and time the resource was compiled." ;
+					rdfs:range				xsd:dateTime 
+
+adenineAgent:precompileTime
+					rdf:type			daml:DatatypeProperty ;
+    				rdf:type   		    hs:ProprietalProperty ;
+					rdfs:isDefinedBy	^ ;
+					rdfs:label			"Precompile time" ;
+					rdfs:range			xsd:dateTime 
+
+adenine:next		rdf:type						daml:ObjectProperty ;
+					rdf:type						hs:ProprietalProperty ;
+					rdfs:isDefinedBy	^ ;
+					rdfs:label				"Next" ;
+					rdfs:domain 			adenine:Instruction ;
+					rdfs:range	 			adenine:Instruction 
+
+#############################################################################################
+# Adenine instruction
+
+adenine:Instruction	rdf:type						daml:Class ;
+	rdf:type				rdfs:Class ;
+					rdfs:label      		"Adenine Instruction" 
+				
+#############################################################################################
+# Adenine instruction handler
+
+adenine:InstructionHandler	rdf:type               daml:Class ;
+	rdf:type				rdfs:Class ;
+					rdfs:label      		"Adenine Instruction Handler" 
+					
+adenine:instructionDomain	rdf:type				daml:ObjectProperty ;
+					rdfs:domain				adenine:InstructionHandler ;
+					rdfs:range				rdfs:Class 
+				
+#############################################################################################
+# Instructions
+
+adenine:Var			rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"var instruction" 
+
+adenine:varHandler	rdf:type						adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Var ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.VarInstruction" } 
+
+adenine:Import		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"import instruction" 
+
+adenine:importHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Import ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.ImportInstruction" } 
+
+adenine:ImportJava	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"importjava instruction" 
+
+adenine:importJavaHandler	rdf:type				adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:ImportJava ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.ImportJavaInstruction" } 
+
+adenine:Assignment	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"= instruction" 
+
+adenine:assignmentHandler	rdf:type				adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Assignment ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.AssignmentInstruction" } 
+
+adenine:If			rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"if instruction" 
+
+adenine:ifHandler	rdf:type						adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:If ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.IfInstruction" } 
+
+adenine:FunctionCall	rdfs:subClassOf		adenine:Instruction ;
+					rdfs:label				"Function call" 
+
+adenine:functionCallHandler	rdf:type				adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:FunctionCall ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.FunctionCallInstruction" } 
+
+adenine:Return		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"return instruction" 
+
+adenine:returnHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Return ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.ReturnInstruction" } 
+
+adenine:Identifier	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"identifier evaluation instruction" 
+
+adenine:identifierHandler	rdf:type				adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Identifier ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.IdentifierInstruction" } 
+
+adenine:Dereferencement	rdfs:subClassOf		adenine:Instruction ;
+					rdfs:label				"Dereferencement () instruction" 
+
+adenine:dereferencementHandler	rdf:type			adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Dereferencement ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.DereferencementInstruction" } 
+
+adenine:Index		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"Index (${}) instruction" 
+
+adenine:indexHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Index ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.IndexInstruction" } 
+
+adenine:Model		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"Model ({}) instruction" 
+
+adenine:modelHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Model ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.ModelInstruction" } 
+
+adenine:Query		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"Query (@{}) instruction" 
+
+adenine:queryHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Query ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.QueryInstruction" } 
+
+adenine:BNode		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"BNode (${}) instruction" 
+
+adenine:bNodeHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:BNode ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.BNodeInstruction" } 
+
+adenine:While		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"while instruction" 
+
+adenine:whileHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:While ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.WhileInstruction" } 
+
+adenine:Break		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"break instruction" 
+
+adenine:breakHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Break ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.BreakInstruction" } 
+
+adenine:Resource	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"Resource immediate value" 
+
+adenine:resourceHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Resource ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.ResourceInstruction" } 
+
+adenine:RDFNode		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"Resource immediate value" 
+
+adenine:rdfNodeHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:RDFNode ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.RDFNodeInstruction" } 
+
+adenine:Literal		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"Literal immediate value" 
+
+adenine:literalHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Literal ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.LiteralInstruction" } 
+
+adenine:Function	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"function instruction" 
+
+adenine:functionHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Function ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.FunctionInstruction" } 
+
+adenine:MethodDef	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"method instruction" 
+
+adenine:methodDefHandler	rdf:type				adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:MethodDef ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.MethodInstruction" } 
+
+adenine:MethodDef2	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"method instruction (2)" 
+
+adenine:methodDef2Handler	rdf:type				adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:MethodDef2 ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.Method2Instruction" } 
+
+adenine:LibraryDef	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"library instruction" 
+
+adenine:libraryDefHandler	rdf:type				adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:LibraryDef ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.LibraryInstruction" } 
+
+adenine:String		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"String immediate value" 
+
+adenine:stringHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:String ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.StringInstruction" } 
+
+adenine:ForIn		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"for  in instruction" 
+
+adenine:forInHandler	rdf:type						adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:ForIn ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.ForInInstruction" } 
+
+adenine:With		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"with instruction" 
+
+adenine:withHandler	rdf:type						adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:With ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.WithInstruction" } 
+
+adenine:Call		rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"call instruction" 
+
+adenine:callHandler	rdf:type						adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Call ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.CallInstruction" } 
+
+adenine:CallReturn	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"call return instruction" 
+
+adenine:callReturnHandler	rdf:type						adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:CallReturn ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.CallReturnInstruction" } 
+
+adenine:Continue	rdfs:subClassOf			adenine:Instruction ;
+					rdfs:label				"continue instruction" 
+
+adenine:continueHandler	rdf:type					adenine:InstructionHandler ;
+					adenine:instructionDomain	adenine:Continue ;
+					hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.adenine.instructions.ContinueInstruction" } 
+
+#############################################################################################
+# Resource converters
+
+adenine:ResourceConverter	rdf:type				daml:Class ;
+	rdf:type				rdfs:Class ;
+					rdfs:label				"Resource converter" 
+
+adenine:conversionDomain	rdf:type				daml:ObjectProperty ;
+					rdfs:label				"Conversion domain" ;
+					rdfs:domain				adenine:ResourceConverter ;
+					rdfs:range				rdfs:Class 
+
+adenine:converter	rdf:type						daml:ObjectProperty ;
+					rdfs:label				"Converter" ;
+					rdfs:domain				adenine:ResourceConverter ;
+					rdfs:range				adenine:Method 
+}
+
+#############################################################################################
+# Adenine condition set
+
+add { adenine:ConditionSet
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Condition Set" ;
+	rdfs:isDefinedBy	^
+}
+				
+add { adenine:conditions
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Conditions" ;
+	rdfs:domain			adenine:ConditionSet ;
+	rdfs:range			rdf:List 
+}
+
+#############################################################################################
+# Adenine condition handler
+
+add { adenine:ConditionHandler
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label      	"Condition Handler" 
+}

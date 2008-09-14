@@ -1,0 +1,81 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Adenine Source Control Agent
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/agents/adenine.ad,v 1.17 2003/12/17 17:34:26 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/agents/adenine>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	config:			<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	wsdl:			<http://schemas.xmlsoap.org/wsdl/>
+@prefix	scheduler:		<http://haystack.lcs.mit.edu/agents/scheduler#> 
+@prefix	source:			<http://haystack.lcs.mit.edu/agents/adenine#>
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	importjava "java.io" File
+	add { 
+		server config:hostsService random:adenineSourceAgent
+		random:adenineSourceAgent	hs:user user ;
+									source:base (Resource (append 'file:' ((File '.').getAbsolutePath))) ;
+									source:outputDirectory ((File 'precompile').getAbsolutePath)
+	}
+
+add { random:subscription	
+	rdf:type			scheduler:Task ;
+	scheduler:service	random:adenineSourceAgent ;
+	dc:title			"Adenine precompilation" ;
+	scheduler:frequency	"60000"
+} 
+
+add { random:adenineSourceAgent 
+	dc:title "Adenine Source Agent" ;
+	rdf:type source:AdenineSourceAgent ;
+	rdf:type config:Service ;
+	wsdl:port ${
+		rdf:type wsdl:Port ;
+		wsdl:binding ${
+			rdf:type	wsdl:Binding ;
+			rdf:type	config:JavaBinding ;
+			wsdl:type ${
+				rdf:type wsdl:PortType ;
+				config:javaInterface ${
+					rdf:type hs:JavaClass ;
+					hs:className "edu.mit.lcs.haystack.server.standard.serine.ISerineAgent" 
+				} 
+			} 
+		} 
+	} ;
+	config:singleton "true" ;
+	hs:javaImplementation ${
+		rdf:type hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.server.standard.adenine.AdenineSourceAgent" 
+	} 
+}
+

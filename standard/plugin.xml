@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <extension point="org.eclipse.ui.views">
+      <category name="%views.category.name" id="edu.mit.csail.haystack"/>
+      <view name="%views.startingpoints.name"
+            icon="icons/sample.gif"
+            category="edu.mit.csail.haystack"
+            class="edu.mit.lcs.haystack.eclipse.StartingPointsView"
+            id="edu.mit.csail.haystack.eclipse.StartingPointsView"/>
+      <view name="%views.taskpane.name"
+            icon="icons/sample.gif"
+            category="edu.mit.csail.haystack"
+            class="edu.mit.lcs.haystack.eclipse.TaskPaneView"
+            id="edu.mit.csail.haystack.eclipse.TaskPaneView"/>
+      <view name="%views.fullscreen.name"
+            icon="icons/sample.gif"
+            category="edu.mit.csail.haystack"
+            class="edu.mit.lcs.haystack.eclipse.FullScreenView"
+            id="edu.mit.csail.haystack.eclipse.FullScreenView"/>
+   </extension>
+   
+   
+   <extension point="org.eclipse.ui.editors">
+      <editor
+            name="Haystack"
+            icon="icons/sample.gif"
+            extensions="hs"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="edu.mit.lcs.haystack.eclipse.Editor"
+            id="edu.mit.csail.haystack.eclipse.Editor">
+      </editor>
+      <editor
+            name="Adenine Console"
+            extensions="adc"
+            icon="icons/sample.gif"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            class="edu.mit.lcs.haystack.eclipse.AdenineConsoleTextEditor"
+            id="edu.mit.csail.haystack.eclipse.AdenineConsoleEditor">
+      </editor>
+   </extension>
+   
+   <extension point="org.eclipse.ui.perspectives">
+      <perspective
+            name="%perspectives.fullscreen.name"
+            class="edu.mit.lcs.haystack.eclipse.FullScreenPerspective"
+            id="edu.mit.csail.haystack.eclipse.FullScreenPerspective"/>
+      <perspective
+            name="%perspectives.tabbed.name"
+            class="edu.mit.lcs.haystack.eclipse.Perspective"
+            id="edu.mit.csail.haystack.eclipse.Perspective"/>
+   </extension>
+   
+   <extension point="org.eclipse.ui.perspectiveExtensions">
+     <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+        <perspectiveShortcut id="edu.mit.csail.haystack.eclipse.FullScreenPerspective"/>
+        <perspectiveShortcut id="edu.mit.csail.haystack.eclipse.Perspective"/>
+     </perspectiveExtension>
+     <perspectiveExtension targetID="edu.mit.csail.haystack.eclipse.Perspective">
+        <perspectiveShortcut id="edu.mit.csail.haystack.eclipse.FullScreenPerspective"/>
+        <perspectiveShortcut id="edu.mit.csail.haystack.eclipse.Perspective"/>
+     </perspectiveExtension>
+     <perspectiveExtension targetID="edu.mit.csail.haystack.eclipse.FullScreenPerspective">
+        <perspectiveShortcut id="edu.mit.csail.haystack.eclipse.FullScreenPerspective"/>
+        <perspectiveShortcut id="edu.mit.csail.haystack.eclipse.Perspective"/>
+     </perspectiveExtension>
+   </extension>
+
+   <extension point="org.eclipse.ui.actionSets">
+      <actionSet id="edu.mit.csail.haystack.actionSet"
+                 label="%actionset.name"
+                 visible="false">
+         <menu id="haystackMenu"
+               label="Ha&amp;ystack">
+            <separator name="sampleGroup"/>
+         </menu>
+         <action id="edu.mit.csail.haystack.eclipse.TriplePaneAction"
+                 icon="icons/three.gif"
+                 label="&amp;Three Panes"
+                 tooltip="Browse in three pane mode"
+                 class="edu.mit.lcs.haystack.eclipse.NavigationAction"
+                 menubarPath="haystackMenu/sampleGroup"
+                 toolbarPath="sampleGroup"/>
+         <action id="edu.mit.csail.haystack.eclipse.DoublePaneAction"
+                 icon="icons/two.gif"
+                 label="T&amp;wo Panes"
+                 tooltip="Browse in two pane mode"
+                 class="edu.mit.lcs.haystack.eclipse.NavigationAction"
+                 menubarPath="haystackMenu/sampleGroup"
+                 toolbarPath="sampleGroup"/>
+         <action id="edu.mit.csail.haystack.eclipse.SinglePaneAction"
+                 icon="icons/one.gif"
+                 label="&amp;One Pane"
+                 tooltip="Browse in single pane mode"
+                 class="edu.mit.lcs.haystack.eclipse.NavigationAction"
+                 menubarPath="haystackMenu/sampleGroup"
+                 toolbarPath="sampleGroup"/>
+         <action id="edu.mit.csail.haystack.eclipse.HomeAction"
+                 icon="icons/home.gif"
+                 label="&amp;Home"
+                 tooltip="Home"
+                 class="edu.mit.lcs.haystack.eclipse.NavigationAction"
+            	 disabledIcon="icons/home.gif"
+                 hoverIcon="icons/home.gif"
+                 menubarPath="haystackMenu/sampleGroup"
+                 toolbarPath="sampleGroup"/>
+         <action id="edu.mit.csail.haystack.eclipse.RefreshAction"
+                 icon="icons/refresh-enabled.gif"
+                 label="&amp;Refresh"
+                 tooltip="Refresh"
+                 class="edu.mit.lcs.haystack.eclipse.NavigationAction"
+                 disabledIcon="icons/refresh-disabled.gif"
+                 hoverIcon="icons/refresh-color.gif"
+                 menubarPath="haystackMenu/sampleGroup"
+                 toolbarPath="sampleGroup"/>
+         <action id="edu.mit.csail.haystack.eclipse.ForwardAction"
+                 icon="icons/forward-enabled.gif"
+                 label="&amp;Forward"
+                 tooltip="Forward"
+                 class="edu.mit.lcs.haystack.eclipse.NavigationAction"
+                 disabledIcon="icons/forward-disabled.gif"
+				 hoverIcon="icons/forward-color.gif"
+                 menubarPath="haystackMenu/sampleGroup"
+                 toolbarPath="sampleGroup"/>
+         <action id="edu.mit.csail.haystack.eclipse.BackAction"
+                 icon="icons/back-enabled.gif"
+                 label="&amp;Back"
+                 tooltip="Back" 
+                 class="edu.mit.lcs.haystack.eclipse.NavigationAction"
+                 disabledIcon="icons/back-disabled.gif"
+                 hoverIcon="icons/back-color.gif"
+                 menubarPath="haystackMenu/sampleGroup"
+                 toolbarPath="sampleGroup"/>
+      </actionSet>
+   </extension>
+   
+   <extension point="org.eclipse.ui.actionSetPartAssociations">
+	<actionSetPartAssociation 
+		targetID="edu.mit.csail.haystack.actionSet">
+		<part id="edu.mit.csail.haystack.eclipse.View"/>
+	</actionSetPartAssociation>
+   </extension>
+   
+   <extension point="org.eclipse.ui.elementFactories">
+      <factory class="edu.mit.lcs.haystack.eclipse.SourceFactory"
+               id="edu.mit.csail.haystack.eclipse.SourceFactory"/>
+   </extension>
+   
+   <extension point="org.eclipse.ui.startup">
+   </extension>
+   
+   <extension point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IResource"
+            id="edu.mit.csail.haystack">
+         <action
+               label="Open in Haystack"
+               class="edu.mit.lcs.haystack.eclipse.PopupMenuActionDelegate"
+               menubarPath="additions"
+               enablesFor="1"
+               id="edu.mit.csail.haystack.eclipse.browseTo"/>
+      </objectContribution>
+   </extension>
+   
+   <extension point="org.eclipse.core.runtime.applications"
+              id="eclipse.Application"
+              name="%application.name">
+      <application>
+         <run class="edu.mit.lcs.haystack.eclipse.Application"/>
+      </application>
+   </extension>
+   
+   <extension point="edu.mit.csail.haystack.core.bales" id="standard">
+   </extension>
+  
+   <extension point="org.eclipse.core.runtime.products"
+              id="haystack"
+              name="%product.name"> 
+	 <product
+        application="edu.mit.csail.haystack.standard.eclipse.Application"
+        description="%product.blurb"
+        name="%product.name">
+     <property
+           name="windowImages"
+           value="icons/hay16.gif,icons/hay32.gif"/>
+     <property
+           name="aboutImage"
+           value="icons/hayAbout.gif"/>
+     <property
+           name="aboutText"
+           value="%product.blurb"/>
+     <property
+           name="appName"
+           value="%application.name"/>
+     <property
+           name="preferenceCustomization"
+           value="plugin_customization.ini"/>
+  </product> 
+  </extension> 
+  
+
+</plugin>

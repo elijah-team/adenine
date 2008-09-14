@@ -1,0 +1,746 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+
+# Ozone summary view support
+# Written by David Huynh and Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/summaryView.ad,v 1.87 2004/05/15 15:18:58 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/summaryView> 
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+
+#############################################################################################
+# Little data providers
+
+add {
+	summary:titleDataProvider
+						rdf:type				ozone:Part ;
+						rdf:type				data:DataProvider ;
+						rdf:type				data:StringDataProvider ;
+						ozone:dataDomain		summary:TitleSource ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.TitleDataProvider" }
+
+	summary:iconDataProvider
+						rdf:type				ozone:Part ;
+						rdf:type				data:DataProvider ;
+						rdf:type				data:ResourceDataProvider ;
+						ozone:dataDomain		summary:IconSource ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.IconDataProvider" }
+
+	summary:documentTypeDataProvider
+						rdf:type				ozone:Part ;
+						rdf:type				data:DataProvider ;
+						rdf:type				data:StringDataProvider ;
+						ozone:dataDomain		summary:DocumentTypeSource ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.TypeStringDataProvider" }
+
+	summary:titleSortingSource
+						rdf:type			data:SortingListSource ;
+						data:sortDataSource summary:titleSource
+}
+
+add { summary:titleSource
+	rdf:type	summary:TitleSource
+}
+
+method summary:getTitle res
+	# Construct destination data source
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+	= context (Context __context__)
+	context.putLocalProperty summary:underlying res
+
+	= dataProvider (DataUtilities.createDataProvider2 summary:titleSource context __source__ __source__)
+	= title (dataProvider.getData data:string null)
+	dataProvider.dispose
+	return title
+
+#############################################################################################
+# Little utility parts
+
+add {
+	summary:titlePart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:Title ;
+		ozone:template ${
+			rdf:type			ozone:PartContainer ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		summary:titleSlide ;
+				data:default ${
+					rdf:type			slide:Text ;
+					ozone:dataSource ${
+						rdf:type			summary:TitleSource ;
+						ozone:dataSource	data:underlyingSource
+					}
+				}
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		layout:fieldHeaderUI	${
+			rdf:type	slide:Text ;
+			slide:text	"Title"
+		}
+
+	summary:iconPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:Icon ;
+		ozone:template ${
+			rdf:type		slide:Image ;
+			slide:width		"16" ;
+			slide:height	"16" ;
+			ozone:dataSource ${
+				rdf:type				data:DefaultSource ;
+				ozone:dataSource ${
+					rdf:type			summary:IconSource ;
+					ozone:dataSource	data:underlyingSource
+				} ;
+				data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif>
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:largeIconPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:LargeIcon ;
+		ozone:template ${
+			rdf:type		slide:Image ;
+			slide:width		"64" ;
+			slide:height	"64" ;
+			ozone:dataSource ${
+				rdf:type				data:DefaultSource ;
+				ozone:dataSource ${
+					rdf:type			summary:IconSource ;
+					ozone:dataSource	data:underlyingSource
+				} ;
+				data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif>
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:mediumIconPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:MediumIcon ;
+		ozone:template ${
+			rdf:type		slide:Image ;
+			slide:width		"32" ;
+			slide:height	"32" ;
+			ozone:dataSource ${
+				rdf:type				data:DefaultSource ;
+				ozone:dataSource ${
+					rdf:type			summary:IconSource ;
+					ozone:dataSource	data:underlyingSource
+				} ;
+				data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif>
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:iconBlankPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:IconBlank ;
+		ozone:template ${
+			rdf:type		slide:Image ;
+			slide:width		"16" ;
+			slide:height	"16" ;
+			ozone:dataSource ${	
+				rdf:type				data:DefaultSource ;
+				ozone:dataSource ${
+					rdf:type			summary:IconSource ;
+					ozone:dataSource	data:underlyingSource
+				} ;
+				data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/blank.gif>
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:mediumIconBlankPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:MediumIconBlank ;
+		ozone:template ${
+			rdf:type		slide:Image ;
+			slide:width		"32" ;
+			slide:height	"32" ;
+			ozone:dataSource ${	
+				rdf:type				data:DefaultSource ;
+				ozone:dataSource ${
+					rdf:type			summary:IconSource ;
+					ozone:dataSource	data:underlyingSource
+				} ;
+				data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/blank.gif>
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:commentPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:Comment ;
+		ozone:template ${
+			rdf:type				slide:Text ;
+			ozone:dataSource	${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		rdfs:comment
+			} ;
+			slide:defaultText	"No description available."
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		layout:fieldHeaderUI	${
+			rdf:type	slide:Text ;
+			slide:text	"Comments"
+		}
+
+	summary:descriptionPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:Description ;
+		ozone:template ${
+			rdf:type				slide:Text ;
+			ozone:dataSource	${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		dc:description
+			} ;
+			slide:defaultText	"No description available."
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		layout:fieldHeaderUI	${
+			rdf:type	slide:Text ;
+			slide:text	"Description"
+		}
+
+	summary:documentTypePart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:DocumentType ;
+		ozone:template ${
+			rdf:type			slide:Text ;
+			ozone:dataSource	${
+				rdf:type			summary:DocumentTypeSource ;
+				ozone:dataSource	data:underlyingSource
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		layout:fieldHeaderUI	${
+			rdf:type	slide:Text ;
+			slide:text	"Document Type"
+		}
+
+	summary:authorPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:Author ;
+		ozone:template ${
+			rdf:type				slide:Text ;
+			ozone:dataSource	${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		dc:title
+			} ;
+			slide:defaultText	"Unknown author"
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		layout:fieldHeaderUI	${
+			rdf:type	slide:Text ;
+			slide:text	"Authors"
+		}
+}
+
+#############################################################################################
+# Summary aspects
+
+add {
+	summary:titleAspect rdf:type summary:TitleAspect ; dc:title "Title"
+
+	summary:titleAspectPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:TitleAspect ;
+		ozone:template ${
+			rdf:type			ozone:PartContainer ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	lensui:underlyingSource ;
+				data:predicate		summary:titleSlide ;
+				data:default ${
+					rdf:type			slide:Text ;
+					ozone:onClick		ozone:aspectHyperlink ;
+					ozone:dataSource ${
+						rdf:type			summary:TitleSource ;
+						ozone:dataSource	lensui:underlyingSource
+					}
+				}
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:iconAspect rdf:type summary:IconAspect ; dc:title ""
+
+	summary:iconAspectPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:IconAspect ;
+		ozone:template ${
+			rdf:type		slide:Image ;
+			slide:width		"16" ;
+			slide:height	"16" ;
+			ozone:dataSource ${
+				rdf:type				data:DefaultSource ;
+				ozone:dataSource ${
+					rdf:type			summary:IconSource ;
+					ozone:dataSource	lensui:underlyingSource
+				} ;
+				data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif>
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:iconBlankAspect rdf:type summary:IconBlankAspect ; dc:title ""
+
+	summary:iconBlankAspectPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:IconBlankAspect ;
+		ozone:template ${
+			rdf:type		slide:Image ;
+			slide:width		"16" ;
+			slide:height	"16" ;
+			ozone:dataSource ${	
+				rdf:type				data:DefaultSource ;
+				ozone:dataSource ${
+					rdf:type			summary:IconSource ;
+					ozone:dataSource	lensui:underlyingSource
+				} ;
+				data:default			<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/blank.gif>
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:commentAspect rdf:type summary:CommentAspect ; dc:title "Comment"
+
+	summary:commentAspectPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:CommentAspect ;
+		ozone:template ${
+			rdf:type				slide:Text ;
+			ozone:dataSource	${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	lensui:underlyingSource ;
+				data:predicate		rdfs:comment
+			} ;
+			slide:defaultText	"No description available."
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:descriptionAspect rdf:type summary:DescriptionAspect ; dc:title "Description"
+
+	summary:descriptionAspectPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:DescriptionAspect ;
+		ozone:template ${
+			rdf:type				slide:Text ;
+			ozone:dataSource	${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	lensui:underlyingSource ;
+				data:predicate		dc:description
+			} ;
+			slide:defaultText	"No description available."
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:documentTypeAspect rdf:type summary:DocumentTypeAspect ; dc:title "Type"
+
+	summary:documentTypeAspectPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:DocumentTypeAspect ;
+		ozone:template ${
+			rdf:type			slide:Text ;
+			ozone:dataSource	${
+				rdf:type			summary:DocumentTypeSource ;
+				ozone:dataSource	lensui:underlyingSource
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	summary:authorAspect rdf:type summary:AuthorAspect ; dc:title "Author"
+
+	summary:authorAspectPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				lensui:LensPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		summary:AuthorAspect ;
+		ozone:template ${
+			rdf:type				slide:Text ;
+			ozone:dataSource	${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	lensui:underlyingSource ;
+				data:predicate		dc:title
+			} ;
+			slide:defaultText	"Unknown author"
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Summary parts
+
+add {
+	hs:SummaryView		rdfs:label				"Line Summary View"
+	:summaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:SummaryViewPart ;
+		ozone:viewDomain		hs:SummaryView ;
+		ozone:template ${
+			rdf:type					slide:Paragraph ; 
+			slide:children @(
+				${	rdf:type			summary:Icon
+				}
+				slide:space
+				${	rdf:type			summary:DocumentType
+				}
+				slide:colon
+				slide:space
+				${	rdf:type			summary:Title ; 
+					ozone:onClick		ozone:underlyingHyperlink
+				}
+				slide:break
+				${	rdf:type			summary:Description
+				}
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:LineSummaryView	rdfs:label				"Line Summary View"
+	:lineSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		ozone:viewDomain		hs:LineSummaryView ;
+		ozone:template ${
+			rdf:type					slide:Paragraph ; 
+			slide:children @(
+				${	rdf:type			summary:Icon
+				}
+				slide:space
+				${	rdf:type			summary:DocumentType
+				}
+				slide:colon
+				slide:space
+				${	rdf:type			summary:Title ; 
+					ozone:onClick		ozone:underlyingHyperlink
+				}
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:MultilineSummaryView	rdfs:label				"Multiline Summary View"
+	:multilineSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:MultilineSummaryViewPart ;
+		ozone:viewDomain		hs:MultilineSummaryView ;
+		ozone:template ${
+			rdf:type				slide:Block ;
+			slide:margin			"3" ;
+			slide:borderBottomWidth	"1" ;
+			slide:borderBottomColor	"lightestGray" ;
+			slide:child ${
+				rdf:type					slide:Paragraph ; 
+				slide:children @(
+					${	rdf:type			summary:Icon
+					}
+					slide:space
+					${	rdf:type			summary:Title ;
+						ozone:onClick		ozone:underlyingHyperlink
+					}
+				)
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:PhraseSummaryView	rdfs:label			"Phrase Summary View"
+	:phraseSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:PhraseViewPart ;
+		ozone:viewDomain		hs:PhraseSummaryView ;
+		ozone:template ${
+			rdf:type					slide:ColumnSet ; 
+			slide:children	@(
+				${	rdf:type			summary:IconBlank
+				}
+				slide:nonwrappingSpace
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type			summary:Title ;
+							ozone:onClick		ozone:underlyingHyperlink
+						}
+					)
+				}
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	:threadedViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:HierarchicalViewPart ;
+		ozone:viewDomain		hs:ThreadedSummaryView ;
+		ozone:template ${
+			rdf:type			slide:ColumnSet ; 
+			slide:children	@(
+				${	rdf:type	slide:Block ;
+					slide:width	"16" ;
+					slide:child	slide:space
+				}
+				${	rdf:type			ozone:ViewContainer ;
+					ozone:viewPartClass	ozone:PhraseViewPart ;
+					ozone:dataSource	data:underlyingSource
+				}
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:IconSummaryView	rdfs:label				"Icon Summary View"
+	:iconSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:IconViewPart ;
+		ozone:viewDomain		hs:IconSummaryView ;
+		ozone:template ${
+			rdf:type			slide:Block ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"gray" ;
+			slide:bgcolor		"white" ;
+			slide:color			"darkestGray" ;
+			slide:dropShadow	"true" ;
+			slide:margin		"5" ;
+			slide:child ${
+				rdf:type			slide:ColumnSet;
+				slide:children		@(
+					${	rdf:type			slide:Block ;
+						slide:marginRight	"5" ;
+						slide:child ${
+							rdf:type			summary:Icon
+						}
+					}
+					${	rdf:type		slide:Paragraph ;
+						slide:children	@(
+							${	rdf:type			ozone:ViewContainer ;
+								ozone:dataSource	data:underlyingSource ;
+								ozone:viewPartClass	ozone:InlineViewPart
+							}
+						)
+					}
+				)
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:ThumbnailSummaryView	rdfs:label			"Thumbnail Summary View"
+	:thumbnailSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:ThumbnailViewPart ;
+		ozone:viewDomain		hs:ThumbnailSummaryView ;
+		ozone:template ${
+			rdf:type			slide:Block ;
+			slide:width			"150" ;
+			slide:height		"150" ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"gray" ;
+			slide:bgcolor		"white" ;
+			slide:color			"darkestGray" ;
+			slide:dropShadow	"true" ;
+			slide:margin		"5" ;
+			slide:child ${
+				rdf:type			slide:ColumnSet;
+				slide:children		@(
+					${	rdf:type			slide:Block ;
+						slide:marginRight	"5" ;
+						slide:child ${
+							rdf:type			summary:Icon
+						}
+					}
+					${	rdf:type		slide:Paragraph ;
+						slide:children	@(
+							${ rdf:type				summary:Title
+							}
+						)
+					}
+				)
+			} ; 
+			ozone:onClick		ozone:underlyingHyperlink
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:InactiveThumbnailSummaryView	rdfs:label			"Inactive Thumbnail Summary View"
+	:inactiveThumbnailSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InactiveThumbnailViewPart ;
+		ozone:viewDomain		hs:InactiveThumbnailSummaryView ;
+		ozone:template ${
+			rdf:type			slide:Block ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"gray" ;
+			slide:bgcolor		"white" ;
+			slide:color			"darkestGray" ;
+			slide:dropShadow	"true" ;
+			slide:margin		"5" ;
+			slide:child ${
+				rdf:type			slide:ColumnSet;
+				slide:children		@(
+					${	rdf:type			slide:Block ;
+						slide:marginRight	"5" ;
+						slide:child ${
+							rdf:type			summary:Icon
+						}
+					}
+					${	rdf:type		slide:Paragraph ;
+						slide:children	@(
+							${ rdf:type				summary:Title
+							}
+						)
+					}
+				)
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	hs:InlineSummaryView rdfs:label	"Inline Summary View"
+	:inlineSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InlineViewPart ;
+		ozone:viewDomain		hs:InlineSummaryView ;
+		ozone:template ${
+			rdf:type			summary:Title ; 
+			ozone:onClick		ozone:underlyingHyperlink
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	hs:ShortInlineSummaryView	rdfs:label		"Short Inline Summary View"
+	:shortInlineSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:ShortInlineViewPart ;
+		ozone:viewDomain		hs:ShortInlineSummaryView ;
+		ozone:template ${
+			rdf:type			summary:Title ;
+			ozone:onClick		ozone:underlyingHyperlink
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	hs:InactiveInlineSummaryView	rdfs:label		"Inactive Inline Summary View"
+	:inactiveInlineSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InactiveInlineViewPart ;
+		ozone:viewDomain		hs:InactiveInlineSummaryView ;
+		ozone:template ${
+			rdf:type			summary:Title
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	daml:Thing hs:classView hs:SummaryView
+
+	daml:Thing hs:classView hs:LineSummaryView
+
+	daml:Thing hs:classView hs:MultilineSummaryView
+
+	daml:Thing hs:classView hs:PhraseSummaryView
+
+	daml:Thing hs:classView hs:ThreadedSummaryView
+
+	daml:Thing hs:classView hs:IconSummaryView
+
+	daml:Thing hs:classView hs:ThumbnailSummaryView
+
+	daml:Thing hs:classView hs:InactiveThumbnailSummaryView
+
+	daml:Thing hs:classView hs:InlineSummaryView
+
+	daml:Thing hs:classView hs:ShortInlineSummaryView
+
+	daml:Thing hs:classView hs:InactiveInlineSummaryView
+}
+
+#############################################################################################
+# Custom stuff
+
+add {
+	:CommentedLineView rdfs:label "Commented Line View"
+	:commentedLineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		ozone:viewDomain		:CommentedLineView ;
+		ozone:template ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type		summary:Icon }
+				slide:space
+				${	rdf:type		summary:Title ;
+					ozone:onClick	ozone:underlyingHyperlink
+				}
+				slide:space
+				slide:leftParenthesis
+				${	rdf:type		summary:Comment }
+				slide:rightParenthesis
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	daml:Class hs:classView :CommentedLineView
+	rdfs:Class hs:classView :CommentedLineView
+
+	daml:ObjectProperty hs:classView :CommentedLineView
+	daml:DatatypeProperty hs:classView :CommentedLineView
+	rdf:Property hs:classView :CommentedLineView
+}

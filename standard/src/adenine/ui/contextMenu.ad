@@ -1,0 +1,928 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone context menu UI
+# Written by David Huynh and Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/contextMenu.ad,v 1.40 2004/05/15 15:18:58 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/contextMenu>
+
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	cont:			<http://haystack.lcs.mit.edu/schemata/continuation#> 
+@prefix	modeless:		<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix op:				<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix opui:			<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#> 
+@prefix lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+
+#############################################################################################
+# Context menu behavior
+
+add {
+	ozone:contextMenuBehavior
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:Behavior ;
+		ozone:dataDomain		ozone:ContextMenu ;
+		hs:javaImplementation	${
+			rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.behaviors.ContextMenuBehavior"
+		}
+}
+
+#############################################################################################
+# showSummary
+
+method contextMenu:showSummary point ; adenine:preload "true" ; adenine:precompile "true"
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+
+	modelessCreator.createModelessPart ${
+		rdf:type		modeless:Modeless ;
+		modeless:child ${
+			rdf:type			slide:Block ;
+			slide:width			400 ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"lightGray" ;
+			slide:fontFamily	"Sans, adobe-helvetica, Tahoma, Arial, Times New Roman" ;
+			slide:fontSize		"8" ;
+			slide:fontBold		"false" ;
+			slide:color			"#3B5377" ;
+			slide:bgcolor		"white" ;
+			slide:margin		"1" ;
+			slide:child ${
+				rdf:type	slide:RowSet ;
+				slide:children @(
+					${	rdf:type		slide:Block ;
+						slide:bgcolor	"#7b8ead" ;
+						slide:margin	"4" ;
+						slide:color		"white" ;
+						slide:fontBold	"true" ;
+						slide:child ${
+							rdf:type		slide:ColumnSet ;
+							slide:pack		"right" ;
+							slide:children	@(
+								${	rdf:type		slide:Paragraph ;
+									slide:children @(
+										${	rdf:type		summary:Title ; 
+											ozone:onClick	:doNavigate
+										}
+									)
+								}
+								${	rdf:type		slide:Image ;
+									ozone:onClick	:doClose ;
+									ozone:tooltip	"Close" ;
+									slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+								}
+							)
+						}
+					}
+					${	rdf:type				ozone:ViewContainer ;
+						ozone:viewPartClass		ozone:AppletViewPart ;
+						ozone:dataSource		data:underlyingSource
+					}
+				)
+			}
+		}
+	} point context
+	
+method :doClose
+	= menuCreator (__context__.getProperty contextMenu:menuCreator)
+	if (!= null menuCreator)
+		menuCreator.disposeChildren
+
+method :doNavigate
+	= menuCreator (__context__.getProperty contextMenu:menuCreator)
+	if (!= null menuCreator)
+		menuCreator.disposeChildren
+		
+	ozone:navigate (data:getUnderlying)
+
+#############################################################################################
+# showContextMenu
+
+method contextMenu:showContextMenu point maxCount debug ; adenine:preload "true" ; adenine:precompile "true"
+	= sections @()
+	= count 0
+	if (== maxCount null)
+		= maxCount -1
+	else
+		= maxCount (- maxCount 1)
+
+	importjava "java.util" HashMap
+
+	= underlyings (HashMap)
+
+	= primaryUnderlying null
+	= primarySection null
+
+	function processContext context
+		= underlying (context.getLocalProperty ozone:underlying)
+		if (!= underlying null)
+			with __source__ __infosource__
+				= dataSource (underlyings.get underlying)
+
+				if (== dataSource null)
+					= section (extract ?x :underlyingContextMenuSectionOf underlying)
+					if (== section null)
+						= dataSource ${
+							rdf:type				contextMenu:UnderlyingOperationSetSource ;
+							:underlying				underlying
+						}
+						= section ${
+							rdf:type				contextMenu:UnderlyingContextMenuSection ;
+							contextMenu:dataSet	${
+								rdf:type			contextMenu:UnderlyingOperationDataSet ;
+								rdf:type			data:CollectionDataSet ;
+								data:dataSource		dataSource
+							} ;
+							:underlyingContextMenuSectionOf	underlying
+						}
+
+					if (== null primaryUnderlying)
+						= primaryUnderlying underlying
+						= primarySection section
+
+					underlyings.put underlying dataSource
+
+					sections.add section
+					= count (+ count 1)
+
+				= nestingRelation (context.getLocalProperty ozone:nestingRelation)
+				if (!= nestingRelation null)
+					add { dataSource :nestingRelation nestingRelation }
+
+		= partData (context.getLocalProperty ozone:partData)
+		= part (context.getLocalProperty ozone:part)
+		if (!= partData null)
+			= contextOperations (query { partData contextMenu:contextOperation ?x })
+			= hasPartOperations (and (!= part null) (!= ((query { ?x op:partDomain part }).size) 0))
+
+			if (or (!= (contextOperations.size) 0) hasPartOperations)
+				= dataSource ${
+					rdf:type		contextMenu:PartOperationSetSource ;
+					:part			part ;
+					:partData		partData
+				}
+
+				for c in contextOperations
+					add { dataSource :contextOperation c[0] }
+
+				sections.add ${
+					rdf:type			contextMenu:PartContextMenuSection ;
+					contextMenu:dataSet	${
+						rdf:type			contextMenu:PartOperationDataSet ;
+						rdf:type			data:CollectionDataSet ;
+						data:dataSource		dataSource
+					}
+				}
+				= count (+ count 1)
+
+		# for debugging
+		if debug
+			= s '[Context menu]'
+			= s (append s '\r\n    Underlying:      ' underlying)
+			= s (append s '\r\n    Part data:       ' partData)
+			= s (append s '\r\n    Part:            ' part)
+			= s (append s '\r\n    View part class: ' (context.getProperty ozone:viewPartClass))
+			print s
+
+		if (and (gt maxCount 0) (gt count maxCount))
+			return
+
+		= parentContext (context.getParentContext)
+		if (!= parentContext null)
+			processContext parentContext
+
+	processContext __context__
+
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	var contextMenu
+	if (== (sections.size) 1)
+		= contextMenu (contextMenu:makeModelessUI ${
+			rdf:type				ozone:ViewContainer ;
+			ozone:initialResource	primarySection ;
+			ozone:viewPartClass		contextMenu:ContextMenuSectionPopoutViewPart
+		})
+	else
+		= children @(
+			${	rdf:type				layout:Layout ;
+				layout:layoutConstraint ${
+					rdf:type			layout:RowStackerConstraint ;
+					ozone:viewPartClass	contextMenu:ContextMenuSectionViewPart
+				} ;
+				ozone:dataSource ${
+					rdf:type			data:DAMLListSource ;
+					data:damlList		sections
+				}
+			}
+		)
+
+		= contextMenu (contextMenu:makeModelessUI ${
+			rdf:type		slide:RowSet ;
+			slide:children	children
+		})
+
+	print sections
+
+	modelessCreator.createModelessPart contextMenu point context
+
+add { :underlyingContextMenuSectionOf rdf:type hs:CachedProperty }
+
+
+method contextMenu:setDebug flag
+	if (== flag null)
+		remove contextMenu:showContextMenu contextMenu:printDebugInfo ?x
+	else
+		replace contextMenu:showContextMenu contextMenu:printDebugInfo ?x flag
+
+#############################################################################################
+# UI for contextMenu:UnderlyingContextMenuSection
+
+add {
+	:underlyingContextMenuSectionViewPart
+		rdf:type					ozone:SWTPart ;
+		rdf:type					ozone:Part ;
+		rdf:type					ozone:ViewPart ;
+		rdf:type					contextMenu:ContextMenuSectionViewPart ;
+		ozone:viewDomain			contextMenu:UnderlyingContextMenuSectionView ;
+		ozone:partDataGenerator		:underlyingContextMenuSectionViewPartGenerator ;
+		ozone:cachePartData			"true" ;
+		ozone:synchronous			"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	contextMenu:UnderlyingContextMenuSection hs:classView contextMenu:UnderlyingContextMenuSectionView
+
+	:underlyingContextMenuSectionPopoutViewPart
+		rdf:type					ozone:SWTPart ;
+		rdf:type					ozone:Part ;
+		rdf:type					ozone:ViewPart ;
+		rdf:type					contextMenu:ContextMenuSectionPopoutViewPart ;
+		ozone:viewDomain			contextMenu:UnderlyingContextMenuSectionPopoutView ;
+		ozone:partDataGenerator		:underlyingContextMenuSectionPopoutViewPartGenerator ;
+		ozone:cachePartData			"true" ;
+		ozone:synchronous			"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	contextMenu:UnderlyingContextMenuSection hs:classView contextMenu:UnderlyingContextMenuSectionPopoutView
+}
+
+method :underlyingContextMenuSectionViewPartGenerator section ; adenine:preload "true" ; adenine:precompile "true"
+	= dataSet (extract section contextMenu:dataSet ?x)
+	= dataSource (extract dataSet data:dataSource ?x)
+	= underlying (extract dataSource :underlying ?x)
+
+	= title ${
+		rdf:type		slide:Paragraph ;
+		slide:children @(
+			${	rdf:type				slide:Span ;
+				ozone:putLocalProperty	${ ozone:name ozone:underlying ; ozone:value underlying } ;
+				slide:children @(
+					${	rdf:type			summary:DocumentType
+					}
+				)
+			}
+			slide:colon
+			slide:space
+			${	rdf:type				ozone:ViewContainer ;
+				ozone:initialResource	underlying ;
+				ozone:viewPartClass		ozone:InactiveInlineViewPart
+			}
+		)
+	}
+
+	= ui (contextMenu:makeItemUI ${
+		rdf:type			slide:ColumnSet ;
+		slide:pack			"right" ;
+		slide:children @(
+			title
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+			}
+		)
+	})
+
+	= popout ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:initialResource	section ;
+		ozone:viewPartClass		contextMenu:ContextMenuSectionPopoutViewPart
+	}
+
+	add { ui
+		slide:submenu		(contextMenu:makeModelessUI popout)	;
+		ozone:putProperty	${ ozone:name contextMenu:underlying ; ozone:value underlying }
+	}
+
+	return ui
+
+add { contextMenu:underlyingSource
+	rdf:type		data:ContextPropertySource ;
+	data:property	contextMenu:underlying
+}
+
+method :underlyingContextMenuSectionPopoutViewPartGenerator section ; adenine:preload "true" ; adenine:precompile "true"
+	= dataSet (extract section contextMenu:dataSet ?x)
+	= dataSource (extract dataSet data:dataSource ?x)
+	= underlying (extract dataSource :underlying ?x)
+
+	= title ${
+		rdf:type		slide:Paragraph ;
+		slide:children @(
+			${	rdf:type				slide:Span ;
+				ozone:putLocalProperty	${ ozone:name ozone:underlying ; ozone:value underlying } ;
+				slide:children @(
+					${	rdf:type			summary:DocumentType
+					}
+				)
+			}
+			slide:colon
+			slide:space
+			${	rdf:type				ozone:ViewContainer ;
+				ozone:initialResource	underlying ;
+				ozone:viewPartClass		ozone:InactiveInlineViewPart
+			}
+		)
+	}
+
+	= continuationsSubmenu (contextMenu:makeItemUI ${
+		rdf:type			slide:ColumnSet ;
+		slide:pack			"right" ;
+		slide:children @(
+			${	rdf:type			slide:Train ;
+				slide:children		@(
+					${	rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/blank.gif>
+					}
+					slide:space
+					${	rdf:type	slide:Text ;
+						slide:text	"Use in pending tasks..."
+					}
+				)
+			}
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+			}
+		)
+	})
+	add { continuationsSubmenu
+		slide:submenu ${
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type				ozone:ViewContainer ;
+				ozone:viewPartClass		contextMenu:ContextSubmenuViewPart ;
+				ozone:initialResource	(cont:getApplicableContinuationsDataSet underlying)
+			}
+		}
+	}
+
+	= summarySubmenu (contextMenu:makeItemUI ${
+		rdf:type			slide:ColumnSet ;
+		slide:pack			"right" ;
+		slide:children @(
+			${	rdf:type			slide:Train ;
+				slide:children		@(
+					${	rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/blank.gif>
+					}
+					slide:space
+					${	rdf:type	slide:Text ;
+						slide:text	"Show summary..."
+					}
+				)
+			}
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+			}
+		)
+	})
+	add { summarySubmenu
+		slide:submenu ${
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type			slide:Block ;
+				slide:width			400 ;
+				slide:bgcolor		"white" ;
+				slide:borderWidth	"1" ;
+				slide:borderColor	"lightGray" ;
+				slide:margin		"2" ;
+				slide:child ${
+					rdf:type				ozone:ViewContainer ;
+					ozone:viewPartClass		ozone:AppletViewPart ;
+					ozone:initialResource	underlying
+				}
+			}
+		}
+	}
+
+	= sectionBody ${
+		rdf:type		slide:Paragraph ;
+		slide:children @(
+			${	rdf:type				layout:Layout ;
+				layout:layoutConstraint ${
+					rdf:type				layout:RowStackerConstraint ;
+					ozone:viewPartClass		contextMenu:ContextMenuItemViewPart ;
+					layout:sortBy			summary:titleSortingSource
+				} ;
+				ozone:dataSource			dataSource
+			}
+			continuationsSubmenu
+			summarySubmenu
+		)
+	}
+
+	= sectionUI (contextMenu:makeSectionUI title sectionBody)
+	add { sectionUI 
+		ozone:putProperty ${ ozone:name contextMenu:underlying ; ozone:value underlying }
+	}
+
+	return sectionUI
+
+
+#############################################################################################
+# UI for contextMenu:PartContextMenuSection
+
+add {
+	:partContextMenuSectionViewPart
+		rdf:type					ozone:SWTPart ;
+		rdf:type					ozone:Part ;
+		rdf:type					ozone:ViewPart ;
+		rdf:type					contextMenu:ContextMenuSectionViewPart ;
+		ozone:viewDomain			contextMenu:PartContextMenuSectionView ;
+		ozone:partDataGenerator		:partContextMenuSectionViewPartGenerator ;
+		ozone:cachePartData			"true" ;
+		ozone:synchronous			"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	contextMenu:PartContextMenuSection hs:classView contextMenu:PartContextMenuSectionView
+}
+
+method :partContextMenuSectionViewPartGenerator section ; adenine:preload "true" ; adenine:precompile "true"
+	= dataSet (extract section contextMenu:dataSet ?x)
+	= dataSource (extract dataSet data:dataSource ?x)
+	= part (extract dataSource :part ?x)
+	= partData (extract dataSource :partData ?x)
+
+	= title ${
+		rdf:type		slide:Paragraph ;
+		slide:children @(
+			${	rdf:type				ozone:ViewContainer ;
+				ozone:initialResource	part ;
+				ozone:viewPartClass		ozone:InlineViewPart
+			}
+		)
+	}
+
+	= popoutBody ${
+		rdf:type				layout:Layout ;
+		layout:layoutConstraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		contextMenu:ContextMenuItemViewPart ;
+			layout:sortBy			summary:titleSortingSource
+		} ;
+		ozone:dataSource			dataSource
+	}
+
+	= popout (contextMenu:makeSectionUI title popoutBody)
+	add { popout 
+		ozone:putProperty ${ ozone:name :part ; ozone:value part } ;
+		ozone:putProperty ${ ozone:name	:partData ; ozone:value partData }
+	}
+
+	= ui (contextMenu:makeItemUI ${
+		rdf:type			slide:ColumnSet ;
+		slide:pack			"right" ;
+		slide:children @(
+			title
+			${	rdf:type			slide:Image ;
+				slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+			}
+		)
+	})
+	add { ui slide:submenu (contextMenu:makeModelessUI popout)	}
+
+	return ui
+
+#############################################################################################
+# UI for op:Operation
+
+add { :operationContextMenuItemViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					contextMenu:ContextMenuItemViewPart ;
+	ozone:viewDomain			contextMenu:OperationContextMenuItemView ;
+	hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ;
+			slide:children @(
+				${	rdf:type			summary:IconBlank ;
+				}
+				slide:space
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type			summary:Title
+						}
+					)
+				}
+			)
+		} ;
+		ozone:onClick				contextMenu:startOperation
+	}
+
+	op:Operation hs:classView contextMenu:OperationContextMenuItemView
+}
+
+method contextMenu:closeContextMenu
+	= oldContext (__context__.getProperty contextMenu:oldContext)
+	= menuCreator (oldContext.getProperty contextMenu:menuCreator)
+	if (!= null menuCreator)
+		menuCreator.disposeChildren
+	else
+		(__context__.getProperty modeless:modelessParent).dispose
+
+method contextMenu:startOperation ; adenine:preload "true" ; adenine:precompile "true"
+	= operation (data:getUnderlying)
+	contextMenu:closeContextMenu
+
+	= underlying (__context__.getProperty contextMenu:underlying)
+	if (!= underlying null)
+		opui:startOperation operation underlying
+		return
+
+	= partData (__context__.getProperty :partData)
+	if (!= partData null)
+		opui:startOperation operation partData
+		return
+
+	opui:startOperation operation
+
+add { :showAspectMenuItemViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					contextMenu:ContextMenuItemViewPart ;
+	ozone:viewDomain			contextMenu:ShowAspectMenuItemView ;
+	hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type			slide:ColumnSet ;
+			slide:pack			"right" ;
+			slide:children @(
+				${	rdf:type			slide:Train ;
+					ozone:onClick		contextMenu:startOperation ;
+					slide:children		@(
+						${	rdf:type			summary:IconBlank ;
+						}
+						slide:space
+						${	rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type			summary:Title
+								}
+							)
+						}
+					)
+				}
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+				}
+			)
+		} ;
+		slide:submenu ${
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type			slide:Block ;
+				slide:bgcolor		"white" ;
+				slide:borderWidth	"1" ;
+				slide:borderColor	"lightGray" ;
+				slide:margin		"1" ;
+				slide:child ${
+					rdf:type					ozone:DataProviderHost ;
+					ozone:hostedDataProvider	contextMenu:underlyingSource ;
+					ozone:propertyName			lensui:underlyingSource ;
+					slide:child ${
+						rdf:type				ozone:ViewContainer ;
+						ozone:dataSource ${
+							rdf:type			data:ResourcePropertySource ;
+							ozone:dataSource	data:underlyingSource ;
+							data:predicate		op:associatedAspect
+						} ;
+						ozone:viewPartClass		lensui:EmbeddedIndividualAspectViewPart
+					}
+				}
+			}
+		}
+	}
+}
+
+#############################################################################################
+# Default UI
+
+add { :defaultContextMenuItemViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					contextMenu:ContextMenuItemViewPart ;
+	ozone:viewDomain			contextMenu:DefaultContextMenuItemView ;
+	hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ;
+			slide:children @(
+				${	rdf:type			summary:IconBlank ;
+				}
+				slide:space
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type			summary:Title
+						}
+					)
+				}
+			)
+		} ;
+		ozone:onClick				ozone:underlyingHyperlink
+	}
+
+	daml:Thing hs:classView contextMenu:DefaultContextMenuItemView
+}
+
+#############################################################################################
+# UI for contextMenu:UnderlyingContextMenuSection
+
+add {
+	:continuationsContextSubmenuViewPart
+		rdf:type					ozone:SWTPart ;
+		rdf:type					ozone:Part ;
+		rdf:type					ozone:ViewPart ;
+		rdf:type					contextMenu:ContextSubmenuViewPart ;
+		ozone:viewDomain			contextMenu:ContinuationsContextSubmenuView ;
+		ozone:partDataGenerator		:continuationsContextSubmenuViewPartGenerator ;
+		ozone:cachePartData			"true" ;
+		ozone:synchronous			"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	cont:ContinuationCollectionDataSet hs:classView contextMenu:ContinuationsContextSubmenuView
+}
+
+method :continuationsContextSubmenuViewPartGenerator dataSet ; adenine:preload "true" ; adenine:precompile "true"
+	= dataSource (extract dataSet data:dataSource ?x)
+	= target (extract dataSource cont:target ?x)
+
+	return ${
+		rdf:type			slide:Block ;
+		slide:bgcolor		"white" ;
+		slide:borderWidth	"1" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"2" ;
+		slide:width			"200" ;
+		ozone:putProperty	${ ozone:name :continuationTarget ; ozone:value target } ;
+		slide:child ${
+			rdf:type				layout:Layout ;
+			layout:layoutConstraint ${
+				rdf:type				layout:RowStackerConstraint ;
+				ozone:viewPartClass		contextMenu:ContextMenuItemViewPart ;
+				layout:sortBy			summary:titleSortingSource
+			} ;
+			ozone:dataSource			dataSource
+		}
+	}
+
+#############################################################################################
+# UI for op:Operation
+
+add {
+	:continuationContextMenuItemViewPart
+		rdf:type					ozone:SWTPart ;
+		rdf:type					ozone:Part ;
+		rdf:type					ozone:ViewPart ;
+		rdf:type					contextMenu:ContextMenuItemViewPart ;
+		ozone:viewDomain			contextMenu:ContinuationContextMenuItemView ;
+		ozone:partDataGenerator		:continuationContextMenuItemViewPartGenerator ;
+		ozone:cachePartData			"true" ;
+		ozone:synchronous			"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	cont:Continuation hs:classView contextMenu:ContinuationContextMenuItemView
+}
+
+method :continuationContextMenuItemViewPartGenerator continuation ; adenine:preload "true" ; adenine:precompile "true"
+	= body ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type			summary:Icon
+			}
+			slide:space
+			${	rdf:type			slide:Text ;
+				slide:text			"Use as"
+			}
+			slide:space
+			${	rdf:type			summary:Title
+			}
+		)
+	}	
+	= ui (contextMenu:makeItemUI body)
+	add { ui
+		ozone:onClick ${ 
+			rdf:type 			ozone:AdenineCall ;
+			ozone:method		:startContinuation ;
+			ozone:parameters 	@( continuation )
+		}
+	}
+
+	return ui
+
+method :startContinuation continuation ; adenine:preload "true" ; adenine:precompile "true"
+	(extract continuation cont:acceptor ?x) (__context__.getProperty :continuationTarget)
+	(__context__.getProperty contextMenu:menuCreator).disposeChildren
+
+#############################################################################################
+# Underlying operation set data provider
+
+add {
+	:underlyingOperationSetDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:SetDataProvider ;
+		ozone:dataDomain		contextMenu:UnderlyingOperationSetSource ;
+		data:initialize			:underlyingOperationSetSourceInitialize ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.AdenineDataProvider" }
+}
+
+method :underlyingOperationSetSourceInitialize dataProvider ; adenine:precompile "true" ; adenine:preload "true"
+	= dataSource (__context__.getLocalProperty ozone:partData)
+	= underlying (extract dataSource :underlying ?x)
+	= operations (Set)
+
+	function handler x
+		operations.add x
+
+	opui:listOperations underlying handler
+
+	= nestingRelations (query { dataSource :nestingRelation ?x })
+	for r in nestingRelations
+		= r r[0]
+		= os (query { ?x rdf:type op:Operation ; op:nestingRelationDomain r })
+		for o in os
+			operations.add o[0]
+
+	dataProvider.cacheData operations
+
+	__context__.putLocalProperty data:onConsumerRegistered	:underlyingOperationSetSourceOnConsumerRegistered
+	__context__.putLocalProperty data:getData				:underlyingOperationSetSourceGetData
+
+method :underlyingOperationSetSourceOnConsumerRegistered dataProvider dataConsumer ; adenine:precompile "true" ; adenine:preload "true"
+	dataConsumer.onDataChanged data:setAddition (dataProvider.getCachedData)
+
+method :underlyingOperationSetSourceGetData dataProvider dataType specifications ; adenine:precompile "true" ; adenine:preload "true"
+	if (or (== dataType null) (== dataType data:set))
+		return (dataProvider.getCachedData)
+
+	if (== dataType data:setCount)
+		return ((dataProvider.getCachedData).size)
+
+	return null
+
+#############################################################################################
+# Part operation set data provider
+
+add {
+	:partOperationSetDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:SetDataProvider ;
+		ozone:dataDomain		contextMenu:PartOperationSetSource ;
+		data:initialize			:partOperationSetSourceInitialize ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.AdenineDataProvider" }
+}
+
+method :partOperationSetSourceInitialize dataProvider ; adenine:precompile "true" ; adenine:preload "true"
+	= dataSource (__context__.getLocalProperty ozone:partData)
+	= part (extract dataSource :part ?x)
+	= partData (extract dataSource :partData ?x)
+
+	= operations (Set)
+
+	operations.addAll (query { dataSource :contextOperation ?x })
+	operations.addAll (query { ?x op:partDomain part })
+
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	dataProvider.cacheData (Utilities.extractFirstItems operations)
+
+	__context__.putLocalProperty data:onConsumerRegistered	:partOperationSetSourceOnConsumerRegistered
+	__context__.putLocalProperty data:getData				:partOperationSetSourceGetData
+
+method :partOperationSetSourceOnConsumerRegistered dataProvider dataConsumer ; adenine:precompile "true" ; adenine:preload "true"
+	dataConsumer.onDataChanged data:setAddition (dataProvider.getCachedData)
+
+method :partOperationSetSourceGetData dataProvider dataType specifications ; adenine:precompile "true" ; adenine:preload "true"
+	if (or (== dataType null) (== dataType data:set))
+		return (dataProvider.getCachedData)
+
+	if (== dataType data:setCount)
+		return ((dataProvider.getCachedData).size)
+
+	return null
+
+#############################################################################################
+# Utilities
+
+method contextMenu:makeSectionUI title body ; adenine:preload "true" ; adenine:precompile "true"
+	return ${
+		rdf:type						slide:Paragraph ;
+		slide:children @(
+			${	rdf:type				slide:Block ;
+				slide:bgcolor			"lightestGray" ;
+				slide:marginY			"3" ;
+				slide:marginX			"5" ;
+				slide:borderBottomWidth	"1" ;
+				slide:borderBottomColor	"lightGray" ;
+				slide:fontBold			"true" ;
+				slide:child				title
+			}
+			slide:newLine
+			${	rdf:type				slide:Block ;
+				slide:marginY			"2" ;
+				slide:child				body
+			}
+		)
+	}
+
+method contextMenu:makeItemUI body ; adenine:preload "true" ; adenine:precompile "true"
+	return ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child					body
+	}
+
+method contextMenu:makeModelessUI body ; adenine:preload "true" ; adenine:precompile "true"
+	return ${
+		rdf:type modeless:Modeless ;
+		modeless:child ${
+			rdf:type			slide:Block ;
+			slide:alignX		"left" ;
+			slide:fontBold		"false" ;
+			slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+			slide:fontSize		"8" ;
+			slide:bgcolor		"white" ;
+			slide:color			"#3B5377" ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"lightGray" ;
+			slide:margin		"2" ;
+			slide:width			"200" ;
+			slide:child			body
+		}
+	}

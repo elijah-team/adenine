@@ -1,0 +1,85 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Note Ontology
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/schemata/note.ad,v 1.19 2003/12/17 17:34:27 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/schemata/note>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#>
+@prefix	note:		<http://haystack.lcs.mit.edu/schemata/note#> 
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#> 
+
+add { ^
+	rdf:type		daml:Ontology ;
+	dc:title		"Note Ontology"
+}
+
+#############################################################################################
+# Note
+
+add { note:Note
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Note" ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/note.gif> ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:subClassOf		content:Content
+}
+
+#############################################################################################
+# Todo
+
+add { note:Todo
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"To-do Item" ;
+	rdfs:subClassOf		note:Note ;
+	rdfs:subClassOf		task:Task ;
+	rdfs:isDefinedBy	^
+}
+
+#############################################################################################
+# Meeting minutes
+
+add { note:MeetingMinutes
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Meeting minutes" ;
+	rdfs:subClassOf		note:Note ;
+	rdfs:isDefinedBy	^
+}
+
+add { note:present
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Who was present" ;
+	rdfs:isDefinedBy	^;
+	rdfs:domain			note:MeetingMinutes ;
+	rdfs:range			hs:Person
+}

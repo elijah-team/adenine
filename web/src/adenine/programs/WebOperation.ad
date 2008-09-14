@@ -1,0 +1,150 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Web Operation interface
+# Written by Ryan Manuel
+
+@base				<http://haystack.lcs.mit.edu/programs/WebOperation>
+
+@prefix	:			<http://haystack.lcs.mit.edu/programs/WebOperation#> 
+@prefix webop:		<http://haystack.lcs.mit.edu/schemata/WebOperation#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix	web:		<http://haystack.lcs.mit.edu/schemata/web#>
+@prefix wrap:		<http://haystack.lcs.mit.edu/schemata/wrapperinduction#>
+
+add { :resultsPage
+	rdf:type		op:Parameter ;
+	op:required		"true" ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Results Page" ;
+	rdfs:range		web:WebPage ;
+	op:adenineCondition	:operationInvoked
+}
+
+add { :wrapperList
+	rdf:type		data:RDFQuerySetSource ;
+	data:existentials		@( ?x ) ;
+	data:targetExistential	?x ;
+	data:statement ${
+		data:subject	?x ;
+		data:predicate			 rdf:type ;
+		data:object				wrap:Pattern
+	} 
+}
+
+
+add { :existingWebOp
+	rdf:type		op:Parameter ;
+	op:required		"true" ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Stored Web Operation" ;
+	rdfs:range		webop:WebOperation
+}
+
+method :operationInvoked
+	= webViewPart (wrap:getWebViewPart)
+	if (== webViewPart null)
+	    return null
+	= operationInvoked (webViewPart.getWebOpOccurred)
+	return operationInvoked
+
+method :rememberWebOperation :wrapper = wrapper :operationName = operationName :resultsPage = resultsPage :menu = menu;
+rdf:type	op:Operation ;
+op:primaryParameter	:resultsPage ;
+dc:title	"Remember Web Operation" ;
+adenine:preload	"true" ;
+rdf:type 	construct:Constructor
+	importjava "edu.mit.lcs.haystack.server.extensions.weboperation" WebOpManager
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	= webViewPart (wrap:getWebViewPart)
+	print (append '>>> creating web operation with name ' operationName[0])
+	var realWrapper
+	if(== (wrapper.size) 0)
+		= realWrapper null
+	else
+		= realWrapper wrapper[0] 
+	= newOp (WebOpManager.createWebOperation __source__ webViewPart (append (operationName[0].getContent) '_Original') realWrapper)
+	method newOp 
+		with __source__ __infosource__
+			= namedValues (__message__.getNamedValues)
+			importjava "edu.mit.lcs.haystack.server.extensions.weboperation" WebOpManager
+			WebOpManager.invokeWebOperation __source__ namedValues `newOp __context__
+		return null
+
+	= newCurriedOp (UniqueResource)
+	method newCurriedOp
+		with __source__ __infosource__
+			for x in (query { `newOp adenine:namedParameter ?np ?np adenine:parameterName ?x } @(?x))
+				= type (extract x[0] webop:paramType ?x)
+				= values (__message__.getNamedValue x[0])
+				if(== values null)
+					= values @()
+				if(type.equals "hidden")
+					values.add (extract x[0] webop:origValue ?x)
+				__message__.setNamedValue x[0] values
+		return (apply `newOp __message__)
+		
+	add { newCurriedOp dc:title operationName[0] ; 
+		rdf:type webop:WebOperation ; 
+		op:originalOperation newOp ; 
+		rdf:type op:Operation ;
+		webop:actionURL (extract newOp webop:actionURL ?x) ;
+		webop:headers (extract newOp webop:headers ?x) ;
+		webop:operType (extract newOp webop:operType ?x) ;
+		webop:pattern (extract newOp webop:pattern ?x) ;
+		webop:initPage (extract newOp webop:initPage ?x) ;
+		op:dispIfParamsAllNotRequired "true"}
+	
+	with __source__ __infosource__
+		for x in (query { newOp adenine:namedParameter ?np ?np adenine:parameterName ?x } @(?x ?np))
+			= type (extract x[0] webop:paramType ?x)
+			if(!(type.equals "hidden"))
+				add { newCurriedOp adenine:namedParameter x[1] }			
+	return newCurriedOp
+	
+
+add { :operationName
+	rdf:type		op:Parameter ;
+	op:required		"true" ;	
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Operation Name" ;
+	rdfs:range		xsd:string
+}
+	
+add { :wrapper
+	rdf:type		op:Parameter ;
+	op:required		"false" ;	
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Wrapper" ;
+	rdfs:range		wrap:Pattern ;
+	op:possibleValues :wrapperList
+}
+	

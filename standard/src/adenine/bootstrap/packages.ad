@@ -1,0 +1,286 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Package Definitions
+# Written by Dennis Quan and David Huynh
+
+@base <http://haystack.lcs.mit.edu/bootstrap/packages>
+
+@prefix config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix :			<http://haystack.lcs.mit.edu/bootstrap/packages#>
+
+########################################################################
+# Functionality Groups
+
+add { <http://haystack.lcs.mit.edu/bootstrap/base> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Base Ontologies" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/bootstrap/base.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/haystackBase> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Haystack Base Ontologies" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/bootstrap/haystackBase.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/uiBase> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Base User Interface" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/bootstrap/uiBase.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/ui> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"User Interface" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/bootstrap/ui.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/navigation> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Navigation" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/bootstrap/navigation.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/operationTaskBase> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Base Operation and Task Support" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/bootstrap/operationTaskBase.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/utilities> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Utilities" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/bootstrap/utilities.ad"
+}
+
+########################################################################
+# Agents
+
+
+add { <http://haystack.lcs.mit.edu/agents/text>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Text Agents" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/agents/text.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/lucene>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Lucene Agent" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/agents/lucene.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/content>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Content Agents" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/agents/content.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/rdfstore>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"RDF Store" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/agents/rdfstore.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/information>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Information Agent" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/agents/information.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/xml>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"XML Recognition Agent" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/agents/xml.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/melatonin>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Melatonin Agent" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/agents/melatonin.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/mercury>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Mercury Agent" ;
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/agents/mercury.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/agents/scheduler>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Scheduler Agent" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/agents/scheduler.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/baseAgents> 
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Base Agents" ;
+	rdf:type		content:NullContent ;
+	config:includes		<http://haystack.lcs.mit.edu/agents/content> ;
+	config:includes		<http://haystack.lcs.mit.edu/agents/rdfstore>
+}
+
+########################################################################
+# Miscellaneous Packages
+
+add { <http://haystack.lcs.mit.edu/ui/setup>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Setup UI" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/ui/setup.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/standalone>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Standalone adenine console support" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/ui/standalone.ad"
+}
+
+
+add { <http://haystack.lcs.mit.edu/schemata/thing>
+	rdf:type	 	config:OntologyPackage ;
+	dc:title		"Base ontology for daml:Thing";
+	rdf:type		content:JavaClasspathContent ;
+	content:path		"/schemata/thing.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/picture>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Haystack Picture Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/picture.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/picture>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Picture UI" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/ui/picture.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/schemata/help>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Help Ontology" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/schemata/help.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/ui/helpView>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Help View" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/ui/helpView.ad"
+}
+
+add { <http://haystack.lcs.mit.edu/data/helpData>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Example help file" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/helpData.ad"
+}
+
+########################################################################
+# Common Configurations
+
+add { <http://haystack.lcs.mit.edu/bootstrap/console>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Console-only Package" ;
+	rdf:type		content:NullContent ;
+	adenine:precompile	"true" ;
+
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/base> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/haystackBase> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/utilities> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/baseAgents> ;
+}
+
+
+add { <http://haystack.lcs.mit.edu/bootstrap/minimal>
+	rdf:type		config:OntologyPackage ;
+	dc:description		"Minimal Package" ;
+	rdf:type		content:NullContent ;
+	adenine:precompile	"true" ;
+
+	config:includes		<http://haystack.lcs.mit.edu/schemata/thing> ;  
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/base> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/haystackBase> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/uiBase> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/ui> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/navigation> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/operationTaskBase> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/utilities> ;
+	config:includes 	<http://haystack.lcs.mit.edu/bootstrap/baseAgents> ;
+	config:includes		<http://haystack.lcs.mit.edu/ui/collectionView> ;
+	config:includes 	<http://haystack.lcs.mit.edu/ui/setup> ;
+
+}
+
+
+add { <http://haystack.lcs.mit.edu/bootstrap/user>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"User Package" ;
+	rdf:type					content:NullContent ;
+	adenine:precompile			"true" ;
+
+	config:includes <http://haystack.lcs.mit.edu/bootstrap/minimal> ;
+	config:includes	<http://haystack.lcs.mit.edu/ui/standalone> ;
+#	config:includes <http://haystack.lcs.mit.edu/demo/simile/simile> ;
+
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/eclipse>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Packages for Haystack/Eclipse" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/bootstrap/eclipse.ad" ;
+	adenine:precompile			"true"
+}
+
+add { <http://haystack.lcs.mit.edu/bootstrap/eclipseBase>
+	rdf:type					config:OntologyPackage ;
+	dc:description				"Eclipse base packages" ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path			 	"/bootstrap/eclipseBase.ad" ;
+	adenine:precompile			"true"
+}
+

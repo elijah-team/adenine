@@ -1,0 +1,425 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# View navigator UI
+# Written by David Huynh and Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/ui/viewNavigator.ad,v 1.43 2003/12/17 17:34:22 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/viewNavigator>
+
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	viewContainer:	<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	navView:		<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix	navigator:		<http://haystack.lcs.mit.edu/ui/viewNavigator#>
+
+#############################################################################################
+# Navigation data providers
+
+add {
+	navigator:navigationDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		navigator:NavigationSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.NavigationDataProvider" }
+
+	navigator:navigationPropertiesDataProvider
+		rdf:type				ozone:Part ;
+		rdf:type				data:DataProvider ;
+		rdf:type				data:ResourceDataProvider ;
+		ozone:dataDomain		navigator:NavigationPropertiesSource ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.data.NavigationPropertiesDataProvider" }
+}
+
+#############################################################################################
+# navigationBarButtonPart
+
+add { :navigationBarButtonPart
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		navigator:NavigationBarButton ;
+	ozone:partDataGenerator	:presentNavigationBarButton ;
+	ozone:cachePartData		"true" ;
+	ozone:synchronous		"true" ;
+	hs:javaImplementation	${
+		rdf:type			hs:JavaClass ;
+		hs:className		"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :presentNavigationBarButton res ; adenine:preload "true"
+	= resPartData (__context__.getLocalProperty ozone:partData)
+	= icon (extract resPartData :icon ?x)
+	= label (extract resPartData :label ?x)
+	= tooltip (extract resPartData :tooltip ?x)
+	= onClick (extract resPartData :onClick ?x)
+	= align (extract resPartData :iconAlign ?x)
+	= id (extract resPartData :id ?x)
+	
+	= children (List)
+	if (!= icon null)			
+		children.add ${
+			rdf:type		slide:Image ;
+			slide:source	icon
+		}
+		
+	if (!= label null)
+		if (or (== align null) (!= align "right"))
+			if (!= icon null)
+				children.add slide:space
+				
+			children.add ${
+				rdf:type		slide:Text ;
+				slide:text		label
+			}
+		else
+			if (!= icon null)
+				children.add 0 slide:space
+				
+			children.add 0 ${
+				rdf:type		slide:Text ;
+				slide:text		label
+			}
+	
+	= button ${
+		rdf:type					slide:Button ;
+		slide:backgroundHighlight	"90%" ;
+		slide:marginY				"5" ;
+		slide:marginX				"7" ;
+		slide:height				"24" ;
+		ozone:onClick				onClick ;
+		slide:child ${
+			rdf:type				slide:Train ;
+			slide:children 			children
+		}
+	}
+	
+	if (!= onClick null)
+		add { button ozone:onClick onClick }
+	if (!= tooltip null)
+		add { button ozone:tooltip tooltip }
+	if (!= id null)
+		add { button ozone:id id }
+
+	return button
+
+#############################################################################################
+# navigationBarButtonPart
+
+add { :navigationBarDepressedButtonPart
+	rdf:type					ozone:Part ;
+	ozone:dataDomain			:NavigationBarDepressedButton ;
+	ozone:partDataGenerator		:presentNavigationBarDepressedButton ;
+	ozone:cachePartData			"true" ;
+	ozone:synchronous			"true" ;
+	hs:javaImplementation	${
+		rdf:type				hs:JavaClass ;
+		hs:className			"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :presentNavigationBarDepressedButton res ; adenine:preload "true"
+	= resPartData (__context__.getLocalProperty ozone:partData)
+	= icon (extract resPartData :icon ?x)
+	= label (extract resPartData :label ?x)
+	= tooltip (extract resPartData :tooltip ?x)
+	= onClick (extract resPartData :onClick ?x)
+	= align (extract resPartData :iconAlign ?x)
+	
+	= children (List)
+	if (!= icon null)			
+		children.add ${
+			rdf:type		slide:Image ;
+			slide:source	icon
+		}
+		
+	if (!= label null)
+		if (or (== align null) (!= align "right"))
+			if (!= icon null)
+				children.add slide:space
+				
+			children.add ${
+				rdf:type		slide:Text ;
+				slide:text		label
+			}
+		else
+			if (!= icon null)
+				children.add 0 slide:space
+				
+			children.add 0 ${
+				rdf:type		slide:Text ;
+				slide:text		label
+			}
+	
+	= button ${
+		rdf:type					slide:Button ;
+		slide:marginY				"5" ;
+		slide:marginX				"7" ;
+		slide:bgcolor				"lightestGray" ;
+		slide:backgroundHighlight	"95%" ;
+		ozone:onClick				onClick ;
+		slide:child ${
+			rdf:type				slide:Train ;
+			slide:children 			children
+		}
+	}
+	
+	if (!= onClick null)
+		add { button ozone:onClick onClick }
+	if (!= tooltip null)
+		add { button ozone:tooltip tooltip }
+
+	return button
+
+#############################################################################################
+# Navigator
+
+add {
+	navigator:adenineNavigatorPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		navigator:AdenineViewNavigator ;
+		ozone:partDataGenerator	:presentAdenineViewNavigator ;
+		ozone:synchronous		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdenineViewNavigatorPart" }
+}
+
+method :presentAdenineViewNavigator ; adenine:preload "true" ; adenine:precompile "true"
+	= partData (__context__.getLocalProperty ozone:partData)
+	= ui (extract ?x :navigatorUIOf partData)
+	if (!= ui null)
+		return ui
+
+	= navigatePane ${ rdf:type navView:NavigationPane ; ozone:visible "false" }
+	= navigationBar (:createNavigationBar navigatePane partData)
+	= contentPane ${
+		rdf:type				slide:Block ;
+		slide:borderTopWidth	"1" ;
+		slide:borderTopColor	"gray" ;
+		slide:marginTop			"1" ;
+		slide:child				(viewContainer:createTopLevelViewContainerWithTitleBar ${ rdf:type navigator:NavigationSource } true (extract partData viewContainer:informationSourceSpecification ?x))
+	}
+
+	return ${
+		rdf:type layout:Layout ;
+		:navigatorUIOf partData ;
+		layout:layoutConstraint ${
+			rdf:type			layout:RowSplitterConstraint ;
+			layout:constraint	${ layout:element navigationBar ; layout:dimension "24" ; layout:resizable "false" ; layout:persistent "false" } ;
+			layout:constraint	${ layout:element navigatePane ; layout:dimension "20%" }
+		} ;
+		ozone:dataSource ${
+			rdf:type			data:VisibleResourceListSource ;
+			ozone:dataSource	${
+				rdf:type		data:DAMLListSource ;
+				data:damlList	@( navigationBar navigatePane contentPane )
+			}
+		}
+	}
+
+add { navigator:simpleNavigatorPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		navigator:SimpleViewNavigator ;
+	ozone:partDataGenerator	:presentSimpleViewNavigator ;
+	ozone:synchronous		"true" ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdenineViewNavigatorPart" }
+}
+
+method :presentSimpleViewNavigator ; adenine:preload "true"
+	= partData (__context__.getLocalProperty ozone:partData)
+	= viewNavigator ${
+		rdf:type				slide:Block ;
+		slide:child				(viewContainer:createTopLevelViewContainerWithTitleBar ${ rdf:type navigator:NavigationSource } true (extract partData viewContainer:informationSourceSpecification ?x))
+	}
+	= navigatePane (extract partData navigator:navigatePane ?x)
+	if (!= null navigatePane)
+		return ${
+			rdf:type layout:Layout ;
+			layout:layoutConstraint ${
+				rdf:type			layout:RowSplitterConstraint ;
+				layout:constraint	${ layout:element navigatePane ; layout:dimension "20%" }
+			} ;
+			ozone:dataSource ${
+				rdf:type			data:VisibleResourceListSource ;
+				ozone:dataSource	${
+					rdf:type		data:DAMLListSource ;
+					data:damlList	@( navigatePane viewNavigator )
+				}
+			}
+		}
+	else
+		return viewNavigator
+
+method :createNavigationBar navigatePane viewNavigatorID
+	uniqueMethod navigateBack
+		= id `viewNavigatorID
+		((__context__.getProperty ozone:navigationMaster).getViewNavigator id).back
+
+	uniqueMethod navigateForward
+		= id `viewNavigatorID
+		((__context__.getProperty ozone:navigationMaster).getViewNavigator id).forward
+
+	uniqueMethod navigateHome
+		= id `viewNavigatorID
+		((__context__.getProperty ozone:navigationMaster).getViewNavigator id).home
+
+	uniqueMethod refreshNavigation
+		= id `viewNavigatorID
+		((__context__.getProperty ozone:navigationMaster).getViewNavigator id).refresh
+
+	uniqueMethod go
+		= id `viewNavigatorID
+		= ep (__context__.getProperty :URI)
+		((__context__.getProperty ozone:navigationMaster).getViewNavigator id).requestNavigation (Resource (ep.getContent)) null null
+
+	= navigationControls ${
+		rdf:type		slide:Train ;
+		slide:textAlign	"false" ;
+		slide:children @(
+			${	rdf:type		navigator:NavigationBarButton ;
+				:icon			<http://haystack.lcs.mit.edu/data/ozone/frame/back.gif> ;
+				:label			"Back" ;
+				:tooltip		"Go to the previous screen" ;
+				:onClick		navigateBack
+			}
+
+			${	rdf:type		navigator:NavigationBarButton ;
+				:icon			<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif> ;
+				:label			"Forward" ;
+				:tooltip		"Go to the next screen" ;
+				:iconAlign		"right" ;
+				:onClick		navigateForward
+			}
+			${	rdf:type		navigator:NavigationBarButton ;
+				:icon			<http://haystack.lcs.mit.edu/data/ozone/common/refresh.gif> ;
+				:tooltip		"Refresh this screen" ;
+				:onClick		refreshNavigation
+			}
+			${	rdf:type		navigator:NavigationBarButton ;
+				:label			"Home" ;
+				:icon			<http://haystack.lcs.mit.edu/data/ozone/frame/home.gif> ;
+				:tooltip		"Go to your home page" ;
+				:onClick		navigateHome
+			}
+			slide:space
+			${	rdf:type		slide:Block ;
+				slide:marginY	"3" ;
+				slide:marginX	"7" ;
+				slide:height	"24" ;
+				slide:child ${
+					rdf:type	slide:Train ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							slide:text		"Go to"
+						}
+						slide:space
+						${	rdf:type				ozone:Edit ;
+							slide:color				"#426496" ;
+							slide:fontBold			"false" ;
+							ozone:width				"150" ;
+							ozone:registerService	:URI ;
+							ozone:onEnterPressed	go
+						}
+						${	rdf:type					slide:Button ;
+							slide:highlightBorder		"true" ;
+							slide:borderColor			"lighterGray" ;
+							slide:borderWidth			"1" ;
+							ozone:onClick				go ;
+							slide:child ${
+								rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+							}
+						}
+					)
+				}
+			}
+		)
+	}
+
+	if (!= null navigatePane)
+		uniqueMethod hideNavigatePane
+			replace `navigatePane ozone:visible ?x "false"
+
+		uniqueMethod showNavigatePane
+			replace `navigatePane ozone:visible ?x "true"
+
+		= navigatePaneHideControl ${
+			rdf:type		:NavigationBarDepressedButton ;
+			:label			"Navigate" ;
+			:icon			<http://haystack.lcs.mit.edu/data/ozone/frame/navigate.gif> ;
+			:onClick		hideNavigatePane
+		}
+		= navigatePaneShowControl ${
+			rdf:type		navigator:NavigationBarButton ;
+			:label			"Navigate" ;
+			:icon			<http://haystack.lcs.mit.edu/data/ozone/frame/navigate.gif> ;
+			:onClick		showNavigatePane
+		}
+
+		= paneControls ${
+			rdf:type		slide:Train ;
+			slide:children @(
+				${	rdf:type ozone:AdeninePartContainer ;
+					ozone:dataSource ${
+						rdf:type			data:MappingSource ;
+						data:domain			@( "true" "false" ) ;
+						data:range			@( navigatePaneHideControl navigatePaneShowControl ) ;
+						data:default		navigatePaneHideControl ;
+						ozone:dataSource	${
+							rdf:type		data:LiteralPropertySource ;
+							data:subject	navigatePane ;
+							data:predicate	ozone:visible
+						}
+					}
+				}
+			)
+		}
+
+		return ${
+			rdf:type				slide:Block ;
+			slide:bgcolor			"white" ;
+			slide:color				"black" ;
+			slide:fillParentWidth	"true" ;
+			slide:fontBold			"true" ;
+			slide:fontSize			"9" ;
+			slide:child ${
+				rdf:type	layout:Layout ;
+				ozone:dataSource ${
+					rdf:type		data:DAMLListSource ;
+					data:damlList	@( navigationControls paneControls )
+				} ;
+				layout:layoutConstraint ${
+					rdf:type		layout:ColumnSplitterConstraint ;
+					layout:pack		"last" ;
+					layout:constraint ${ layout:element paneControls ; layout:resizable "false" }
+				}
+			}
+		}
+	else
+		return navigationControls

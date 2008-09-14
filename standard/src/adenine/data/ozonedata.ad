@@ -1,0 +1,472 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone data
+# Written by Dennis Quan, David Huynh
+
+@base <http://haystack.lcs.mit.edu/schemata/ozonedata>
+
+@prefix	content:		<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix config:			<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#>
+
+########################################################################
+# Graphics
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/back.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/back.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/forward.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/home.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/home.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/horizontalBlocks.png>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/horizontalBlocks.png"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/horzResizeBars.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/horzResizeBars.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/navigate.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/navigate.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/navigation.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/navigation.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/tick.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/tick.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/frame/vc.jpg>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/frame/vc.jpg"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/checkMark.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/checkMark.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/collapse.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/drop.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/endLeft.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/endLeft.gif"
+}
+add { <http://haystack.lcs.mit.edu/data/ozone/common/endRight.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/endRight.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/expand.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/expand.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/go.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/maximize.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/maximize.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/minus.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/minus.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/plus.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/plus.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/refresh.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/refresh.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/remove.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/remove.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/stop.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common//stop.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/stopSign.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common//stopSign.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/sortAscending.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/sortAscending.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/sortDescending.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/sortDescending.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/up.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/up.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/x.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/select.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/select.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/information.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/information.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/spanAll.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/spanAll.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/pause.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/pause.gif"
+}
+ 
+add { <http://haystack.lcs.mit.edu/data/ozone/common/play.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/play.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/pin.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/pin.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/checked.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/checked.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/checkedOption.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/checkedOption.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/uncheckedOption.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/uncheckedOption.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/common/unchecked.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/common/unchecked.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/agent.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/agent.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/album.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/album.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/collection.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/collection.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/connection.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/connection.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/continuation.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/continuation.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/note.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/note.gif"
+}
+
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/discussion.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/discussion.gif"
+}
+
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/email.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/email.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/generic.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/generic.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/home.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/home.gif"
+}
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/instantMessage.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/instantMessage.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/mechanic.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/mechanic.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/organization.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/organization.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/person.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/person.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/picture.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/picture.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/photomanager.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/photomanager.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/property.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/property.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/class.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/class.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/adenine.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/adenine.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/types/web.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/types/web.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/verbs/blank.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/verbs/blank.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/verbs/eclipse.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/verbs/eclipse.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/verbs/forward.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/verbs/forward.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/verbs/browseto.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/verbs/browseto.gif"
+}
+
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/verbs/reply.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/verbs/reply.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/verbs/send.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/verbs/send.gif"
+}
+
+add { <http://haystack.lcs.mit.edu/data/ozone/icons/verbs/extracttext.gif>
+	rdf:type					config:OntologyData ;
+	rdf:type					content:JavaClasspathContent ;
+	content:path				"/data/ozone/icons/verbs/extracttext.gif"
+}
+
+#############################################################################################
+# Icons
+
+add {
+	<http://haystack.lcs.mit.edu/data/ozone/frame/back.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/frame/home.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/frame/horzResizeBars.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/frame/navigate.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/frame/tick.gif> ozone:luminant "true"
+
+	<http://haystack.lcs.mit.edu/data/ozone/common/checkMark.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/checked.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/checkedOption.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/endLeft.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/stop.gif>	ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/stopSign.gif>	ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/endRight.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/maximize.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/minus.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/pause.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/pin.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/play.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/plus.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/refresh.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/remove.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/select.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/sortAscending.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/sortDescending.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/spanAll.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/unchecked.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/uncheckedOption.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/up.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif> ozone:luminant "true"
+
+	<http://haystack.lcs.mit.edu/data/ozone/icons/types/agent.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/icons/types/album.gif> ozone:luminant "true"
+
+	<http://haystack.lcs.mit.edu/data/ozone/icons/types/continuation.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/icons/types/home.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/icons/types/organization.gif> ozone:luminant "true"
+
+	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/blank.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/browseto.gif> ozone:luminant "true"
+	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/extracttext.gif> ozone:luminant "true"
+}
+

@@ -1,0 +1,201 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack RDF Store
+# Written by Dennis Quan
+# $Header: 
+
+@base <http://haystack.lcs.mit.edu/agents/rdfstore> 
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	adenine:	<http://haystack.lcs.mit.edu/schemata/adenine#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	fs:			<http://haystack.lcs.mit.edu/agents/fs#> 
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	:			<http://haystack.lcs.mit.edu/agents/rdfstore#> 
+@prefix rdfstore:	<http://haystack.lcs.mit.edu/agents/rdfstore#>
+@prefix editor:	<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+
+#############################################################################################
+# RDF store constructor
+
+#add { opdata:setupOperations hs:member :rdfStoreConstructor }
+
+method :rdfStoreConstructor implementation ; 
+rdf:type				construct:Constructor ;
+construct:targetType	config:Service ;
+construct:targetType	info:RDFStore ;
+rdf:type				op:Operation ;
+dc:title				"Create RDF Store" ;
+rdfs:comment			"Creates an RDF store." ;
+adenine:preload			"true"
+	if (== null implementation)
+		= implementation "edu.mit.lcs.haystack.server.rdfstore.Cholesterol3RDFStoreService"
+	
+	= agent ${
+		dc:title "RDF Store" ;
+		rdf:type config:Service ;
+		rdf:type info:RDFStore ;
+		wsdl:port ${
+			rdf:type wsdl:Port ;
+			wsdl:binding ${
+				rdf:type	wsdl:Binding ;
+				rdf:type	config:JavaBinding ;
+				wsdl:type ${
+					rdf:type wsdl:PortType ;
+					config:javaInterface ${
+						rdf:type hs:JavaClass ;
+						hs:className "edu.mit.lcs.haystack.server.core.rdfstore.IRDFStore"
+					} 
+				} 
+			} 
+		} ;
+		config:singleton "true" ;
+		hs:javaImplementation ${
+			rdf:type hs:JavaClass ;
+			hs:className implementation
+		} ;
+	} 
+
+	add { (__serviceaccessor__.getResource) config:hostsService agent }
+
+	return agent
+
+#############################################################################################
+# Caching store constructor
+
+add { :CachingStore 
+	rdf:type		daml:Class ;
+	rdfs:subClassOf	info:RDFStore ;
+	rdfs:label		"Caching Store" ;
+	vowl:hasLens ${
+		rdf:type			lensui:DataSetAspect ;
+		dc:title			"Stores to cache" ;
+		lensui:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:predicate		:source ;
+			ozone:dataSource	lensui:underlyingSource
+		} ;
+		lensui:layoutConstraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		ozone:PhraseViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		} ;
+		lensui:constructor	fs:constructAgent ;
+		lensui:constructorsDataSource ${
+			rdf:type		data:PredicateSetSource ;
+			data:predicate	construct:targetType ;
+			data:object		info:RDFStore
+		}
+	}
+}
+
+add { :storeToCache
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	op:required	"true" ;
+	rdfs:range	info:RDFStore
+}
+
+#add { opdata:setupOperations hs:member :cachingStoreConstructor }
+
+method :cachingStoreConstructor :storeToCache = stores ; 
+rdf:type				construct:Constructor ;
+construct:targetType	config:Service ;
+construct:targetType	info:RDFStore ;
+op:primaryParameter		:storeToCache ;
+construct:targetType	:CachingStore ;
+rdf:type				op:Operation ;
+dc:title				"Create Caching Store" ;
+adenine:preload			"true"
+	= agent ${
+		dc:title			"Caching Store" ;
+		rdf:type			config:Service ;
+		rdf:type			info:RDFStore ;
+		rdf:type			:CachingStore ;
+		wsdl:port ${
+			rdf:type wsdl:Port ;
+			wsdl:binding ${
+				rdf:type	wsdl:Binding ;
+				rdf:type	config:JavaBinding ;
+				wsdl:type ${
+					rdf:type wsdl:PortType ;
+					config:javaInterface ${
+						rdf:type hs:JavaClass ;
+						hs:className "edu.mit.lcs.haystack.server.core.rdfstore.IRDFStore"
+					} 
+				} 
+			} 
+		} ;
+		:source				stores[0] ;
+		config:singleton	"true" ;
+		hs:javaImplementation ${
+			rdf:type		hs:JavaClass ;
+			hs:className	"edu.mit.lcs.haystack.server.core.rdfstore.CachingRDFStoreService"
+		} ;
+	} 
+
+	add { (__serviceaccessor__.getResource) config:hostsService agent }
+
+	return agent
+
+add { :cachingStore
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	op:required	"true" ;
+	rdfs:range	:CachingStore
+}
+
+method :refreshCache :cachingStore = stores ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:cachingStore ;
+dc:title			"Refresh cache" ;
+adenine:preload 	"true"
+	((connect stores[0]).getRDFStore).synchronize
+
+#############################################################################################
+# Store maintenance
+
+add { opdata:setupOperations hs:member :defrag }
+
+method :defrag ; 
+rdf:type				op:Operation ;
+dc:title				"Defragment main store on restart" ;
+dc:description			"Optimizes the performance of the Haystack store; should be performed periodically." ;
+adenine:preload			"true"
+	__source__.setDefrag

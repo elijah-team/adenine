@@ -1,0 +1,197 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Configuration Ontology
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/schemata/config>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	acl:		<http://haystack.lcs.mit.edu/schemata/acl#>
+@prefix	wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	soap:		<http://schemas.xmlsoap.org/wsdl/soap/>
+@prefix	http:		<http://schemas.xmlsoap.org/wsdl/http/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+
+add { ^
+	rdf:type	daml:Ontology ;
+	dc:title	"Haystack Configuration Ontology"
+}
+
+#############################################################################################
+# Ontology package classes
+
+add { config:OntologyPackage
+	rdfs:label			"Ontology package" ;
+	rdf:type			daml:Class ;
+	hs:classView		lensui:AspectView ;
+	rdfs:isDefinedBy	^
+}
+
+add { config:OntologyPackage
+	rdfs:label			"Ontology package" ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^
+}
+
+add { config:includes
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Includes" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			config:OntologyPackage ;
+	rdfs:range			config:OntologyPackage
+}
+
+add { config:dependsOn
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Depends on" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			config:OntologyPackage ;
+	rdfs:range			config:OntologyPackage
+}
+
+#############################################################################################
+# Java binding
+
+add { config:JavaBinding
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		wsdl:Binding ;
+	rdfs:label			"Java binding" ;
+	rdfs:isDefinedBy	^
+}
+
+#############################################################################################
+# Haystack Server
+
+add { config:HaystackServer	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		hs:Service ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Haystack Server"
+}
+
+add { config:hostsService	
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			config:HaystackServer ;
+	rdfs:range			config:Service
+}
+
+#############################################################################################
+# Transport
+
+add { config:Transport
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Transport" ;
+	rdfs:subClassOf		config:Service
+}
+
+#############################################################################################
+# Port Type
+
+add { config:javaInterface	
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			wsdl:PortType ;
+	rdfs:range			hs:JavaClass
+}
+
+#############################################################################################
+# Service
+
+add { config:Service	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Service" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:subClassOf		hs:Service ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/agent.gif>
+}
+
+add { config:singleton	
+	rdf:type			daml:DatatypeProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Singleton" ;
+	rdfs:domain			config:Service ;
+	rdfs:range			xsd:boolean
+}
+
+add { config:canConnectTo	
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Can Connect To" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			acl:Identity ;
+	rdfs:range			config:Service
+}
+
+#############################################################################################
+# Adenine service
+
+add { config:AdenineService	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Adenine Service" ;
+	rdfs:subClassOf		config:Service
+}
+
+add { config:Method	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Method"
+}
+
+add { config:method	
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Method" ;
+	rdfs:domain			config:AdenineService ;
+	rdfs:range			config:Method
+}
+
+add { config:adenineMethod	
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Adenine Method" ;
+	rdfs:domain			config:Method ;
+	rdfs:range			adenine:Method
+}
+
+add { config:input	
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Input" ;
+	rdfs:domain			config:Method
+}

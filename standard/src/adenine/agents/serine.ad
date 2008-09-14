@@ -1,0 +1,273 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Serine agent
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/agents/serine.ad,v 1.28 2004/05/15 15:18:54 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/agents/serine>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	serine:		<http://haystack.lcs.mit.edu/agents/serine#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	scheduler:	<http://haystack.lcs.mit.edu/agents/scheduler#> 
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+
+#############################################################################################
+# Serine ontology
+
+add { serine:Pattern
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ; 
+	rdfs:label			"Pattern" ;
+	rdfs:isDefinedBy	^
+}
+
+add { serine:statement
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:label			"Statement" ; 
+	rdfs:domain			serine:Pattern ; 
+	rdfs:range			serine:PatternStatement ;
+	rdfs:isDefinedBy	^
+}
+
+add { serine:pattern
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:label			"Pattern" ; 
+	rdfs:domain			serine:Pattern ; 
+	rdfs:range			adenine:ConditionSet ;
+	rdfs:isDefinedBy	^
+}
+
+add { serine:priority
+	rdf:type			daml:DatatypeProperty ; 
+	rdfs:label			"Priority" ; 
+	rdfs:domain			serine:Pattern ; 
+	rdfs:range			xsd:boolean ;
+	rdfs:isDefinedBy	^
+}
+
+add { serine:runOnIdle
+	rdf:type			daml:DatatypeProperty ; 
+	rdf:type			daml:UniqueProperty ; 
+	rdfs:label			"Run on idle" ; 
+	rdfs:domain			serine:Pattern ; 
+	rdfs:range			xsd:boolean ;
+	rdfs:isDefinedBy	^
+}
+
+add { serine:existentials
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Existentials" ; 
+	rdfs:domain			serine:Pattern ; 
+	rdfs:range			rdf:List 
+}
+
+add { serine:PatternStatement
+	rdfs:isDefinedBy	^ ;
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ; 
+	rdfs:label			"Pattern Statement" 
+}
+
+add { serine:subject
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			serine:PatternStatement ; 
+	rdfs:label			"Subject"
+}
+
+add { serine:predicate	
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			serine:PatternStatement ; 
+	rdfs:label			"Predicate"
+}
+
+add { serine:object	
+	rdf:type			rdf:Property ; 
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			serine:PatternStatement ; 
+	rdfs:label			"Object"
+}
+
+add { serine:Transformation	
+	rdfs:isDefinedBy	^ ;
+	rdf:type			daml:Class ; 
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Transformation"
+}
+
+add { serine:precondition	
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Precondition" ; 
+	rdfs:domain			serine:Transformation ; 
+	rdfs:range			serine:Pattern
+}
+
+add { serine:postcondition	
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Postcondition" ; 
+	rdfs:domain			serine:Transformation ; 
+	rdfs:range			serine:Pattern
+}
+
+add { serine:adenineMethod	
+	rdf:type			daml:ObjectProperty ; 
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Adenine Method" ; 
+	rdfs:domain			serine:Transformation ; 
+	rdfs:range			adenine:Method
+}
+
+#############################################################################################
+# Serine agent
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	if (== null (extract ?x rdf:type serine:SerineAgent))
+		= serine ${
+			dc:title	"Serine Agent" ;
+			rdf:type	config:Service ;
+			rdf:type	serine:SerineAgent ;
+			wsdl:port ${
+				rdf:type wsdl:Port ;
+				wsdl:binding ${
+					rdf:type	wsdl:Binding ;
+					rdf:type	config:JavaBinding ;
+					wsdl:type ${
+						rdf:type wsdl:PortType ;
+						config:javaInterface ${
+							rdf:type hs:JavaClass ;
+							hs:className "edu.mit.lcs.haystack.server.standard.serine.ISerineAgent"
+						}
+					}
+				}
+			} ;
+			config:singleton "true" ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:className "edu.mit.lcs.haystack.server.standard.serine.SerineAgent" 
+			} 
+		}
+
+		= subscription ${
+			rdf:type			scheduler:Task ;
+			scheduler:service	serine ;
+			dc:title			"Serine idle updates" ;
+			scheduler:timeOfDay	"02:00:00"
+		} 
+
+		add { server config:hostsService serine }
+		add { serine hs:user user }
+
+#############################################################################################
+# Default patterns
+
+add { serine:derivedClasses	
+	rdf:type				serine:Transformation ;
+	serine:runOnIdle		"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x ?y ?z) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	rdf:type ;
+			serine:object		?y
+		} ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?y ;
+			serine:predicate	rdfs:subClassOf ;
+			serine:object		?z
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		?z
+	}
+}
+
+#############################################################################################
+# Serine aspects
+
+add { serine:SerineAgent
+	rdfs:label		"Serine Agent" ;
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:subClassOf	config:Service ;
+	hs:classView	lensui:AspectView ;
+	vowl:hasLens	${
+		rdf:type	scheduler:ScheduleAspect ;
+		dc:title	"Idle transformation schedule"
+	} ;
+	vowl:hasLens ${
+		rdf:type			lensui:DataSetAspect ;
+		dc:title			"Registered transformations" ;
+		lensui:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:predicate		rdf:type ;
+			data:object			serine:Transformation
+		} ;
+		lensui:layoutConstraint ${
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		ozone:PhraseViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+	}
+}
+
+add { :serineAgent
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	op:required	"true" ;
+	rdfs:range	serine:SerineAgent
+}
+
+method :runIdle :serineAgent = agents ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:serineAgent ;
+dc:title			"Run idle transforms" ;
+adenine:preload 	"true"
+	(connect agents[0]).performIdleTransforms
+

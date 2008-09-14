@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleGetInfoString</key>
+	<string>REPLACE_SHORTNAME for MacOS X</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>REPLACE_SHORTNAME</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1</string>
+	<key>CFBundleSignature</key>
+	<string>HayS</string>
+	<key>CFBundleVersion</key>
+	<string>0.1</string>
+	<key>Java</key>
+	<dict>
+		<key>Arguments</key>
+		<array/>
+		<key>ClassPath</key>
+		<string>REPLACE_CLASSPATH</string>
+		<key>JVMVersion</key>
+		<string>1.4*</string>
+		<key>MainClass</key>
+		<string>REPLACE_CLASSNAME</string>
+		<key>Properties</key>
+		<dict>
+			<key>REPLACE_PROP1</key>
+			<string>REPLACE_VAL</string>
+			<key>REPLACE_PROP2</key>
+			<string>REPLACE_VAL</string>
+			<key>REPLACE_PROP3</key>
+			<string>REPLACE_VAL</string>
+			<key>edu.mit.lcs.haystack.ui</key>
+			<string>ozone</string>
+			<key>java.library.path</key>
+			<string>REPLACE_LIBPATH</string>
+			<key>python.home</key>
+			<string>$JAVAROOT/jython</string>
+		</dict>
+		<key>VMOptions</key>
+		<array/>
+		<key>WorkingDirectory</key>
+		<string>$JAVAROOT</string>
+	</dict>
+</dict>
+</plist>

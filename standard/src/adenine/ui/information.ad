@@ -1,0 +1,343 @@
+# Copyright (c) 1998-2004 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Information UI
+# Written by Dennis Quan
+# $Header: 
+
+@base <http://haystack.lcs.mit.edu/ui/information>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	config:			<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	info:			<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	rdfstore:		<http://haystack.lcs.mit.edu/agents/rdfstore#> 
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	status:			<http://haystack.lcs.mit.edu/ui/status#>
+@prefix	op:				<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	opui:			<http://haystack.lcs.mit.edu/ui/operation#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	mercury:		<http://haystack.lcs.mit.edu/agents/mercury#>
+@prefix	lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:			<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	setupui:		<http://haystack.lcs.mit.edu/ui/setup#> 
+@prefix	:				<http://haystack.lcs.mit.edu/ui/information#>
+
+#############################################################################################
+# Aspects
+
+add { info:Information
+	hs:classView	lensui:AspectView ;
+	vowl:hasLens	:highlightedItemsAspect ;
+	vowl:hasLens	:importOptionsAspect
+}
+
+add { :highlightedItemsAspect
+	rdf:type		lensui:DataSetAspect ;
+	dc:title		"Highlighted items" ;
+	dc:description	"Haystack detected the following items as useful starting points for browsing. This list is generated upon importation.  If the list is empty, you can use the Extract all resources command to see all resources in this file." ;
+	lensui:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		info:highlight ;
+		ozone:dataSource	lensui:underlyingSource
+	} ;
+	lensui:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	} 
+}
+
+add { :importOptionsAspect
+	rdf:type		lensui:SlideAspect ;
+	dc:title		"Import options" ;
+	lensui:slide ${
+		rdf:type		slide:Slide ;
+		slide:margin	"5" ;
+		slide:child ${
+			rdf:type			slide:Paragraph ;
+			ozone:putProperty	${ ozone:name opui:useAspectUnderlying ; ozone:value "true" } ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"Before you can work with the data in this file, it must be imported into Haystack."
+				}
+				slide:break
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	:importOperation ;
+					ozone:viewPartClass		setupui:SmallSummaryViewPart
+				}
+				slide:break
+				${	rdf:type	slide:Text ;
+					slide:text	"If you want to remove this file from your repository or reinstall the file, use the command below."
+				}
+				slide:break
+				${	rdf:type				ozone:ViewContainer ;
+					ozone:initialResource	:uninstallOperation ;
+					ozone:viewPartClass		setupui:SmallSummaryViewPart
+				}
+			)
+		}
+	}
+}
+
+#############################################################################################
+# Information applet view part
+
+add { :informationAppletViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:AppletViewPart ;
+	rdf:type				ozone:ViewPart ;
+	ozone:viewDomain		:InformationAppletView ;
+	ozone:template ${
+		rdf:type		slide:Slide ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"Information about the following items is contained within this document:"
+				}
+				slide:break
+				${	rdf:type	slide:Block ;
+					slide:child ${
+						rdf:type				layout:Layout ;
+						ozone:dataSource ${
+							rdf:type			data:PredicateSetSource ;
+							ozone:dataSource	data:underlyingSource ;
+							data:predicate		info:highlight
+						} ;
+						layout:layoutConstraint ${ 
+							rdf:type				layout:RowStackerConstraint ;
+							ozone:viewPartClass		ozone:PhraseViewPart ;
+							layout:defaultShowCount	"15" ;
+							layout:sortBy ${
+								rdf:type			data:SortingListSource ;
+								data:sortDataSource ${ rdf:type summary:TitleSource }
+							}
+						}
+					}
+				}
+				slide:break
+				${	rdf:type	slide:Text ;
+					slide:text	"For your protection, this information will not be incorporated until you click Incorporate."
+				}
+				slide:break
+				${	rdf:type					slide:Button ;
+					slide:backgroundHighlight	"90%" ;
+					slide:borderWidth			"1" ;
+					slide:clearance				"5" ;
+					ozone:onClick				:incorporate ;
+					slide:child ${
+						rdf:type		slide:Text ;
+						slide:text		"Incorporate"
+					}
+				}
+			)
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+method :incorporate
+	:importOperation :target = @( (data:getUnderlying) )
+
+add { info:Information hs:classView :InformationAppletView }
+
+#############################################################################################
+# Import verb
+
+add { :informationReader
+	rdf:type			op:Parameter ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Extractor" ;
+	op:required			"false" ;
+	rdfs:range			info:InformationReader
+}
+
+add { :findInterestingItems
+	rdf:type			op:Parameter ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			daml:DatatypeProperty ;
+	dc:title			"Find interesting items" ;
+	op:required			"false" ;
+	rdfs:range			xsd:boolean
+}
+
+add { :target
+	rdf:type			op:Parameter ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Target" ;
+	op:required			"true" ;
+	rdfs:range			info:Information
+}
+
+method :importOperation :target = res ;
+# :informationReader = extractor :findInterestingItems = findInterestingItems ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+dc:title			"Incorporate into Haystack" ;
+dc:description		"Copies this information into your Haystack." ;
+adenine:preload 	"true"
+	= res res[0]
+	
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	importjava "java.net" URL
+	= data {}
+
+	var extractor findInterestingItems
+
+	if (== null extractor)
+		= extractor @()
+
+	if (== null findInterestingItems)
+		= findInterestingItems @()
+
+	if (== 0 (length extractor))
+		with __source__ __infosource__
+			= extractor (queryExtract { ?x rdf:type info:InformationReader ; info:targetFormat ?y res dc:format ?y } @(?x))
+
+	if (!= extractor null)
+		with __target__ data
+			extractor[0] res
+		(mercury:getMercuryAgent).incorporate data true false res
+		if (!= 0 (length findInterestingItems))
+			= findInterestingItems findInterestingItems[0]
+		else
+			= findInterestingItems true
+
+		if findInterestingItems
+			with __target__ (PackageFilterRDFContainer __infosource__ res)
+				:findInterestingItems res data
+		status:notifyUser (append 'Incorporation of ' res ' is complete.') res 60000
+		ozone:navigate res ${ rdf:type lensui:AspectView }
+	else
+		status:notifyUser (append 'Failed to incorporate ' res '.') res 60000
+
+method :extractAllSubjectsAndObjects :target = res ;
+# :informationReader = extractor :findInterestingItems = findInterestingItems ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+dc:title			"Extract all resources" ;
+dc:description		"Makes a collection of all subjects and objects." ;
+adenine:preload 	"true"
+	= res res[0]
+	
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	importjava "java.net" URL
+	= data {}
+
+	var extractor
+
+	if (== null extractor)
+		= extractor @()
+
+	if (== 0 (length extractor))
+		with __source__ __infosource__
+			= extractor (queryExtract { ?x rdf:type info:InformationReader ; info:targetFormat ?y res dc:format ?y } @(?x))
+
+	if (!= extractor null)
+		with __target__ data
+			extractor[0] res
+
+		with __target__ __infosource__
+			= y ${ rdf:type hs:Collection ; dc:title "Extracted resources" }			
+			for x in (data.iterator)
+				add { y hs:member (x.getSubject) }
+				= obj (x.getObject)
+				if (instanceOf obj Resource)
+					add { y hs:member obj }
+			return y
+
+method :uninstallOperation :target = res ;
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+dc:title			"Uninstall" ;
+dc:description		"Removes this information from your Haystack." ;
+adenine:preload 	"true"
+	= res res[0]
+	print 'uninstalling' res
+	with __target__ __infosource__
+		adenine:uninstallPackage res
+
+#############################################################################################
+# Interesting item detection
+
+method :findInterestingItems data datasource ; adenine:preload "true" ; adenine:precompile "true"
+	= items (Set)
+
+	# Are there RDF type predicates present?
+	with __source__ datasource
+		= x (queryExtract { ?x rdf:type ?y })
+		var theQuery
+		if (== x null)
+			= theQuery { ?x ?y ?z }
+		else
+			= theQuery { ?x rdf:type ?y }
+
+		# Find interesting items
+		= rows (query theQuery @(?x))
+		for x in rows
+			= datum (queryExtract { ?a ?b x[0] })
+			if (== null datum)
+				items.add x[0]
+
+	for x in items
+		add { data info:highlight x }
+
+#############################################################################################
+# Attach verb
+
+add { :attachProgressItemViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:LineSummaryViewPart ;
+	rdf:type				ozone:PhraseViewPart ;
+	ozone:viewDomain		:AttachProgressItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.slide.SlidePart" } 
+}
+
+
+method :attachOperation :target = res ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+dc:title			"Attach information source" ;
+dc:description		"Make this body of information available for inquiry" ;
+adenine:preload 	"true"
+	= res res[0]
+	
+	= newRDFStore (rdfstore:rdfStoreConstructor "edu.mit.lcs.haystack.server.core.rdfstore.ContentBasedRDFStoreService")
+	add { newRDFStore rdfstore:mountedInformation res }
+
+	add { (__serviceaccessor__.getResource) config:hostsService newRDFStore }
+

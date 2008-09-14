@@ -1,0 +1,316 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+# Utilities
+# Written by Karun Bakshi
+
+@base				<http://haystack.lcs.mit.edu/ui/Utilities>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	editor:		<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix	adutil:			<http://haystack.lcs.mit.edu/schemata/adenine#> 
+
+@prefix : 			<http://haystack.lcs.mit.edu/ui/Utilities#>
+
+
+################################################################################
+# Conditional Pane Part
+
+add {:aConditionalPanePart
+	rdf:type			ozone:Part;
+	ozone:dataDomain	:ConditionalPanePart;
+	ozone:partDataGenerator	:generateConditionalPanePart ;
+	hs:javaImplementation	
+						${	rdf:type		hs:JavaClass ;
+							hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+						} 	
+}
+
+method	:generateConditionalPanePart
+	= partData (__context__.getProperty  ozone:partData)
+	= toggleCondition (extract partData :toggleCondition ?x)
+	= truePane (extract partData :trueConditionPane ?x)
+	= falsePane (extract partData :falseConditionPane ?x)
+	= rangeList	@()	
+	rangeList.add truePane
+	rangeList.add falsePane
+	= toggleablePane ${
+			rdf:type		ozone:MultiplexPartContainer;
+			ozone:dataSource ${
+							rdf:type			data:MappingSource ;
+							data:domain			@( "true" "false") ;
+							data:range			rangeList;
+							data:default		 falsePane;
+							ozone:dataSource	toggleCondition
+			};
+			ozone:children @(truePane falsePane)			
+	}
+	
+	return toggleablePane
+	
+################################################################################
+# Toggleable UI Part
+
+add {:aToggleableUIPart
+	rdf:type			ozone:Part;
+	ozone:dataDomain	:ToggleableUIPart;
+	ozone:partDataGenerator	:generateToggleableUIPart ;
+	hs:javaImplementation	${	rdf:type		hs:JavaClass ;
+								hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+						} 	
+}
+
+method :generateToggleableUIPart
+	= partData (__context__.getProperty  ozone:partData)
+	
+	= toggledPane (extract partData :toggleablePane ?x)
+	= toggleCondition (extract partData :toggleCondition ?x)
+	= checkboxTitle (extract partData :checkBoxTitle ?x)
+	
+	= checkboxPart ${
+						rdf:type	slide:Checkbox;
+						ozone:dataSource	toggleCondition;
+						slide:children	@(
+							${
+								rdf:type		slide:Text;
+								slide:text		checkboxTitle;
+							}
+						)						
+					}
+
+	= collapsedPane ${
+						rdf:type		slide:Block;
+						slide:child		${
+										rdf:type		slide:Paragraph;
+										slide:children	@(
+													checkboxPart
+										)
+						}
+	}
+	= expandedPane ${
+						rdf:type		slide:Block;
+						slide:child		${
+									rdf:type		slide:Paragraph;
+									slide:children	@(
+														checkboxPart
+														slide:break
+														toggledPane
+									)
+						}
+					}	
+	= toggleablePane ${
+			rdf:type		:ConditionalPanePart;
+			:trueConditionPane	expandedPane;
+			:falseConditionPane	collapsedPane;
+			:toggleCondition	toggleCondition
+	}		
+	return toggleablePane
+
+################################################################################
+# Property Label Part
+	
+add {:PropertyLabelPart
+	rdf:type				ozone:Part;
+	ozone:dataDomain		:PropertyLabel;
+	ozone:template		${
+							rdf:type		slide:Text;
+							slide:fontBold	"true";
+							ozone:dataSource	${
+								rdf:type data:LiteralPropertySource ;
+								ozone:dataSource ${
+										rdf:type			data:ResourcePropertySource;
+										ozone:dataSource	data:partDataSource ;
+										data:predicate		:property
+									} ;
+								data:predicate rdfs:label
+							}
+						};
+	hs:javaImplementation	${
+				rdf:type		hs:JavaClass;
+				hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart"
+	}
+	
+}
+
+################################################################################
+# Title Description Block Part
+	
+add {	:TitleDescriptionBlockPart
+	rdf:type				ozone:Part;
+	ozone:dataDomain		:PropertyLabel;
+	ozone:template	${	
+					rdf:type		slide:Paragraph;
+					slide:children	@(
+										${
+											rdf:type 	:PropertyLabel;
+											:property	dc:title;
+										}
+										slide:break
+										${		
+											rdf:type		editor:LiteralEditor ;
+											ozone:dataSource	${
+												rdf:type 				data:LiteralPropertySource;
+												ozone:dataSource 		data:underlyingSource;
+												data:predicate 			dc:title
+											}
+										}
+										slide:break
+										${
+												rdf:type :PropertyLabel;
+												:property	dc:description;
+										}
+										slide:break
+										${
+											rdf:type			editor:LiteralEditor ;
+											editor:multiline	"true";
+											ozone:dataSource	${
+												rdf:type			data:LiteralPropertySource ;
+												ozone:dataSource	data:underlyingSource;
+												data:predicate		dc:description
+											}
+										}
+					)
+	};
+	hs:javaImplementation	${
+							rdf:type		hs:JavaClass;
+							hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart"
+				}
+}
+
+
+################################################################################
+# Dynamically Styled Text Part
+
+add{ :aDynamicallyStyledTextPart
+	rdf:type			ozone:Part;
+	ozone:dataDomain	:DynamicallyStyledText;
+	ozone:partDataGenerator	:generateDynamicallyStyledTextPartDataGenerator;
+	hs:javaImplementation	${		rdf:type		hs:JavaClass ;
+									hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+						} 	
+}
+
+method :generateDynamicallyStyledTextPartDataGenerator
+	= textElement (UniqueResource)
+	= partData	(__context__.getLocalProperty ozone:partData)
+	add {textElement
+			rdf:type		slide:Text;
+			ozone:dataSource	(extract partData :textSrc ?x)
+	}
+	return textElement
+	
+	
+################################################################################
+# Error Message
+
+add {
+		:ErrorMessage
+		rdf:type		daml:Class;
+		rdf:type		rdfs:Class;
+		rdfs:label		"Error Message";
+		dc:description	"A class used to capture a user error that needs to be communicated to him/her.";
+		rdfs:isDefinedBy	^
+	}
+
+add {	:errorMessageText
+		rdf:type			daml:DatatypeProperty;
+		rdf:type			daml:UniqueProperty;
+		rdfs:label			"Error Message Text";
+		dc:description		"The text of the message.";
+		rdfs:domain			:ErrorMessage;
+		rdfs:range			xsd:string;
+		rdfs:isDefinedBy	^
+}
+
+add {	:errorTime
+		rdf:type			daml:DatatypeProperty;
+		rdf:type			daml:UniqueProperty;
+		rdfs:label			"Error Time";
+		dc:description		"The time of the error.";
+		rdfs:domain			:ErrorMessage;
+		rdfs:range			xsd:string;
+		rdfs:isDefinedBy	^
+}
+
+method :createDefaultDNDErrorMessage
+	= error (UniqueResource)
+	add {error rdf:type		:ErrorMessage; 
+		dc:title	"Error Message";
+		:errorMessageText	"The dragged item cannot be dropped on the item selected.";
+		:errorTime	(adutil:currTime)
+	}	
+	return error
+	
+	
+add {:ErrorMessage	hs:classView	:ErrorMessageAppletView}
+add { :anErrorMessageAppletViewPart
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:AppletViewPart ;
+	ozone:viewDomain			:ErrorMessageAppletView;
+	ozone:template	${
+				rdf:type		slide:Block;
+				slide:margin	"5";
+				slide:child		${
+						rdf:type	slide:Paragraph;
+						slide:children	@(
+								${
+									rdf:type			slide:Image ;
+									slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/stop.gif>;
+									slide:textAlign		"baseline"
+								}		
+								slide:space	
+								${
+									rdf:type	slide:Text;
+									slide:fontSize	"12";
+									ozone:dataSource	${
+												rdf:type	data:LiteralPropertySource;
+												ozone:dataSource	data:underlyingSource;
+												data:predicate		:errorMessageText
+									}
+								}
+								slide:break
+								${
+									rdf:type	slide:Text;
+									slide:fontBold	"true";
+									ozone:dataSource	${
+												rdf:type	data:LiteralPropertySource;
+												ozone:dataSource	data:underlyingSource;
+												data:predicate		:errorTime
+									}
+								}
+						)
+				}
+	};	
+	hs:javaImplementation	${
+								rdf:type		hs:JavaClass;
+								hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart"
+	}
+}
+
+
+	

@@ -1,0 +1,1250 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Operation UI support
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/operation>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix op:				<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix config:			<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	modeless:		<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix	cont:			<http://haystack.lcs.mit.edu/schemata/continuation#> 
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	contui:			<http://haystack.lcs.mit.edu/ui/continuation#> 
+@prefix	status:			<http://haystack.lcs.mit.edu/ui/status#>
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#> 
+@prefix	vc:				<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	frame:			<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	taskui:			<http://haystack.lcs.mit.edu/ui/task#> 
+@prefix opui:			<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	task:			<http://haystack.lcs.mit.edu/schemata/task#> 
+@prefix	chooser:		<http://haystack.lcs.mit.edu/ui/chooser#> 
+@prefix	lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:			<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	metadata:		<http://haystack.lcs.mit.edu/ui/metadataEditor#> 
+@prefix	construct:		<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix editor:			<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix :				<http://haystack.lcs.mit.edu/ui/operation#>
+
+add { ^ config:dependsOn <http://haystack.lcs.mit.edu/ui/frame> }
+
+#############################################################################################
+# Operation aspects
+
+add { :operationSummaryPropertiesList
+	rdf:type		data:OrderedSetSource ;
+	data:damlList @(
+		dc:title
+		dc:description
+	)
+}
+
+add { :operationSummaryAspect
+	rdf:type						metadata:MetadataAspect ;
+	dc:title						"Operation" ;
+	vowl:priority				"a" ;
+	metadata:propertiesToDisplay	:operationSummaryPropertiesList
+}
+
+add { op:Operation
+	vowl:hasLens		:operationSummaryAspect ;
+	vowl:hasLens		:parametersAspect ;
+	lensui:appletAspect	:operationSummaryAspect
+}
+
+add { :parametersAspect
+	rdf:type			lensui:DataSetAspect ;
+	dc:title			"Parameters" ;
+	vowl:priority	"c" ;
+	lensui:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?y ) ;
+		data:targetExistential	?x ;
+		data:statement ${
+			data:subjectDataSource	lensui:underlyingSource ;
+			data:predicate			adenine:namedParameter ;
+			data:object				?y
+		} ;
+		data:statement ${
+			data:subject	?y ;
+			data:predicate	adenine:parameterName ;
+			data:object		?x
+		}
+	} ;
+	lensui:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	}
+}
+
+#############################################################################################
+# Perform operation operation
+
+add { :operationToPerform
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Operation to perform" ;
+	op:required			"true" ;
+	rdfs:range			op:Operation
+}
+
+method :performOperation :operationToPerform = operationsToPerform ; 
+adenine:preload "true" ;
+rdf:type			op:Operation ;
+op:primaryParameter	:operationToPerform ;
+dc:title			"Perform operation"
+	:startOperation operationsToPerform[0]
+
+#############################################################################################
+# Curry operation
+
+add { :operationClosure
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			daml:UniqueProperty ;
+	dc:title			"Task to save" ;
+	op:required			"true" ;
+	rdfs:range			op:OperationClosure
+}
+
+add { :name
+	rdf:type				op:Parameter ;
+	rdf:type				daml:DatatypeProperty ;
+	rdf:type				daml:UniqueProperty ;
+	dc:title				"Name" ;
+	op:required				"true" ;
+	rdfs:range				xsd:string ;
+	editor:disallowBlanks	"true"
+}
+
+method :curryOperation0 x
+	:curryOperation :operationClosure = @( x )
+
+method :curryOperation :operationClosure = operationClosures :name = names ; 
+adenine:preload 	"true" ;
+op:primaryParameter	:operationClosure ;
+rdf:type			op:Operation ;
+dc:title			"Save as an operation"
+	= operationClosure operationClosures[0]
+	var operation
+	with __source__ __infosource__
+		= operation (extract operationClosure op:operation ?x)
+
+	= name names[0]
+	uniqueMethod newOp
+		with __source__ __infosource__
+			for x in (query { `operation adenine:namedParameter ?np ?np adenine:parameterName ?x `operationClosure ?x ?y } @(?x ?y))
+				= y (__message__.getNamedValue x[0])
+				if (== null y)
+					= y @()
+					__message__.setNamedValue x[0] y
+				y.add x[1]
+		return (apply `operation __message__)
+
+	with __source__ __infosource__
+		for x in (query { operation adenine:namedParameter ?np ?np adenine:parameterName ?x } @(?x ?np))
+			if (== (extract operationClosure x[0] ?x) null)
+				add { newOp adenine:namedParameter x[1] }
+				if (contains operation op:primaryParameter x[0])
+					add { newOp op:primaryParameter x[0] }
+
+	add { newOp dc:title name ; rdf:type op:Operation }
+
+	return newOp
+
+#############################################################################################
+# Starting point for parameters
+
+add { :startingPoint
+	rdf:type		daml:ObjectProperty ;
+	rdf:type		hs:RelationalProperty ;
+	rdfs:label		"Starting point" ;
+	rdfs:comment	"An Adenine method that will be called to display a list of choices for this parameter for the user." ;
+	rdfs:domain		op:Parameter ;
+	rdfs:range		adenine:Method
+}
+
+#############################################################################################
+# Generates a list of available operations
+
+method :listOperations underlying handler onlySpecific ; adenine:preload "true" ; adenine:precompile "true"
+	# Find all applicable operations
+
+	var types
+	with __source__ __infosource__
+		= types (query { underlying rdf:type ?z })
+	for y in types
+		= operations (query { ?x rdf:type op:Operation ; op:primaryParameter ?y ?y rdfs:range y[0] } @(?x ?y))
+		for x in operations
+			if (contains x[0] rdf:type op:ContextualOperation)
+				continue
+
+			= adenineCondition (extract x[1] op:adenineCondition ?x)
+			if (!= adenineCondition null)
+				if (! (adenineCondition underlying))
+					continue
+
+			handler x[0]
+
+#	= operations0 (query { ?x rdf:type op:Operation ; adenine:namedParameter ?np ?np adenine:parameterName ?y ?y rdfs:range ?z underlying rdf:type ?z } @(?x ?y))
+#	for x in operations0
+#		= adenineCondition (extract x[1] op:adenineCondition ?x)
+#		if (!= adenineCondition null)
+#			if (! (adenineCondition underlying))
+#				continue
+#		handler x[0]
+	
+	if (!= onlySpecific true)
+		= operations1 (query { ?x rdf:type op:Operation ; op:primaryParameter ?y ?y rdfs:range daml:Thing } @(?x ?y))
+		for x in operations1
+			if (contains x[0] rdf:type op:ContextualOperation)
+				continue
+
+			= adenineCondition (extract x[1] op:adenineCondition ?x)
+			if (!= adenineCondition null)
+				if (! (adenineCondition underlying))
+					continue
+
+			handler x[0]
+
+	var operations2
+	with __source__ __infosource__
+		= operations2 (query { underlying op:associatedOperation ?x })
+	for x in operations2
+		handler x[0]
+
+method :createOperationsCollection underlying collection ; adenine:preload "true" ; adenine:precompile "true"
+	function handler x
+		add { collection hs:member x }
+	:listOperations underlying handler
+		
+method :startOperation op startingParameter :event = event
+	= showOnStartPane false
+	if (!= null event)
+		importjava "org.eclipse.swt.events" MouseEvent
+		importjava "org.eclipse.swt" SWT
+		if (instanceOf event MouseEvent)
+			= showOnStartPane (& event.stateMask SWT.SHIFT)
+
+	if (and (== null startingParameter)	(== (__context__.getProperty :useAspectUnderlying) "true"))
+		= startingParameter (lensui:getUnderlying)
+
+	# See if there is a matching parameter
+	= params (query { op adenine:namedParameter ?np ?np adenine:parameterName ?x ?x op:required "true" } @(?x))
+	= allParams (query { op adenine:namedParameter ?np ?np adenine:parameterName ?x } @(?x))
+	= matchingParam null
+
+	if (!= null startingParameter)
+		= matchingParams (query { op op:primaryParameter ?x ?x rdfs:range ?y startingParameter rdf:type ?y } @(?x) adenine:source = __infosource__)
+		if (== (matchingParams.size) 0)
+			= matchingParams (query { op op:primaryParameter ?x ?x rdfs:range daml:Thing } @(?x) adenine:source = __infosource__)
+
+		if (== (matchingParams.size) 1)
+			if (== (length allParams) 1)
+				= msg (Message)
+				msg.setNamedValue matchingParams[0][0] @(startingParameter)
+				:doOperation op msg :showResultOnStartPane = showOnStartPane
+
+				return
+			else
+				= matchingParam matchingParams[0][0]
+
+	# Does this operation even require parameters?
+	if (== matchingParam null)
+		if (== (length params) 0)
+			# Instantiate the operation now
+			:doOperation op (Message) :showResultOnStartPane = showOnStartPane
+			return
+
+	# Set up an operation closure structure
+	= closure ${ 
+		rdf:type					op:OperationClosure ;
+		rdf:type					task:Task ;
+		:showResultOnStartPane		showOnStartPane ;
+		op:operation				op
+	}
+
+	# Put in first parameter
+	if (!= matchingParam null)
+		add { closure matchingParam startingParameter }
+
+	# Get a name if available
+	= title (extract op dc:title ?x)
+	if (!= title null)
+		replace closure dc:title ?x title
+
+	# Set up UI continuations
+	= allParams (query { op adenine:namedParameter ?np ?np adenine:parameterName ?x } @(?x))
+	for x in allParams
+		= param x[0]
+
+		uniqueMethod acceptor value
+			add { `closure `param value }
+		
+		uniqueMethod validator value
+			= typeCondition (extract `param rdfs:range ?x)
+			if (!= typeCondition null)
+				if (!= typeCondition daml:Thing)
+					if (! (contains value rdf:type typeCondition))
+						return false
+			
+			= adenineCondition (extract `param op:adenineCondition ?x)
+			if (!= adenineCondition null)
+				return (adenineCondition value)
+
+			return true			
+		
+		add { closure 
+			:uiContinuation ${
+				rdf:type			cont:Continuation ; 
+				rdf:type			task:Task ;
+				dc:title			(extract param dc:title ?x) ; 
+				cont:acceptor		acceptor ; 
+				cont:validator		validator ;
+				:operationClosure	closure ;
+				:parameter			param
+			}
+		}
+		
+	= continuation (__context__.getProperty op:continuation)
+	if (!= null continuation)
+		add { closure op:continuation continuation }
+
+	# See if we can just show a menu of possible items
+#	if (and (!= matchingParam null) (== (length allParams) 2))
+#		= otherParam allParams[0][0]
+#		if (== allParams[0][0] matchingParam)
+#			= otherParam allParams[1][0]
+#
+#		= dataSource (extract otherParam :dataSource ?y)
+#		if (!= null dataSource)
+#			importjava "org.eclipse.swt.widgets" Display
+#			:showOperationParameters otherParam closure dataSource ((Display.getDefault).getCursorLocation)
+#			return
+
+	:startOperationWithParams closure
+
+method :startOperationWithParams closure ; adenine:preload "true"
+	= op (extract closure op:operation ?x)
+
+	# Go to some starting point, if available
+	= startingPoint (queryExtract { op adenine:namedParameter ?np ?np adenine:parameterName ?x ?x :startingPoint ?y } @(?y))
+	if (!= startingPoint null)
+		startingPoint[0]
+
+	taskui:addPendingTask closure
+
+	for x in (query { closure :uiContinuation ?x })
+		contui:addContinuation x[0] false
+
+method :startOperationWithClosure closure
+	= operation (extract closure op:operation ?x)
+
+	= enoughParameters true
+	
+	= parameters (query { operation adenine:namedParameter ?np ?np adenine:parameterName ?x } @(?x))
+	for p in parameters
+		= parameter p[0]
+		if (== null (queryExtract { closure parameter ?x }))
+			= enoughParameters false
+
+			= uiContinuation (queryExtract { closure :uiContinuation ?x ?x :parameter parameter })
+			if (== null uiContinuation)
+				uniqueMethod acceptor value
+					add { `closure `parameter value }
+				
+				uniqueMethod validator value
+					= typeCondition (extract `parameter rdfs:range ?x)
+					if (!= typeCondition null)
+						if (!= typeCondition daml:Thing)
+							if (! (contains value rdf:type typeCondition))
+								return false
+					
+					= adenineCondition (extract `parameter op:adenineCondition ?x)
+					if (!= adenineCondition null)
+						return (adenineCondition value)
+
+					return true			
+				
+				add { closure 
+					:uiContinuation ${
+						rdf:type			cont:Continuation ; 
+						rdf:type			task:Task ;
+						dc:title			(extract parameter dc:title ?x) ; 
+						cont:acceptor		acceptor ; 
+						cont:validator		validator ;
+						:operationClosure	closure ;
+						:parameter			parameter
+					}
+				}
+
+	if enoughParameters
+		= msg (Message)
+		for c in parameters
+			= parameter c[0]
+			= values (query { closure parameter ?x })
+			= valueList @()
+
+			for v in values
+				valueList.add v[0]
+
+			msg.setNamedValue parameter valueList
+
+		:doOperation operation msg
+	else
+		:startOperationWithParams closure
+	
+#############################################################################################
+# Summary view parts for operations
+
+method :startUnderlyingAsOperation element context part event
+	:startOperation (data:getUnderlying) :event = event
+
+add {
+	:OperationLineSummaryView rdfs:label "Operation Line Summary View"
+	:operationLineSummaryViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		rdf:type				ozone:PhraseViewPart ;
+		ozone:viewDomain		:OperationLineSummaryView ;
+		ozone:template ${
+			rdf:type					slide:ColumnSet ; 
+			slide:children	@(
+				${	rdf:type			summary:IconBlank
+				}
+				slide:nonwrappingSpace
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type		summary:Title ;
+							ozone:onClick	:startUnderlyingAsOperation ;
+						}
+					)
+				}
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	op:Operation hs:classView :OperationLineSummaryView 
+}
+
+add {
+	:OperationInlineView rdfs:label "Operation Inline View"
+	:operationInlineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InlineViewPart ;
+		ozone:viewDomain		:OperationInlineView ;
+		ozone:template ${
+			rdf:type		summary:Title ;
+			ozone:onClick	:startUnderlyingAsOperation
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+
+	op:Operation hs:classView :OperationInlineView 
+}
+
+#############################################################################################
+# UI for operation closures
+
+add { 
+	op:OperationClosure
+		ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/icons/types/continuation.gif>
+
+	:operationClosureToolbarViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				vc:ToolbarViewPart ;
+		ozone:viewDomain		:OperationClosureToolbarView ;
+		ozone:partDataGenerator	:presentOperationClosureToolbarView ;
+		ozone:cachePartData		"true" ;
+		ozone:synchronous		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	op:OperationClosure hs:classView :OperationClosureToolbarView
+
+	:operationClosurePhraseViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:PhraseViewPart ;
+		ozone:viewDomain		:OperationClosurePhraseSummaryView ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		ozone:template ${ 
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type			summary:IconBlank
+				}
+				slide:nonwrappingSpace
+				${	rdf:type			summary:Title ;
+					ozone:onClick		taskui:addUnderlyingAsPendingTask
+				}
+			)
+		}
+
+	op:OperationClosure hs:classView :OperationClosurePhraseSummaryView
+
+	:operationClosureAppletViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:AppletViewPart ;
+		ozone:viewDomain		:OperationClosureAppletView ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		ozone:template ${
+			rdf:type				slide:Slide ;
+			slide:margin			"5" ;
+			slide:child ${
+				rdf:type		slide:Paragraph ;
+				slide:children	@(
+					${	rdf:type	slide:Text ;
+						slide:text	"The following information is required:"
+					}
+					slide:break
+					${	rdf:type						metadata:MetadataEditor ;
+						ozone:dataSource				data:underlyingSource ;
+						metadata:scrollable				"false" ;
+						metadata:propertiesToDisplay	:parameterDataSource
+					}
+					${	rdf:type		slide:Paragraph ;
+						slide:alignX	"right" ;
+						slide:children	@(
+							slide:break
+							${	rdf:type					slide:Button ;
+								slide:backgroundHighlight	"90%" ;
+								slide:borderWidth			"1" ;
+								slide:margin				"3" ;
+								ozone:onClick				:finishUnderlyingOperation ;
+								slide:child ${
+									rdf:type				slide:Train ;
+									slide:children @(
+										${	rdf:type	slide:Text ;
+											slide:text	"OK"
+										}
+									)
+								}
+							}
+							slide:space
+							${	rdf:type					slide:Button ;
+								slide:backgroundHighlight	"90%" ;
+								slide:borderWidth			"1" ;
+								slide:margin				"3" ;
+								ozone:onClick				:cancelUnderlyingOperation ;
+								slide:child ${
+									rdf:type				slide:Train ;
+									slide:children @(
+										${	rdf:type	slide:Text ;
+											slide:text	"Cancel"
+										}
+									)
+								}
+							}
+							slide:space
+							${	rdf:type					slide:Button ;
+								slide:backgroundHighlight	"90%" ;
+								slide:borderWidth			"1" ;
+								slide:margin				"3" ;
+								ozone:onClick				:showHelp ;
+								slide:child ${
+									rdf:type				slide:Train ;
+									slide:children @(
+										${	rdf:type	slide:Text ;
+											slide:text	"Help"
+										}
+									)
+								}
+							}
+						)
+					}
+				)
+			}
+		}
+		
+	op:OperationClosure hs:classView :OperationClosureAppletView
+
+	:operationClosureInteractiveViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InteractiveViewPart ;
+		ozone:viewDomain		:OperationClosureInteractiveView ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		ozone:template ${
+			rdf:type				slide:Slide ;
+			slide:cropChildWidth	"true" ;
+			slide:child ${
+				rdf:type				slide:RowSet ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:background		<http://haystack.lcs.mit.edu/data/ozone/frame/horizontalBlocks> ;
+						slide:backgroundRepeat	"both" ;
+						slide:height			"15" ;
+						slide:cropChildWidth	"true" ;
+						slide:child				slide:null
+					}
+					${	rdf:type				slide:Block ;
+						slide:color				"#274683" ;
+						slide:fontBold			"true" ;
+						slide:fontSize			"200%" ;
+						slide:marginX			"13" ;
+						slide:marginTop			"13" ;
+						slide:marginBottom		"13" ;
+						slide:cropChildWidth	"true" ;
+						slide:bgcolor			"#fffef9" ;
+						slide:child ${
+							rdf:type	slide:ColumnSet ;
+							slide:children @(
+								${	rdf:type	summary:LargeIcon
+								}
+								${	rdf:type			slide:Block ;
+									slide:marginLeft	"10" ;
+									slide:marginTop		"20" ;
+									slide:child ${
+										rdf:type	slide:Paragraph ;
+										slide:children @(
+											${	rdf:type			ozone:ViewContainer ;
+												ozone:dataSource	data:underlyingSource ;
+												ozone:viewPartClass	ozone:InactiveInlineViewPart
+											}
+										)
+									}
+								}
+							)
+						}
+					}
+					${	rdf:type				slide:Block ;
+						slide:bgcolor			"#fffef9" ;
+						slide:cropChildWidth	"true" ;
+						slide:margin			"20" ;
+						slide:color				"#274683" ;
+						slide:child ${
+							rdf:type		slide:Paragraph ;
+							slide:children	@(
+								${	rdf:type	slide:Text ;
+									slide:text	"The following information is required:"
+								}
+								slide:break
+								${	rdf:type						metadata:MetadataEditor ;
+									ozone:dataSource				data:underlyingSource ;
+									metadata:scrollable				"false" ;
+									metadata:propertiesToDisplay	:parameterDataSource
+								}
+								slide:break
+								slide:break
+								${	rdf:type		slide:Paragraph ;
+									slide:alignX	"right" ;
+									slide:children	@(
+										slide:break
+										${	rdf:type					slide:Button ;
+											slide:backgroundHighlight	"90%" ;
+											slide:borderWidth			"1" ;
+											slide:margin				"3" ;
+											ozone:onClick				:finishUnderlyingOperation ;
+											slide:child ${
+												rdf:type				slide:Train ;
+												slide:children @(
+													${	rdf:type	slide:Text ;
+														slide:text	"OK"
+													}
+												)
+											}
+										}
+										slide:space
+										${	rdf:type					slide:Button ;
+											slide:backgroundHighlight	"90%" ;
+											slide:borderWidth			"1" ;
+											slide:margin				"3" ;
+											ozone:onClick				:cancelUnderlyingOperation ;
+											slide:child ${
+												rdf:type				slide:Train ;
+												slide:children @(
+													${	rdf:type	slide:Text ;
+														slide:text	"Cancel"
+													}
+												)
+											}
+										}
+									)
+								}
+							)
+						}
+					}
+				)
+			}
+		}
+	
+	op:OperationClosure hs:classView :OperationClosureInteractiveView
+
+	:operationClosureInlineClosureViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				:InlineClosureViewPart ;
+		ozone:viewDomain		:OperationClosureInlineClosureView ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		ozone:template ${
+			rdf:type			ozone:MultiplexPartContainer ;
+			ozone:children		@( :parametersPresent :noParametersPresent ) ;
+			ozone:dataSource ${
+				rdf:type			data:MappingSource ;
+				data:domain			@( "0" ) ;
+				data:range			@( :noParametersPresent ) ;
+				data:default		:parametersPresent ;
+				ozone:dataSource ${
+					rdf:type			data:SetSizeSource ;
+					ozone:dataSource	:parameterSetDataSource
+				}
+			}
+		}
+
+	daml:Thing hs:classView :OperationClosureInlineClosureView
+}
+
+method :presentOperationClosureToolbarView closure
+	return ${
+		rdf:type		slide:Train ;
+		ozone:onClick ${
+			rdf:type			ozone:AdenineCall ;
+			ozone:method		:startOperationWithClosure ;
+			ozone:parameters	@( closure )
+		} ;
+		slide:children @(
+			${	rdf:type				ozone:ViewContainer ;
+				ozone:initialResource	(extract closure op:operation ?x) ;
+				ozone:viewPartClass		ozone:InactiveInlineViewPart
+			}
+		)
+	}
+
+add { :noParametersPresent
+	rdf:type			slide:Train ;
+	slide:children @(
+		${	rdf:type					slide:Button ;
+			slide:backgroundHighlight	"90%" ;
+			slide:borderWidth			"1" ;
+			slide:margin				"3" ;
+			ozone:onClick				:finishUnderlyingOperation ;
+			slide:child ${
+				rdf:type				slide:Train ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						ozone:dataSource ${
+							rdf:type			summary:TitleSource ;
+							ozone:dataSource ${
+								rdf:type			data:ResourcePropertySource ;
+								ozone:dataSource	data:underlyingSource ;
+								data:predicate		op:operation
+							}
+						}
+					}
+				)
+			}
+		}
+	)
+}
+
+add { :parametersPresent
+	rdf:type			slide:Paragraph ;
+	slide:children	@(
+		${	rdf:type						metadata:MetadataEditor ;
+			ozone:dataSource				data:underlyingSource ;
+			metadata:scrollable				"false" ;
+			metadata:propertiesToDisplay	:parameterDataSource
+		}
+		slide:break
+		${	rdf:type	slide:Span ;
+			slide:children @(
+				${	rdf:type					slide:Button ;
+					slide:borderWidth			"1" ;
+					slide:backgroundHighlight	"90%" ;
+					slide:margin				"3" ;
+					ozone:onClick				:finishUnderlyingOperation ;
+					slide:child ${
+						rdf:type				slide:Train ;
+						slide:children @(
+							${	rdf:type	slide:Text ;
+								ozone:dataSource ${
+									rdf:type			summary:TitleSource ;
+									ozone:dataSource ${
+										rdf:type			data:ResourcePropertySource ;
+										ozone:dataSource	data:underlyingSource ;
+										data:predicate		op:operation
+									}
+								}
+							}
+						)
+					}
+				}
+			)
+		}
+	)
+}		
+
+add { :parameterDataSource
+	rdf:type			data:SortingListSource ;
+	data:sortDataSource ${ rdf:type summary:TitleSource } ;
+	ozone:dataSource	:parameterSetDataSource
+}
+
+add { :parameterSetDataSource
+	rdf:type				data:RDFQuerySetSource ;
+	data:existentials		@( ?x ?y ?z ) ;
+	data:targetExistential	?x ;
+	data:statement ${
+		data:subjectDataSource	data:underlyingSource ;
+		data:predicate		op:operation ;
+		data:object			?y
+	} ;
+	data:statement ${
+		data:subject	?y ;
+		data:predicate	adenine:namedParameter ;
+		data:object		?z
+	} ;
+	data:statement ${
+		data:subject	?z ;
+		data:predicate	adenine:parameterName ;
+		data:object		?x
+	} ;
+	data:statement ${
+		data:subject	?x ;
+		data:predicate	rdf:type ;
+		data:object		op:Parameter
+	}
+}
+
+method :cancelUnderlyingOperation
+	:cancelOperation (data:getUnderlying)
+
+method :cancelOperation closure ; adenine:preload "true" ; adenine:precompile "true"
+	# Close all UI continuations
+	for x in (query { closure :uiContinuation ?x })
+		contui:removeContinuation x[0]
+
+	taskui:removePendingTask closure
+
+method :doOperation operation message closure :showResultOnStartPane = showResultOnStartPane
+	with __target__ __infosource__
+		importjava "java.util" Date
+		= record ${
+			rdf:type		op:Performance ;
+			op:operation	operation ;
+			dc:date			(Date)
+		}
+	= x (apply operation message)
+	= y (__context__.getProperty op:continuation)
+	if (!= y null)
+		y x
+		return
+		
+	if (!= null closure)
+		= y (extract closure op:continuation ?x adenine:source = __infosource__)
+		if (!= null y)
+			y x
+			return
+
+	if (!= null x)
+     	if (!= null closure) 
+     	   if (or showResultOnStartPane (contains closure opui:showResultOnStartPane "true"))
+	    	  frame:addToStartPaneCollection x
+	    	  return
+	    if (contains operation rdf:type construct:Constructor)
+			if (== null (ozone:navigateInNewWindowIfPossible x))
+			    ozone:navigate x
+		else
+		    ozone:navigate x
+
+method :finishUnderlyingOperation
+	:finishOperation (data:getUnderlying)
+
+method :showHelp
+	ozone:navigate (extract (data:getUnderlying) op:operation ?x)
+
+method :finishOperation closure 
+#; adenine:preload "true" ; adenine:precompile "true"
+	# TODO: support cardinality
+	= op (extract closure op:operation ?x)
+	= params (query { op adenine:namedParameter ?np ?np adenine:parameterName ?x } @(?x))
+	= msg (Message)
+	
+	for x in params
+		= param x[0]
+		var values
+		with __source__ __infosource__
+			= values (query { closure param ?y } @(?y))
+		if (contains param op:required "true")
+			if (== (length values) 0)
+				status:notifyUser "One or more parameters are still needed to complete this operation."
+				return
+			
+		= paramValues @()
+		for x in values
+			paramValues.add x[0]
+			
+		msg.setNamedValue param paramValues
+
+	# Close all UI continuations
+	for x in (query { closure :uiContinuation ?x })
+		contui:removeContinuation x[0]
+
+	frame:removeFromStartPaneCollection closure
+	:doOperation op msg closure
+	taskui:removePendingTask closure
+
+#############################################################################################
+# Starting Points start pane category collection view part
+
+add { :operationCategoryCollectionAbbreviatedViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:VerticalAppletViewPart2 ;
+	ozone:viewDomain			:OperationCategoryStartPaneCollectionView ;
+	ozone:partDataGenerator		:operationCategoryStartPaneCollectionViewGenerator ;
+	ozone:cachePartData			"true" ;
+	dc:title					"List" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+add { hs:CategorizationScheme
+	hs:classView :OperationCategoryStartPaneCollectionView
+}
+
+method :operationCategoryStartPaneCollectionViewGenerator ; adenine:preload "true" ; adenine:precompile "true"
+	= underlying (__context__.getLocalProperty ozone:underlying)
+	if (== underlying null)
+		return frame:noResourceToViewStartPaneBox
+		
+	= content ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:subject		underlying ;
+			data:predicate		hs:member
+		} ;
+		layout:layoutConstraint ${ 
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		:PopOutViewPart ;
+			layout:defaultShowCount	"15" ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+	}
+
+	return (ozone:createVerticalAppletBox2 underlying content null 5)
+
+#############################################################################################
+# Category popup menu view part
+
+add { :popOutViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+
+	rdf:type				:PopOutViewPart ;
+	ozone:viewDomain		:PopOutView ;
+	ozone:dataDomain		:PopOutView ;
+	ozone:cachePartData		"true" ;
+	ozone:partDataGenerator	:presentCategory ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+	
+	hs:Category	hs:classView	:PopOutView
+}
+
+method :presentCategory category ; adenine:preload "true" ; adenine:precompile "true"
+	return ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"5" ;
+		slide:marginY				"1" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type				slide:ColumnSet ;
+			slide:pack				"right" ;
+			slide:children @(
+				${	rdf:type			summary:Title
+				}
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+				}
+			)
+		} ;
+		slide:autoshowSubmenu		"false" ;
+		slide:submenu ${
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type			slide:Block ;
+				slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+				slide:fontSize		"8" ;
+				slide:borderWidth	"1" ;
+				slide:borderColor	"lightGray" ;
+				slide:bgcolor		"white" ;
+				slide:margin		"2" ;
+				slide:width			"200" ;
+				slide:color			"#3B5377" ;
+				slide:alignX		"left" ;
+				slide:fontBold		"false" ;
+				slide:child ${
+					rdf:type		slide:RowSet ;
+					slide:children @(
+						${	rdf:type			slide:Block ;
+							slide:bgcolor		"lightestGray" ;
+							slide:margin		"5" ;
+							slide:fontBold		"true" ;
+							slide:child ${
+								rdf:type		slide:Paragraph ;
+								slide:children @(
+									${	rdf:type			summary:Title
+									}
+								)
+							}
+						}
+						${	rdf:type			layout:Layout ;
+							ozone:dataSource	${
+								rdf:type		data:PredicateSetSource ;
+								data:subject	category ;
+								data:predicate	hs:member
+							} ;
+							layout:layoutConstraint ${ 
+								rdf:type				layout:RowStackerConstraint ;
+								ozone:viewPartClass		contextMenu:ContextMenuItemViewPart ;
+								layout:sortBy ${
+									rdf:type			data:SortingListSource ;
+									data:sortDataSource ${ rdf:type summary:TitleSource }
+								}
+							}
+						}
+					)
+				}
+			}
+		}
+	}
+
+#############################################################################################
+# Operation parameters popup menu support
+
+method :showOperationParameters param closure dataSource point ; adenine:preload "true" ; adenine:precompile "true"
+	uniqueMethod x input
+		add { `closure `param input }
+		:finishOperation `closure
+
+	chooser:showChooser point chooser:selectionsDataSource = dataSource chooser:continuation = x chooser:more = ${
+		rdf:type			ozone:AdenineCall ;
+		ozone:method		:startOperationWithParams2 ;
+		ozone:parameters	@( closure )
+	}
+
+method :startOperationWithParams2 closure ; adenine:preload "true" ; adenine:precompile "true"
+	(__context__.getProperty modeless:modelessParent).dispose
+	:startOperationWithParams closure
+				
+#############################################################################################
+# Recommended operations part
+
+add { :recommendedOperationsPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				lensui:LensPart ;
+	ozone:dataDomain		:RecommendedOperationsAspect ;
+	ozone:partDataGenerator	:generateRecommendedOperations ;
+#	ozone:cachePartData		"true" ;
+	hs:javaImplementation ${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+add { :recommendedOperationsAspect
+	rdf:type	:RecommendedOperationsAspect ;
+	dc:title	"Recommended operations"
+}
+
+#[add { daml:Thing
+	vowl:hasLens	:recommendedOperationsAspect
+}]#
+
+method :suggestOperations selection toolCollection member
+	if (== null member)
+		= member hs:member
+
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	= old (Utilities.extractFirstItems (query { toolCollection member ?x }))
+
+	if (!= null selection)
+		function handler x
+			add { toolCollection member x }
+			old.remove x
+
+		opui:listOperations selection handler true
+
+	for x in old
+		remove toolCollection member x
+
+method :generateRecommendedOperations selection ; adenine:preload "true" ; adenine:precompile "true"
+	= toolCollection (UniqueResource)
+
+	uniqueMethod suggestOperations
+		= selection (lensui:getUnderlying)
+		:suggestOperations selection `toolCollection
+
+	suggestOperations
+
+	return ${
+		rdf:type			slide:Block ;
+		slide:margin		10 ;
+		slide:child ${
+			rdf:type			slide:Paragraph ;
+			ozone:putProperty	${ ozone:name :useAspectUnderlying ; ozone:value "true" } ;
+			slide:children @(
+				${	rdf:type				layout:Layout ;
+					layout:layoutConstraint ${ 
+						rdf:type				layout:RowStackerConstraint ;
+						ozone:viewPartClass		ozone:PhraseViewPart ;
+						layout:noItems			slide:space ;
+						layout:sortBy ${
+							rdf:type			data:SortingListSource ;
+							data:sortDataSource ${ rdf:type summary:TitleSource }
+						}
+					} ;
+					ozone:dataSource ${
+						rdf:type		data:PredicateSetSource ;
+						data:subject	toolCollection ;
+						data:predicate	hs:member
+					}
+				}
+				${	rdf:type			ozone:DataConsumer ;
+					ozone:onDataChanged	suggestOperations ;
+					ozone:dataSource	lensui:underlyingSource
+				}
+				${	rdf:type			ozone:DataConsumer ;
+					ozone:onDataChanged	suggestOperations ;
+					ozone:dataSource ${
+						rdf:type			data:ResourcePropertySource ;
+						data:predicate		rdf:type ;
+						ozone:dataSource	lensui:underlyingSource
+					}
+				}
+#				slide:break
+#				${	rdf:type					slide:Button ;
+#					slide:margin				0 ;
+#					ozone:onClick				${ rdf:type ozone:ContextMenu ; ozone:underlying selection ; ozone:objectOnly true } ;
+#					slide:child ${
+#						rdf:type				slide:Train ;
+#						slide:children @(
+#							${	rdf:type		slide:Text ;
+#								slide:text		"All operations" ;
+#								slide:fontBold	"true"
+#							}
+#							slide:space
+#							${	rdf:type		slide:Image ;
+#								slide:source	<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+#							}
+#						)
+#					}
+#				}
+			)
+		}
+	}
+
+#############################################################################################
+# Dropdown item view part
+
+add { op:Operation hs:classView :OperationDropdownItemView }
+
+add { :operationDropdownItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:DropdownItemViewPart ;
+	ozone:viewDomain		:OperationDropdownItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type		slide:ColumnSet ;
+			ozone:onClick	:onDropdownItemClick ;
+			slide:children @(
+				${	rdf:type	summary:IconBlank
+				}
+				slide:space
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	summary:Title
+						}
+					)
+				}
+			)
+		}
+	}
+}
+
+method :onDropdownItemClick
+	= menuCreator (__context__.getProperty contextMenu:menuCreator)
+	if (!= null menuCreator)
+		menuCreator.disposeChildren
+
+	:startOperation (data:getUnderlying)
+
+#############################################################################################
+# Task pane
+
+add { op:OperationClosure hs:classView :TaskPaneTaskContentsView }
+
+add { :taskPaneTaskContentsViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				taskui:TaskPaneTaskContentsViewPart ;
+	ozone:viewDomain		:TaskPaneTaskContentsView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type				ozone:ViewContainer ;
+				ozone:dataSource		data:underlyingSource ;
+				ozone:viewPartClass		ozone:AppletViewPart
+			}
+			taskui:history
+			taskui:categorizationSchemes
+		)
+	}
+}
+

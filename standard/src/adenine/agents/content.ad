@@ -1,0 +1,80 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Content agents
+# Written by Dennis Quan
+# $Header: 
+
+@base <http://haystack.lcs.mit.edu/agents/content> 
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	info:		<http://haystack.lcs.mit.edu/schemata/information#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	:			<http://haystack.lcs.mit.edu/agents/content#> 
+
+method :constructAgent ;
+rdf:type				construct:Constructor ;
+construct:targetType	config:Service ;
+construct:targetType	info:RDFStore ;
+rdf:type				op:Operation ;
+dc:title				"Create simple content agent" ;
+rdfs:comment			"Creates an agent that holds content locally." ;
+adenine:preload			"true"
+	= title 'Simple content agent'
+
+	= agent ${
+		dc:title	title ;
+		rdf:type	config:Service ;
+		rdf:type	content:ContentService ;
+		rdf:type	:SimpleContentAgent ;
+		hs:user		(__identity__.getResource) ;
+		wsdl:port ${
+			rdf:type wsdl:Port ;
+			wsdl:binding ${
+				rdf:type	wsdl:Binding ;
+				rdf:type	config:JavaBinding ;
+				wsdl:type ${
+					rdf:type wsdl:PortType ;
+					config:javaInterface ${
+						rdf:type hs:JavaClass ;
+						hs:className "edu.mit.lcs.haystack.server.core.content.IContentService"
+					} 
+				} 
+			} 
+		} ;
+		hs:javaImplementation ${
+			rdf:type hs:JavaClass ;
+			hs:className "edu.mit.lcs.haystack.server.core.content.SimpleContentService"
+		} ;
+	}
+	
+	add { (__serviceaccessor__.getResource) config:hostsService agent }
+
+	return agent
+

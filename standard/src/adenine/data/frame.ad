@@ -1,0 +1,95 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone frame data
+# Written by David Huynh and Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/data/frame>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix taskui:		<http://haystack.lcs.mit.edu/ui/task#>
+
+#############################################################################################
+# Main frame
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	var startPaneCollection toolCollection toolTargets topList 
+	with __source__ __infosource__
+		= startPaneCollection (extract user frame:startPaneCollection ?x)
+
+		= toolCollection (extract user frame:toolCollection ?x)
+		= topList (extract user frame:topList ?x)
+		= bottomList (extract user frame:bottomList ?x)
+
+		with __target__ __infosource__
+			if (== null toolCollection)
+				= toolCollection ${ rdf:type hs:Collection }
+				add { user frame:toolCollection toolCollection }
+
+			if (== null startPaneCollection)
+				= startPaneCollection ${
+					dc:title	"Start pane" ;
+					rdf:type	hs:List ;
+					hs:list		@( )
+				}
+				add { user frame:startPaneCollection startPaneCollection }
+
+			if (== null topList)
+				= topList ${
+					dc:title	"Top toolbar" ;
+					rdf:type	hs:List ;
+					hs:list		@( frame:backOperation frame:forwardOperation frame:refreshOperation frame:homeOperation frame:browseToOperation frame:searchBar frame:toggleNavigatePaneOperation opdata:startingPoints)
+				}
+				add { user frame:topList topList }
+
+	= mainFrame ${
+		rdf:type		ozone:OzoneFrame ;
+		ozone:caption	"Haystack" ;
+		slide:child ${
+			rdf:type								frame:Frame ;
+			frame:toolCollection					taskui:taskPane ;
+			frame:startPaneCollection				startPaneCollection ;
+			frame:topList							topList ;
+			frame:toolTargets						toolTargets
+		}
+	}
+
+	with __target__ __infosource__
+		replace user ozone:defaultFrame ?x mainFrame
+		importjava "java.lang" System
+
+		if (== (extract user dc:title ?x) null)
+			add { user dc:title (System.getProperty 'user.name') }
+
+		if (== (extract server dc:title ?x) null)
+			add { server dc:title (System.getProperty 'edu.mit.lcs.haystack.hostname') }
+

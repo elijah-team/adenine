@@ -1,0 +1,1841 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Navigation View
+
+@base <http://haystack.lcs.mit.edu/ui/navigationView>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	query:		<http://haystack.lcs.mit.edu/schemata/query#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	cont:		<http://haystack.lcs.mit.edu/schemata/continuation#> 
+@prefix	contui:		<http://haystack.lcs.mit.edu/ui/continuation#> 
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	text:		<http://haystack.lcs.mit.edu/agents/text#>
+@prefix	navView:	<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix	nav:		<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix navAgent: 	<http://haystack.lcs.mit.edu/agents/navigation#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	taskui:		<http://haystack.lcs.mit.edu/ui/task#> 
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#>
+@prefix	task:		<http://haystack.lcs.mit.edu/schemata/task#> 
+@prefix frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix lucene:		<http://haystack.lcs.mit.edu/agents/lucene#>
+@prefix navSupport:	<http://haystack.lcs.mit.edu/programs/navigationSupport#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/navigationView#>
+
+
+#############################################################################################
+# Data
+
+# VS: TODO: move below to appropriate spots
+# needs to be moved elsewhere
+add {
+	lucene:lastModified	rdfs:label	"last modified"
+	query:parentObject	rdfs:label	"parent object" 
+	navView:pred		rdfs:label	"predicate"
+	navView:queryTitle	rdfs:label	"query title"
+}
+
+add { :body
+		rdfs:label		"Body" ;
+		rdf:type		navView:NavigableProperty ;
+		navView:path	${	rdf:type			navView:NavigationPath ;
+							navView:domain		content:HttpContent ;
+							navView:rangePath	@( text:extractedText )
+						} ;
+		navView:path	${	rdf:type			navView:NavigationPath ;
+							navView:domain		content:FilesystemContent ;
+							navView:rangePath	@( text:extractedText )
+						} 
+
+}
+
+add { :noteContent
+		rdfs:label		"Note-Content" ;
+		rdf:type		navView:NavigableProperty ;
+		navView:path	${	rdf:type			navView:NavigationPath ;
+							navView:domain		<http://haystack.lcs.mit.edu/schemata/note#Note> ;
+							navView:rangePath	@( <http://haystack.lcs.mit.edu/schemata/note#body> )
+						}
+}
+
+
+add {
+	hs:view			rdf:type	navView:NonNavigableProperty
+	hs:JavaClass	rdf:type	navView:NonNavigableProperty
+	adenine:preload	rdf:type	navView:NonNavigableProperty
+	adenine:parameters	rdf:type	navView:NonNavigableProperty
+	navView:disableContent	rdf:type	navView:NonNavigableProperty
+	<http://haystack.lcs.mit.edu/ui/task#showOnStartPane>	rdf:type	navView:NonNavigableProperty
+	<http://haystack.lcs.mit.edu/schemata/haystack#md5>	rdf:type	navView:NonNavigableProperty
+	navView:reverseNextPred rdfs:label "Reverse"
+	hs:member		hs:reversiblePred	${
+		rdf:type			daml:ObjectProperty ;
+		rdf:type			hs:reversePred ;
+		rdfs:label			"Contained in" ;
+		rdfs:domain			daml:Thing ;
+	}
+}
+
+add {
+	daml:Thing hs:classView :thingNavView
+	:thingNavView rdfs:label "Navigation View for things"
+	:thingNavViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		#rdf:type				navView:InlineViewPart ;
+		rdf:type				navView:NavInlineViewPart ;
+		ozone:viewDomain		:thingNavView ;
+		ozone:partDataGenerator	:presentThingNavView ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentThingNavView res
+
+	= children @()
+
+	if (contains res rdf:type navView:NavigationModeValue)
+		print '***** Thing View has a navigation options!!!!!!!!!!!!!!!!!! *****' res ': ' (navView:getTitle res)
+		= clickMethod (extract res navView:onClickMethod ?x)
+		if (== null clickMethod)
+			= clickMethod navView:onClickNavigationOption
+	if (== null clickMethod)
+		= clickMethod frame:browseToOperation
+	
+	= navOptTxt (extract res navView:title ?x)
+	if (== null navOptTxt)
+		= navOptTxt (navView:getTitle res)
+	else
+		= navOptTxt (append '- ' (navOptTxt.getContent))
+
+	#	children.add ${
+	#			rdf:type				ozone:ViewContainer ;
+	#			ozone:initialResource	underlyingVal ;
+	#			ozone:viewPartClass		ozone:InactiveInlineViewPart
+	#		}
+	#	}
+					
+	children.add ${ 
+		rdf:type		slide:Text ;
+		slide:text		navOptTxt ;
+		ozone:onClick ${ 
+			rdf:type 			ozone:AdenineCall ;
+			ozone:method		clickMethod ;
+			ozone:parameters 	@( res )
+		}
+	}
+
+	if (contains res rdf:type hs:Collection)
+		children.add slide:space
+		children.add slide:leftParenthesis
+		children.add ${
+			rdf:type			slide:Text ;
+			#slide:text			(extract navOption navView:valueSize ?x) ;
+			slide:text			(length (query {res hs:member ?x})) ;
+		}
+		children.add slide:rightParenthesis
+
+	return ${
+		rdf:type		slide:Span ;
+		slide:children	children
+	}
+
+
+
+###########################################################
+
+add {
+	navView:NavigationModeValue
+		rdf:type				rdfs:Class ;
+		rdf:type				daml:Class ;
+		rdfs:label				"Navigation Option Value" ;
+		ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/browseto.gif> ;
+		hs:classView			:NavigationModeValueInlineView ;
+		hs:classView			:NavigationModeValueLineView ;
+		hs:classView			:NavigationModeValuePhraseView ;
+		hs:classView			:navigationModeValuesCollectionDefinitionView ;
+		hs:classView			:navigationModeValuesGroupedByPredView ;
+		hs:classView			:navigationModeValuesGroupedView
+		
+	#navView:valueSize
+	#	rdf:type				daml:DatatypeProperty ;
+	#	rdfs:label				"Number of items for classifier value" ;
+	#	rdfs:domain				navView:NavigationModeValue ;
+	#	rdfs:range				xsd:int
+
+	:parentCollNavigationModeValue
+		rdf:type				op:Parameter ;
+		rdf:type				daml:ObjectProperty ;
+		dc:title				"Parent Collection Navigation Option" ;
+		op:required				"true" ;
+		op:adenineCondition		:checkSuggIsRDFPath ;
+		rdfs:range				navView:NavigationModeValue
+
+	# collection definition view
+	:navigationModeValuesCollectionDefinitionView rdfs:label "Navigation Options Collection Definition View"
+	:navigationModeValuesCollectionDefinitionViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				navView:CollectionDefinitionViewPart ;
+		ozone:viewDomain		:navigationModeValuesCollectionDefinitionView ;
+		ozone:partDataGenerator	:presentNavigationModeValuesCollectionDefinitionView ;
+		#ozone:cachePartData		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	:navigationModeValuesGroupedByPredView rdfs:label	"Navigation Options Grouped View"
+	:navigationModeValuesGroupedByPredViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				navView:GroupedByPredViewPart ;
+		ozone:viewDomain		:navigationModeValuesGroupedByPredView ;
+		ozone:partDataGenerator	:presentNavigationModeValueGroupedByPredView  ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	:navigationModeValuesGroupedView rdfs:label "Navigation Option Value Line Summary View"
+	:navigationModeValuesGroupedViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				navView:GroupedViewPart ;
+		ozone:viewDomain		:navigationModeValuesGroupedView ;
+		ozone:partDataGenerator	:presentNavigationModeValueGroupedView ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+
+	:NavigationModeValueLineView rdfs:label "Navigation Option Value Line Summary View"
+	:navigationModeValueLineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		ozone:viewDomain		:NavigationModeValueLineView ;
+		ozone:partDataGenerator	:presentNavigationModeValueLineView ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+
+	:NavigationModeValuePhraseView rdfs:label "Navigation Option Value Phrase Summary View"
+	:navigationModeValuePhraseViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:PhraseViewPart ;
+		ozone:viewDomain		:NavigationModeValuePhraseView ;
+		ozone:partDataGenerator	:presentNavigationModeValuePhraseView ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	:NavigationModeValueInlineView rdfs:label "Navigation Option Value Inline Summary View"
+	:navigationModeValueInlineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InlineViewPart ;
+		rdf:type				navView:NavInlineViewPart ;
+		ozone:viewDomain		:NavigationModeValueInlineView ;
+		ozone:partDataGenerator	:presentNavigationModeValueInlineView ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :checkParentCollection res
+	#nothing should be limited by this
+	return (!= null (queryExtract{res navView:currObj ?x ?x rdf:type hs:Collection}))
+
+method :checkSuggIsRDFPath res
+	if (and (!= null (extract res navView:pred ?x)) (!= null (extract res navView:value ?x)))
+		return true
+	else
+		return false
+
+method navView:browseToNavOptionsCollectionResource
+	= resColl (__context__.getProperty navView:coll)
+	#if (== null resColl)
+	#	print '************************ is null *********************'
+	#	= resColl (__context__.getProperty ozone:underlying)
+	#	print resColl
+	#else
+	#	print '************************ is *NOT* null *********************'
+	#	navView:addLightCollViewWithoutPreview resColl
+	layout:browseToResource
+
+method :presentNavigationModeValueInlineView navOption
+
+	= children @()
+
+	= underlyingVal (extract navOption navView:value ?x)
+	if (== null underlyingVal)
+		 = underlyingVal (extract navOption dc:title ?x)
+
+	= clickMethod (extract navOption navView:onClickMethod ?x)
+	if (== null clickMethod)		 
+		= clickMethod navView:onClickNavigationOption
+	
+	#= navOptValueTxtRes (UniqueResource)
+
+	#if (instanceOf underlyingVal Literal)
+	#	#print 'navigationModeValueInlineSummarizer Literal' navOption under
+	#	add { navOptValueTxtRes
+	#			rdf:type			slide:Text ;
+	#			slide:text			underlyingVal
+	#	}
+	#else
+	#	add { navOptValueTxtRes
+	#			rdf:type				ozone:ViewContainer ;
+	#			ozone:initialResource	underlyingVal ;
+	#			ozone:viewPartClass		ozone:InactiveInlineViewPart
+	#		}
+	#	}
+
+	#children.add ${ 
+	#	rdf:type		slide:Span ;
+	#	slide:children @(
+	#		${	rdf:type				ozone:ViewContainer ;
+	#			ozone:initialResource	(extract navOption navView:pred ?x) ;
+	#			ozone:viewPartClass		ozone:InactiveInlineViewPart
+	#		}
+	#		slide:space
+	#		navOptValueTxtRes
+	#	) ;
+	#	ozone:onClick ${ 
+	#		rdf:type 			ozone:AdenineCall ;
+	#		ozone:method		:onClickNavigationOption ;
+	#		ozone:parameters 	@( navOption )
+	#	}
+	#}
+	#if (! (contains navOption navView:displayOnly "true") )
+	
+	= navOptTxt ''
+	if (== null (extract navOption navView:pred ?x))
+		= navOptTxt (extract navOption dc:title ?x)
+	else
+		if (contains navOption navView:negatedNavOption "true")
+			= navOptTxt (append navOptTxt ' Not ')
+		= navOptTxt (append 
+						navOptTxt
+						(navView:getTitle (extract navOption navView:pred ?x))
+						' '
+						(navView:getTitle (extract navOption navView:value ?x))
+					)
+					
+	children.add ${ 
+		rdf:type		slide:Text ;
+		slide:text		navOptTxt ;
+		ozone:onClick ${ 
+			rdf:type 			ozone:AdenineCall ;
+			ozone:method		clickMethod ;
+			ozone:parameters 	@( navOption )
+		}
+	}
+
+	if (!= (extract navOption navView:valueSize ?x) null)
+		children.add slide:space
+		children.add slide:leftParenthesis
+		children.add ${
+			rdf:type			slide:Text ;
+			slide:text			(extract navOption navView:valueSize ?x) ;
+		}
+		children.add slide:rightParenthesis
+
+	return ${
+		rdf:type		slide:Span ;
+		slide:children	children
+	}
+
+method :presentNavigationModeValueLineView navOption
+
+	= children @()
+	= underlyingVal (extract navOption navView:value ?x)
+	= clickMethod (extract navOption navView:onClickMethod ?x)
+	if (== null clickMethod)		 
+		= clickMethod navView:onClickNavigationOption
+
+	# we really need to figure out what need to be clicked and ...
+	#TODO[vineet]: make below more semantic
+	#[
+	children.add ${
+		rdf:type			slide:Text ;
+		slide:text			'Navigate to subset of collection'
+	}
+	children.add slide:space
+	children.add ${
+		rdf:type				ozone:ViewContainer ;
+		ozone:initialResource	(extract navOption navView:currObj ?x) ;
+		ozone:viewPartClass		ozone:InactiveInlineViewPart
+	}
+	children.add slide:space
+	children.add ${
+		rdf:type			slide:Text ;
+		slide:text			'having'
+	}
+	children.add slide:space
+	for predElem in (extract navOption navView:pred ?x)
+		children.add ${
+			rdf:type				ozone:ViewContainer ;
+			ozone:initialResource	predElem ;
+			ozone:viewPartClass		ozone:InactiveInlineViewPart
+		}
+		children.add slide:space
+	children.add ${
+		rdf:type			slide:Text ;
+		slide:text			'equals'
+	}
+	children.add slide:space
+	
+
+	= navOptTxtRes (UniqueResource)
+
+	if (instanceOf underlyingVal Literal)
+		#print 'navigationModeValueInlineSummarizer Literal' navOption under
+		add { navOptTxtRes
+				rdf:type			slide:Text ;
+				slide:text			underlyingVal
+		}
+	else
+		add { navOptTxtRes
+			rdf:type				ozone:ViewContainer ;
+			ozone:initialResource	underlyingVal ;
+			ozone:viewPartClass		ozone:InactiveInlineViewPart
+		}
+
+	# >>>>>> huh? # going to a collection from a non-collection
+	if (! (contains navOption navView:displayOnly "true") )
+		# show link
+		add { navOptTxtRes ozone:onClick ${ 
+				rdf:type 			ozone:AdenineCall ;
+				ozone:method		clickMethod ;
+				ozone:parameters 	@( navOption )
+			}
+		}
+
+	children.add navOptTxtRes
+		
+	if (!= (extract navOption navView:valueSize ?x) null)
+		children.add slide:space
+		children.add slide:leftParenthesis
+		children.add ${
+			rdf:type			slide:Text ;
+			slide:text			(extract navOption navView:valueSize ?x) ;
+		}
+		children.add slide:space
+		children.add ${
+			rdf:type			slide:Text ;
+			slide:text			'items'
+		}
+		children.add slide:rightParenthesis
+	]#
+
+	= navOptTxt 'Navigate to '
+	= navOptTxt (append navOptTxt (:getNavOptPhraseViewText navOption))
+
+	children.add ${ 
+		rdf:type		slide:Text ;
+		slide:text		navOptTxt ;
+		ozone:onClick ${ 
+			rdf:type 			ozone:AdenineCall ;
+			ozone:method		clickMethod ;
+			ozone:parameters 	@( navOption )
+		}
+	}
+	
+	return ${
+		rdf:type		slide:Paragraph ;
+		slide:children	children
+	}
+
+method :getNavOptPhraseViewText navOption
+
+	= underlyingVal (extract navOption navView:value ?x)
+	
+	if (== null underlyingVal)
+		return (navView:getTitle navOption)
+
+	var navOptTxt
+	if (!= null (extract navOption navView:queryStatement ?x))
+		= navOptTxt 'Collection having '
+		#for predElem in (extract navOption navView:pred ?x)
+		= navOptTxt (append navOptTxt (navView:getTitle (extract navOption navView:pred ?x)))
+		if (instanceOf underlyingVal Literal)
+			= navOptTxt (append navOptTxt ' containing ')
+			= navOptTxt (append navOptTxt underlyingVal)
+		else
+			= navOptTxt (append navOptTxt ' equalling ')
+			= navOptTxt (append navOptTxt (navView:getTitle underlyingVal))
+	else
+		= navOptTxt 'Subset of "'
+		= navOptTxt (append navOptTxt (navView:getTitle (extract navOption navView:currObj ?x)))
+		= navOptTxt (append navOptTxt '"')
+		if (contains navOption navView:negatedNavOption "true")
+			= navOptTxt (append navOptTxt ' Not ')
+		= navOptTxt (append navOptTxt ' having ')
+		= navOptTxt (append navOptTxt (navView:getTitle (extract navOption navView:pred ?x)))
+		if (instanceOf underlyingVal Literal)
+			= navOptTxt (append navOptTxt ' containing ')
+			= navOptTxt (append navOptTxt underlyingVal)
+		else
+			= navOptTxt (append navOptTxt ' is ')
+			= navOptTxt (append navOptTxt (navView:getTitle underlyingVal))
+
+	if (!= (extract navOption navView:valueSize ?x) null)
+		= navOptTxt (append navOptTxt ' (')
+		= navOptTxt (append navOptTxt ((extract navOption navView:valueSize ?x).getContent) )
+		= navOptTxt (append navOptTxt ' items)')
+		
+	return navOptTxt
+
+
+method :presentNavigationModeValueGroupedView navOption
+	# TODO[vineet]: this can be unified with the phrase view
+	
+	= children @()
+	= underlyingVal (extract navOption navView:value ?x)
+
+	= clickMethod (extract navOption navView:onClickMethod ?x)
+	if (== null clickMethod)		 
+		= clickMethod navView:onClickNavigationOption
+
+	= navOptTxt ((extract navOption dc:title ?x).getContent)
+	
+	if (!= (extract navOption navView:valueSize ?x) null)
+		= navOptTxt (append navOptTxt ' (')
+		= navOptTxt (append navOptTxt ((extract navOption navView:valueSize ?x).getContent) )
+		= navOptTxt (append navOptTxt ' items)')
+
+	children.add ${ 
+		rdf:type			slide:Text ;
+		slide:text			navOptTxt ;
+		ozone:onClick ${ 
+			rdf:type 			ozone:AdenineCall ;
+			ozone:method		clickMethod ;
+			ozone:parameters 	@( navOption )
+		}
+	}
+	
+	return ${
+		rdf:type		slide:Paragraph ;
+		slide:children	children
+	}
+
+
+method :presentNavigationModeValuePhraseView navOption
+
+	# almost identical to line summarizer except for return type
+	# (:presentNavigationModeValueLineView navOption)
+
+	= children @()
+	= underlyingVal (extract navOption navView:value ?x)
+	= clickMethod (extract navOption navView:onClickMethod ?x)
+	if (== null clickMethod)		 
+		= clickMethod navView:onClickNavigationOption
+
+	= navOptTxt (:getNavOptPhraseViewText navOption)
+		
+	children.add ${
+		rdf:type				slide:Span ;
+		slide:children @(
+			${	rdf:type		summary:Icon ;
+			}
+			slide:space
+		)
+	}
+	children.add ${ 
+		rdf:type			slide:Text ;
+		slide:text			navOptTxt ;
+		ozone:onClick ${ 
+			rdf:type 			ozone:AdenineCall ;
+			ozone:method		clickMethod ;
+			ozone:parameters 	@( navOption )
+		}
+	}
+	
+	return ${
+		rdf:type		slide:Paragraph ;
+		slide:children	children
+	}
+
+
+method :presentNavigationModeValueGroupedByPredView navOption
+	# simpler implementation just print title of value!
+	# we are not going to even bother about possibly putting the object underneath, this approach needs
+	#  to be properly selected, since it goes against the semantic/uniform ui approach
+
+	= clickMethod (extract navOption navView:onClickMethod ?x)
+	if (== null clickMethod)		 
+		= clickMethod navView:onClickNavigationOption
+
+	= children @()
+
+	= underlyingVal (extract navOption navView:value ?x)
+	if (!= null underlyingVal)
+		= underlyingVal (navView:getTitle underlyingVal)
+	else
+		= underlyingVal (extract navOption dc:title ?x)
+
+	children.add ${ 
+		rdf:type		slide:Text ;
+		slide:text		underlyingVal ;
+		ozone:onClick ${ 
+			rdf:type 			ozone:AdenineCall ;
+			ozone:method		clickMethod ;
+			ozone:parameters 	@( navOption )
+		}
+	}
+
+	if (!= (extract navOption navView:valueSize ?x) null)
+		children.add slide:space
+		children.add slide:leftParenthesis
+		children.add ${
+			rdf:type			slide:Text ;
+			slide:text			(extract navOption navView:valueSize ?x) ;
+		}
+		children.add slide:rightParenthesis
+
+
+	return ${
+		rdf:type		slide:Span ;
+		slide:children	children
+	}
+
+
+
+	
+	#[
+	= children @()
+
+	= underlyingVal (extract navOption navView:value ?x)
+	if (== null underlyingVal)
+		= underlyingVal (extract navOption dc:title ?x)
+
+	= clickMethod (extract navOption navView:onClickMethod ?x)
+	if (== null clickMethod)		 
+		= clickMethod navView:onClickNavigationOption
+
+	= navOptTxtRes (UniqueResource)
+
+	if (instanceOf underlyingVal Literal)
+		add { navOptTxtRes
+				rdf:type			slide:Text ;
+				slide:text			underlyingVal
+		}
+	else
+		#TODO[vineet]: resolve what the UI should be like, but for now just do text
+		add { navOptTxtRes
+			rdf:type			slide:Text ;
+			slide:text			(navView:getTitle underlyingVal) ;
+		}
+		
+		#add { navOptTxtRes
+		#	rdf:type				ozone:ViewContainer ;
+		#	ozone:initialResource	underlyingVal ;
+		#	ozone:viewPartClass		ozone:InactiveInlineViewPart
+		#	#ozone:viewPartClass		ozone:InlineViewPart
+		#}
+
+	#if (instanceOf underlyingVal Literal)
+	#	add { navOptTxtRes ozone:onClick ${ 
+	#			rdf:type 			ozone:AdenineCall ;
+	#			ozone:method		:onClickNavigationOption ;
+	#			ozone:parameters 	@( navOption )
+	#		}
+	#	}
+	#else
+
+	# show link
+	= navOptTxtRes2 null
+	if (! (contains navOption navView:displayOnly "true") )
+		= navOptTxtRes2 ${
+			rdf:type		slide:Span ;
+			ozone:onClick	${
+				rdf:type			ozone:AdenineCall ;
+				ozone:method		clickMethod ;
+				ozone:parameters 	@( navOption )
+			} ;
+			slide:children	@( navOptTxtRes )
+		}
+
+	#children.add navOptTxtRes
+	
+	if (!= navOptTxtRes2 null)
+		children.add navOptTxtRes2
+	else
+		children.add navOptTxtRes
+		
+	if (!= (extract navOption navView:valueSize ?x) null)
+		children.add slide:space
+		children.add slide:leftParenthesis
+		children.add ${
+			rdf:type			slide:Text ;
+			slide:text			(extract navOption navView:valueSize ?x) ;
+		}
+		children.add slide:rightParenthesis
+
+	return ${
+		rdf:type		slide:Span ;
+		slide:children	children
+	}
+	]#
+
+
+method :presentNavigationModeValuesCollectionDefinitionView navOption
+
+	= nm (__context__.getProperty ozone:navigationMaster)
+	= vn (nm.getViewNavigator null)
+	= currColl (vn.getCurrentResource)
+
+	= children @()
+
+	= underlyingVal (extract navOption navView:value ?x)
+	if (== null underlyingVal)
+		 = underlyingVal (extract navOption dc:title ?x)
+
+	#= navOptTxtRes (UniqueResource)
+
+	# we are not supporting both underlyingVal and dc:text 
+	# [is it worth the effort]?
+	# we are using the implied semantic of dc:tile being used only to
+	# over-ride the default title that can be generated
+	
+	#if (instanceOf underlyingVal Literal)
+	#	#print 'navigationModeValueInlineSummarizer Literal' navOption under
+	#	add { navOptTxtRes
+	#			rdf:type			slide:Text ;
+	#			slide:text			underlyingVal
+	#	}
+	#else
+	#	add { navOptTxtRes
+	#		rdf:type				ozone:ViewContainer ;
+	#		ozone:initialResource	underlyingVal ;
+	#		ozone:viewPartClass		ozone:InactiveInlineViewPart
+	#	}
+
+	#children.add navOptTxtRes
+	children.add ${
+		rdf:type	slide:Text ;
+		slide:text	(navView:buildTitleFromNavOption navOption)
+	}
+		
+	#return ${
+	#	rdf:type			slide:Span ;
+	#	slide:bgcolor		"white" ;
+	#	slide:margin		"3" ;
+	#	slide:borderWidth	"1" ;
+	#	slide:children		children
+	#}
+	
+	# see if we should allow removal
+	= allowRemoval false
+	= navOptions (query { currColl navView:collDef ?x ?x hs:member ?y} @(?y))
+	for opt in navOptions
+		if (== opt[0] navOption)
+			continue
+		if (contains opt[0] navView:volatilePath "true")
+			continue
+		= allowRemoval true
+		break
+
+	if allowRemoval
+		children.addAll 0 @(
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/x.gif> ;
+			}
+			slide:space
+		)
+		return ${
+			rdf:type			slide:Button ;
+			slide:bgcolor		"white" ;
+			slide:margin		"3" ;
+			slide:borderWidth	"1" ;
+			slide:backgroundHighlight	"90%" ;
+			ozone:onClick ${ 
+				rdf:type 			ozone:AdenineCall ;
+				ozone:method		:onClickRemoveNavigationOption ;
+				ozone:parameters 	@( navOption currColl )
+			} ;
+			ozone:tooltip	"Broaden collection with the removal of this condition" ;
+			slide:child ${
+				rdf:type		slide:Train ;
+				slide:children	children
+			}
+		}
+	else
+		return ${
+			rdf:type			slide:Button ;
+			slide:bgcolor		"white" ;
+			slide:margin		"3" ;
+			slide:borderWidth	"1" ;
+			slide:backgroundHighlight	"90%" ;
+			#ozone:onClick ${ 
+			#	rdf:type 			ozone:AdenineCall ;
+			#	ozone:method		:onClickRemoveNavigationOption ;
+			#	ozone:parameters 	@( navOption currColl )
+			#} ;
+			#ozone:tooltip	"Broaden collection with the removal of this condition" ;
+			slide:child ${
+				rdf:type		slide:Train ;
+				slide:children	children
+			}
+		}
+
+
+method :onClickRemoveNavigationOption navigationModeValue prevColl
+	<navStudy:log> ':onClickRemoveNavigationOption Coll' prevColl
+	<navStudy:log> ':onClickRemoveNavigationOption' navigationModeValue
+	# *2*: create the collection definition
+	= newCollDefinitionRes (UniqueResource)
+
+	# put in the current collection definition
+	= prevCollDef (query {prevColl navView:collDef ?x ?x hs:member ?y} @(?y))
+	for defs in prevCollDef
+		add { newCollDefinitionRes hs:member defs[0] }
+
+	# now remove current from collection definition
+	remove newCollDefinitionRes hs:member navigationModeValue prevColl
+
+	navSupport:execAndNavToQuery newCollDefinitionRes
+
+
+method :onClickNavigationOption navigationModeValue ; adenine:precompile "true" ; adenine:preload "true"
+	<navStudy:log> ':onClickNavigationOption' navigationModeValue
+	= parentObj (extract navigationModeValue navView:currObj ?x)
+	:runQuery parentObj navigationModeValue
+
+# support for negation
+method :onClickNegNavigationOptionOperation :parentCollNavigationModeValue = navigationModeValue ;
+rdf:type				op:Operation ;
+dc:title				"Remove items containing suggestion from collection" ;
+op:primaryParameter		:parentCollNavigationModeValue ;
+ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/common/remove.gif> ;
+dc:description			"Remove items containing suggestion from collection"
+	<navStudy:log> ':onClickNegNavigationOptionOperation' navigationModeValue[0]
+	= parentObj (extract navigationModeValue[0] navView:currObj ?x)
+	:runQuery parentObj (navSupport:negNavigationOption navigationModeValue[0])
+
+method :onClickShowAllForRefinementNavigationOptionOperation :parentCollNavigationModeValue = navigationModeValue ;
+rdf:type				op:Operation ;
+dc:title				"Show all items with suggestion" ;
+op:primaryParameter		:parentCollNavigationModeValue ;
+ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/browseto.gif> ;
+dc:description			"Shows all items with given Navigation Value (does not refine)"
+	<navStudy:log> ':onClickShowAllForRefinementNavigationOptionOperation' navigationModeValue[0]
+
+	# build queryStatement here from navigation option / nav. mode value
+	= navOptionQueryCond (:buildQueryCondFromNavOption navigationModeValue[0])
+	= collTitle (navView:getTitle navigationModeValue[0])
+	= parentObj (extract navigationModeValue[0] navView:currObj ?x)
+	:runQuery parentObj (:buildNavOptionFromQueryAndTitle navOptionQueryCond collTitle)
+
+
+add { 
+	navView:RangedNavigationMode
+		rdf:type				rdfs:Class ;
+		rdf:type				daml:Class ;
+		rdfs:subClassOf			navView:NavigationMode ;
+		rdfs:label				"Ranged Navigation Mode"
+}
+
+add {
+	:RangedNavigationModeLineView rdfs:label "Ranged Navigation Mode Line Summary View"
+	:rangedNavigationModeLineViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+ 		rdf:type				navView:GroupedViewPart ;
+		ozone:viewDomain		:RangedNavigationModeLineView ;
+		#ozone:partDataGenerator	:presentRangedNavigationModeLineView ;
+		ozone:partDataGenerator	:GUIrangedNavigationModeLineSummarizer ;		
+		ozone:cachePartData		"true" ;
+		ozone:synchronous		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	navView:RangedNavigationMode hs:classView :RangedNavigationModeLineView 
+}
+
+method :presentRangedNavigationModeLineView res
+#; adenine:precompile "true" ; adenine:preload "true"
+
+	return	${	
+		rdf:type		slide:Paragraph ;
+		slide:children	@(
+			${	rdf:type		slide:Text ;
+				slide:fontBold	"true" ;
+				slide:text		(extract res dc:title ?x)
+			}
+			slide:colon
+			slide:space
+			${	rdf:type				slide:Text ;
+				slide:text				"from"
+			}
+			slide:space
+			${	rdf:type				ozone:Edit ;
+				ozone:text				(extract res navView:minElem ?x) ;
+				slide:color				"#426496" ;
+				ozone:width				"175" ;
+				ozone:registerService	:from
+			}
+			slide:space
+			slide:space
+			${	rdf:type				slide:Text ;
+				slide:text				"to"
+			}
+			slide:space
+			${	rdf:type				ozone:Edit ;
+				ozone:text				(extract res navView:maxElem ?x) ;
+				slide:color				"#426496" ;
+				ozone:width				"175" ;
+				ozone:registerService	:to
+			}
+			slide:space
+
+			slide:space
+			${	rdf:type					slide:Button ;
+				slide:highlightBorder		"true" ;
+				slide:borderColor			"lightGray" ;
+				slide:borderWidth			"1" ;
+				navView:currObj				(extract res navView:currObj ?x) ;
+				:pred						(extract res navView:pred ?x) ;
+				:title						(extract res dc:title ?x) ;
+				ozone:onClick				:rangedNavigationModeRunQuery ;
+				slide:child ${
+					rdf:type				slide:Train ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							slide:text		"Go!!"
+						}
+						slide:space
+						slide:leftParenthesis
+						${	rdf:type				slide:Text ;
+							slide:text				(extract res navView:collSize ?x)
+						}
+						slide:rightParenthesis
+					)
+				}
+			}
+		)
+	}
+
+method :GUIrangedNavigationModeLineSummarizer res
+
+	= rangeSelectorPart ${
+		rdf:type			slide:RangeSelector ;	
+		navView:rangeType	(extract res navView:rangeType ?x) ;
+		data:subject		(extract res navView:coll ?x) ;
+		data:predicate		(extract res navView:pred ?x) ;
+		navView:leftItem	"<l>" ;
+		navView:rightItem	"<r>"
+	}
+
+	return	${	
+		rdf:type		slide:Paragraph ;
+		slide:children	@(
+			${	rdf:type		slide:Text ;
+				slide:fontBold	"true" ;
+				slide:text		(extract res dc:title ?x)
+			}
+			slide:colon
+			rangeSelectorPart
+			slide:space
+			${	rdf:type					slide:Button ;
+				slide:highlightBorder		"true" ;
+				slide:borderColor			"lightGray" ;
+				slide:borderWidth			"1" ;
+				navView:currObj				(extract res navView:currObj ?x) ;
+				:pred						(extract res navView:pred ?x) ;
+				:title						(extract res dc:title ?x) ;
+				ozone:onClick				:rangedNavigationModeRunQuery ;
+				slide:child ${
+					rdf:type				slide:Train ;
+					slide:children @(
+						${	rdf:type				slide:Text ;
+							slide:text				"from"
+						}
+						slide:space
+						${	rdf:type				slide:Text ;
+							ozone:dataSource	${
+								rdf:type			data:LiteralPropertySource ;
+								data:subject		rangeSelectorPart ;
+								data:predicate		navView:leftItem
+							}
+						}
+						slide:space
+						${	rdf:type				slide:Text ;
+							slide:text				"to"
+						}
+						slide:space
+						${	rdf:type				slide:Text ;
+							ozone:dataSource	${
+								rdf:type			data:LiteralPropertySource ;
+								data:subject		rangeSelectorPart ;
+								data:predicate		navView:rightItem
+							}
+						}
+						slide:space
+						${	rdf:type				slide:Text ;
+							slide:text				"("
+						}
+						${	rdf:type				slide:Text ;
+							ozone:dataSource	${
+								rdf:type			data:LiteralPropertySource ;
+								data:subject		rangeSelectorPart ;
+								data:predicate		navView:count
+							}
+						}
+						${	rdf:type				slide:Text ;
+							slide:text				")"
+						}
+					)
+				}
+			}
+		)
+	}
+
+method :rangedNavigationModeRunQuery res
+
+	= fromVal (Literal ((__context__.getProperty :from).getContent))
+	= toVal (Literal ((__context__.getProperty :to).getContent))
+	= coll (extract res navView:currObj ?x)
+	= predicate (extract res :pred ?x)
+
+	= greaterThanMethod (queryExtract {predicate rdfs:range ?x ?y adenine:greaterThanMethod ?x} @(?y))[0]
+
+	= items (ask %{	
+					hs:member			coll	?x , 
+					predicate			?x		?y ,
+					greaterThanMethod	?y		fromVal ,
+					greaterThanMethod	toVal	?y
+				} @(?x))
+
+	= newTit (append 
+				((extract res :title ?x).getContent)
+				' from ' fromVal ' to ' toVal
+				)
+
+	= newColl (UniqueResource)
+	add {
+		newColl	rdf:type	hs:Collection ;
+				dc:title	newTit ;
+				hs:view		${ rdf:type ozone:CollectionView }
+	}
+
+	for item in items
+		add { newColl hs:member item[0] }
+
+	= prevObj (extract res navView:currObj ?x)
+	add { newColl query:prevObject prevObj }
+
+	(__context__.getProperty ozone:navigationMaster).requestViewing newColl
+
+
+add { 
+	navView:QueryNavigationMode
+	rdf:type				rdfs:Class ;
+		rdf:type				daml:Class ;
+		rdfs:subClassOf			navView:NavigationMode ;
+		rdfs:label				"Query Navigation Mode"
+}
+
+add {
+	:QueryNavigationModeLineView rdfs:label "Query Navigation Mode Line Summary View"
+	:queryNavigationModeLineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+ 		rdf:type				navView:GroupedViewPart ;
+ 		rdf:type				navView:AppletGroupedViewPart ;
+		ozone:viewDomain		:QueryNavigationModeLineView ;
+		ozone:partDataGenerator	:presentQueryNavigationModeLineView ;
+		#ozone:cachePartData		"true" ;
+		#ozone:synchronous		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	navView:QueryNavigationMode hs:classView :QueryNavigationModeLineView 
+}
+
+
+method :presentQueryNavigationModeLineView res
+	= queryTxt (UniqueResource)
+
+	uniqueMethod runQuery res
+		= prevObj (extract res navView:currObj ?x)
+		= queryTxtVal (Literal ((__context__.getProperty `queryTxt).getContent))
+		= navOption (navView:buildNestableNavOptionFromQueryAndTitle %{ text:contains ?x queryTxtVal } queryTxtVal)
+		add { navOption navView:containingTextQuery "true" ; navView:volatilePath "true" }
+		<navStudy:log> ':presentQueryNavigationModeLineView/runQuery' navOption
+		navView:runQuery prevObj navOption
+
+	return	${	
+		#rdf:type		slide:Slide ;
+		rdf:type		slide:Block ;
+		#slide:marginY	"3" ;
+		#slide:marginX	"7" ;
+		slide:height	"24" ;
+		slide:child ${
+			#rdf:type	slide:Train ;
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text		"Query"
+				}
+				slide:space
+				${	rdf:type				ozone:Edit ;
+					slide:color				"#426496" ;
+					slide:fontBold			"false" ;
+					ozone:width				"100" ;
+					ozone:registerService	queryTxt ;
+					navView:currObj			(extract res navView:currObj ?x) ;
+					:title					(extract res dc:title ?x) ;
+					ozone:onEnterPressed	runQuery ;
+				}
+				${	rdf:type				slide:Button ;
+					slide:highlightBorder	"true" ;
+					slide:borderColor		"black" ;
+					slide:borderWidth		"1" ;
+					#lide:width				"0" ;
+					#lide:margin			"3" ;
+					navView:currObj			(extract res navView:currObj ?x) ;
+					:title					(extract res dc:title ?x) ;
+					ozone:onClick			runQuery ;
+					slide:child ${
+						rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+					}
+				}
+			)
+		}
+	}
+
+
+
+add { 
+	navView:PromptNavigationMode
+		rdf:type			rdfs:Class ;
+		rdf:type			daml:Class ;
+		rdfs:subClassOf		navView:NavigationMode ;
+		rdfs:label			"Prompt Navigation Mode" ;
+		hs:classView		:PromptNavigationModeLineView 
+
+	:PromptNavigationModeLineView rdfs:label "Prompt Navigation Mode Line Summary View"
+	:processingNavigationModeLineViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		rdf:type				ozone:InteractiveViewPart ;
+ 		rdf:type				navView:GroupedViewPart ;
+		rdf:type				navView:CollectionViewEmbeddedViewPart ;
+		ozone:viewDomain		:PromptNavigationModeLineView ;
+		ozone:partDataGenerator	:presentPromptNavigationModeLineView ;
+		#ozone:cachePartData	"true" ;
+		#ozone:synchronous		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentPromptNavigationModeLineView res
+
+	return	${	
+		rdf:type		slide:Paragraph ;
+		slide:children	@(
+			${	rdf:type		slide:Text ;
+				slide:fontBold	"true" ;
+				slide:text		(extract res dc:title ?x)
+			}
+		)
+	}
+
+add { 
+	navView:NavigationMode
+		rdf:type				rdfs:Class ;
+		rdf:type				daml:Class ;
+		rdfs:label				"Navigation Advisor"
+
+	#navView:navMethodValues
+	#	rdf:type				daml:ObjectProperty ;
+	#	rdfs:label				"Number of items for classifier value" ;
+	#	rdfs:domain				navView:NavigationMode ;
+	#	rdfs:range				hs:Collection
+
+	:parentCollNavigationMode
+		rdf:type				op:Parameter ;
+		rdf:type				daml:ObjectProperty ;
+		dc:title				"Parent Collection Navigation Expert" ;
+		op:required				"true" ;
+		op:adenineCondition		:navModeCheckParentCollection ;
+		rdfs:range				navView:NavigationMode
+}
+
+method :navModeCheckParentCollection res
+	= navModeValue (queryExtract{res navView:navMethodValues ?x ?x hs:member ?y ?y navView:currObj ?z} @(?z))
+	if (== null navModeValue)
+		return false
+		return (contains navModeValue[0] rdf:type hs:Collection)
+
+method :subsetNavModeValues :parentCollNavigationMode = navMode ;
+rdf:type				op:Operation ;
+dc:title				"Select multiple navigation option values" ;
+op:primaryParameter		:parentCollNavigationMode ;
+ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/common/select.gif> ;
+dc:description			"Select Subset Navigation Mode Values for collection"
+
+	= navMode navMode[0]
+
+	= cont (UniqueResource)
+
+	uniqueMethod acceptor res
+		if (contains res rdf:type hs:Collection)
+			= newValues (query { res hs:member ?x })
+			for a in newValues
+				if (contains a[0] rdf:type hs:NavigationModeValue)
+					add { `cont hs:member a[0] }
+		else
+			add { `cont hs:member res }
+
+	uniqueMethod validator res
+		return (or (contains res rdf:type navView:NavigationModeValue) (contains res rdf:type hs:Collection))
+
+	uniqueMethod endTask c
+		contui:removeContinuation c
+		:runOrQuery `navMode c
+
+	add { cont
+		rdf:type		cont:Continuation ; 
+		rdf:type		task:Task ;
+		dc:title		"Add navigation mode values task" ; 
+		cont:acceptor	acceptor ; 
+		cont:validator	validator ;
+		cont:endTask	endTask ;
+		cont:dataSource	${
+			rdf:type		data:PredicateSetSource ;
+			data:subject	cont ;
+			data:predicate	hs:member
+		} ;
+		hs:view			${	rdf:type	:AddNavigationModeValuesContinuationPhraseSummaryView } ;
+		cont:origin		(extract navMode navView:navMethodValues ?x)
+	}
+
+	contui:addContinuation cont
+
+	#(__context__.getProperty ozone:navigationMaster).requestViewing (extract navMode navView:navMethodValues ?x)
+
+
+add { :addNavigationModeValuesContinuationPhraseSummaryViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+
+	ozone:viewDomain		:AddNavigationModeValuesContinuationPhraseSummaryView ;
+	ozone:partDataGenerator	:presentAddNavigationModeValuesContinuationPhrase ;
+	ozone:cachePartData		"true" ;
+	ozone:requiresViewInstance	"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+}
+
+method :presentAddNavigationModeValuesContinuationPhrase res
+	var dataSourceChildren
+
+	= dataSource (extract res cont:dataSource ?x)
+	if (!= null dataSource)
+		= dataSourceChildren ${
+			rdf:type			layout:Layout ;
+			ozone:dataSource	dataSource ;
+			layout:layoutConstraint ${ 
+				rdf:type				layout:RowStackerConstraint ;
+				ozone:viewPartClass		ozone:PhraseViewPart ;
+				layout:sortBy ${
+					rdf:type			data:SortingListSource ;
+					data:sortDataSource ${ rdf:type summary:TitleSource }
+				}
+			}
+		}
+	else
+		= dataSourceChildren slide:null
+		
+	return ${ 
+		rdf:type		slide:Paragraph ;
+		slide:children	@(
+			${	rdf:type			summary:Title ;
+				slide:fontBold		"true"
+			}
+			slide:line
+			${	rdf:type	slide:Text ;
+				slide:text	"The following information is required to complete this task. Drag and drop items into the bin below."
+			}
+			slide:break
+			${	rdf:type	slide:Paragraph ;
+				slide:children @(
+					${	rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/types/continuation.gif>
+					}
+					slide:space
+					${	rdf:type			summary:Title
+					}
+					${	rdf:type	slide:Text ;
+						slide:text	":"
+					}
+					${	rdf:type			slide:Block ;
+						slide:marginLeft	16 ;
+						slide:child			dataSourceChildren
+					}
+					slide:break
+				)
+			}
+			${	rdf:type		slide:Paragraph ;
+				slide:alignX	"right" ;
+				slide:children	@(
+					slide:line
+					${	rdf:type					slide:Button ;
+						slide:highlightBorder		"true" ;
+						slide:borderWidth			"1" ;
+						ozone:onClick	${ 
+							rdf:type 			ozone:AdenineCall ;
+							ozone:method		contui:removeContinuation ;
+							ozone:parameters 	@( res )
+						} ;
+						slide:child ${
+							rdf:type				slide:Train ;
+							slide:children @(
+								${	rdf:type			slide:Image ;
+									slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+								}
+								slide:space
+								${	rdf:type		slide:Text ;
+									slide:text		"Cancel task"
+								}
+							)
+						}
+					}
+					slide:space
+					${	rdf:type					slide:Button ;
+						slide:highlightBorder		"true" ;
+						slide:borderWidth			"1" ;
+						ozone:onClick				${ rdf:type ozone:Hyperlink ; ozone:target (extract res cont:origin ?x) } ;
+						slide:child ${
+							rdf:type				slide:Train ;
+							slide:children @(
+								${	rdf:type			slide:Image ;
+									slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/back.gif>
+								}
+								slide:space
+								${	rdf:type		slide:Text ;
+									slide:text		"Return"
+								}
+							)
+						}
+					}
+					slide:space
+					${	rdf:type					slide:Button ;
+						slide:highlightBorder		"true" ;
+						slide:borderWidth			"1" ;
+						ozone:onClick	${ 
+							rdf:type 			ozone:AdenineCall ;
+							ozone:method		(extract res cont:endTask ?x) ;
+							ozone:parameters 	@( res )
+						} ;
+						slide:child ${
+							rdf:type				slide:Train ;
+							slide:children @(
+								${	rdf:type			slide:Image ;
+									slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+								}
+								slide:space
+								${	rdf:type		slide:Text ;
+									slide:text		"Complete task"
+								}
+							)
+						}
+					}
+					slide:break
+					slide:break
+					slide:break
+				)
+			}
+		)
+	}
+	
+
+add {
+	navView:NavigationMode hs:classView :NavigationModeLineView 
+
+	:NavigationModeLineView rdfs:label "Navigation Mode Line Summary View"
+	:navigationModeLineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		ozone:viewDomain		:NavigationModeLineView ;
+		ozone:partDataGenerator	:presentNavigationModeLineView ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		ozone:synchronous		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+	}
+
+method :presentTemplatedNavigationModeLineView res optionsViewPart
+	= viewPart (__context__.getLocalProperty ozone:part)
+	
+	#= titleBreak false
+	= titleBreakRes slide:space
+	= bottomMargin "1"
+	if (== viewPart :navigationModeAppletGroupedLineViewPart)
+		# applet are shown on multiple lines
+		#= titleBreak true
+		= titleBreakRes slide:newLine
+		= bottomMargin "6"
+
+	= initVisCount 5
+	if (== viewPart :collectionViewEmbeddedViewPart)
+		= initVisCount 25
+	
+
+	= navigationOptions (UniqueResource)
+	= navigationOptionsData (UniqueResource)
+	= navOptionsColl (extract res navView:navMethodValues ?x)
+
+	= moreItems (UniqueResource)
+	
+	uniqueMethod getSortedInlineConstraint visCnt
+		return ${
+				rdf:type			layout:InlineConstraint ;
+				ozone:viewPartClass	`optionsViewPart ;
+				layout:sortBy ${
+					rdf:type			data:SortingListSource ;
+					data:sortDataSource ${ rdf:type summary:TitleSource }
+				} ;
+				layout:itemsCountCollection ${
+					rdf:type		data:PredicateSetSource ;
+					data:subject	`navOptionsColl ;
+					data:predicate	hs:member	
+				} ;
+				layout:maxVisibleCount	visCnt ;
+				#layout:lastSeparator	slide:comma ;
+				layout:lastSeparator ${
+					rdf:type		slide:Span ;
+					slide:children	@( slide:comma slide:space )
+				} ;
+				layout:moreItems `moreItems
+		}
+	
+	uniqueMethod showMoreNavigationOptions
+		#replace `layout layout:layoutConstraint ?x `listViewStackerConstraint
+		#navView:browseToNavOptionsCollectionResource
+		#= curConstraint (extract `navigationOptions layout:layoutConstraint ?x)
+		= curVisCount (extract `navigationOptionsData data:itemsCount ?x)
+		= newVisCount (+ (Integer.parseInt (curVisCount.getContent)) 5)
+		replace `navigationOptions layout:layoutConstraint ?x (`getSortedInlineConstraint newVisCount)
+		replace `navigationOptionsData data:itemsCount ?x newVisCount
+		
+	add { moreItems
+		rdf:type		slide:Text ;
+		slide:text		"..." ;
+		ozone:tooltip	"More items" ;
+		ozone:onClick	showMoreNavigationOptions
+	}
+
+	
+	add { navigationOptions
+			rdf:type				layout:Layout ;
+			layout:layoutConstraint (getSortedInlineConstraint initVisCount) ;
+			ozone:dataSource		navigationOptionsData ;
+	}
+	add { navigationOptionsData
+			rdf:type			data:ListHeadSource ;
+			data:itemsCount		initVisCount ;
+			ozone:dataSource ${
+				rdf:type			data:SortingListSource ;
+				data:sortValueType	xsd:float ;
+				data:sortOrder		"descending" ;
+				data:sortDataSource	${ 
+					rdf:type		data:LiteralPropertySource ; 
+					data:predicate	navView:sortAttrib ; 
+					data:default	"0.0" ;
+				} ;
+				ozone:dataSource ${
+					rdf:type		data:PredicateSetSource ;
+					data:subject	navOptionsColl ;
+					data:predicate	hs:member	
+				} ;
+			} ;
+	}
+
+	return	${
+		rdf:type			slide:Block ;
+		slide:marginBottom	bottomMargin ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			#ozone:putLocalProperty	${ ozone:name ozone:underlying ; ozone:value res } ;
+			#ozone:putLocalProperty	${ ozone:name navView:coll ; ozone:value res } ;
+			ozone:putProperty		${ ozone:name navView:coll ; ozone:value res } ;
+			slide:children	@(
+				${	rdf:type		slide:Span ;
+					slide:fontBold	"true" ;
+					slide:children @(
+						${	rdf:type				ozone:ViewContainer ;
+							ozone:viewPartClass		ozone:InactiveInlineViewPart ;
+							ozone:initialResource	res ;
+						}
+					)
+				}
+				slide:colon
+				#slide:space
+				titleBreakRes
+				navigationOptions
+			)
+		}
+	}
+
+
+method :presentNavigationModeLineView res
+	return (:presentTemplatedNavigationModeLineView res navView:NavInlineViewPart)
+
+
+add {
+	# grouped view for nav. mode options
+	navView:NavigationMode hs:classView :navigationModeGroupedLineView
+
+	:navigationModeGroupedLineView	rdfs:label	"Navigation Expert Grouped View"
+	:navigationModeGroupedLineViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+ 		rdf:type				navView:GroupedViewPart ;
+		ozone:viewDomain		:navigationModeGroupedLineView ;
+		ozone:partDataGenerator	:presentNavigationModeGroupedLineView  ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	navView:NavigationMode hs:classView :navigationModeAppletGroupedLineView
+	:navigationModeAppletGroupedLineView	rdfs:label	"Navigation Expert Applet Grouped View"
+	:navigationModeAppletGroupedLineViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+ 		rdf:type				navView:AppletGroupedViewPart ;
+		ozone:viewDomain		:navigationModeAppletGroupedLineView ;
+		ozone:partDataGenerator	:presentNavigationModeGroupedLineView  ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	# view when users browse to resource
+	navView:NavigationMode hs:classView :collectionViewEmbeddedView 
+	:collectionViewEmbeddedView rdfs:label "Collection View for the grouped navigation method"
+	:collectionViewEmbeddedViewPart
+    	rdf:type				ozone:SWTPart ;
+    	rdf:type				ozone:Part ;
+    	rdf:type				ozone:ViewPart ;
+    	rdf:type				:CollectionViewEmbeddedViewPart ;
+		ozone:viewDomain		:collectionViewEmbeddedView ;
+		ozone:partDataGenerator	:presentNavigationModeGroupedLineView ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		ozone:synchronous		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+}
+
+method :presentNavigationModeGroupedLineView res
+	if (contains res rdf:type navView:groupByPred)
+		return (:presentTemplatedNavigationModeLineView res navView:GroupedByPredViewPart)
+	else
+		return (:presentTemplatedNavigationModeLineView res navView:NavInlineViewPart)
+
+method :disableNavigationAdvisor navMethod
+	#print '**************** in disableNavigationAdvisor:' navMethod
+	= navAdvisors  ( query {navMethod navView:agentSource ?x} @(?x) )
+	for n in navAdvisors
+		print '  **************** disabling: ' n[0]
+		replace n[0] navAgent:enabled ?x "false"
+
+add { navView:GroupedNavigationMode
+	rdf:type				rdfs:Class ;
+	rdf:type				daml:Class ;
+	rdfs:label				"Navigation Mode" ;
+	rdfs:subClassOf			navView:NavigationMode ;
+	task:deactivateMethod	:disableNavigationAdvisor ;
+}
+
+# line view
+add {
+	navView:GroupedNavigationMode hs:classView :GroupedNavigationModeLineView 
+	:GroupedNavigationModeLineView rdfs:label "Grouped Navigation Mode Line Summary View"
+	:groupedNavigationModeLineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		ozone:viewDomain		:GroupedNavigationModeLineView ;
+		ozone:partDataGenerator	:presentGroupedNavigationModeLineAppletView ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		ozone:synchronous		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+
+	navView:GroupedNavigationMode hs:classView :GroupedNavigationModeAppletView 
+	:GroupedNavigationModeAppletView rdfs:label "Grouped Navigation Mode Applet View"
+	:groupedNavigationModeAppletViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:AppletViewPart ;
+		rdf:type				taskui:TaskPaneTaskContentsViewPart ;
+		ozone:viewDomain		:GroupedNavigationModeAppletView ;
+		ozone:partDataGenerator	:presentGroupedNavigationModeLineAppletView ;
+		ozone:cachePartData		"true" ;
+		ozone:requiresViewInstance	"true" ;
+		ozone:synchronous		"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentGroupedNavigationModeLineAppletView res
+	= viewPart (__context__.getLocalProperty ozone:part)
+	
+	= displayTitle true
+	= childrenViewPart navView:GroupedViewPart
+	if (== viewPart :groupedNavigationModeAppletViewPart)
+		# applet are shown with in context
+		= displayTitle false
+		= childrenViewPart navView:AppletGroupedViewPart
+		
+		
+	= childrenCollection ${
+		rdf:type			slide:Block ;
+		slide:marginLeft	"10" ;
+		slide:marginBottom	"2" ;
+		slide:child ${
+			rdf:type			layout:Layout ;
+			layout:layoutConstraint ${
+				rdf:type				layout:RowStackerConstraint ;
+				ozone:viewPartClass		childrenViewPart ;
+				layout:sortBy ${
+					rdf:type				data:SortingListSource ;
+					data:sortValueType		xsd:float ;
+					data:sortOrder			"descending" ;
+					data:sortDataSource		${ rdf:type data:LiteralPropertySource ; data:predicate navView:sortAttrib ; data:default "0.0" }
+				} ;
+				#layout:sortBy			${
+				#	rdf:type			data:SortingListSource ;
+				#	data:sortDataSource ${ rdf:type summary:TitleSource }
+				#}
+			} ;
+			layout:maxVisibleCount "20" ;
+			ozone:dataSource ${
+				rdf:type		data:PredicateSetSource ;
+				data:subject	(extract res navView:navMethodValues ?x) ;
+				data:predicate	hs:member
+			}
+		}
+	}
+
+	if displayTitle
+		return	${	
+			rdf:type		slide:Paragraph ;
+			slide:children	@(
+				${	rdf:type		slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text		(extract res dc:title ?x)
+				}
+				slide:newLine
+				childrenCollection
+			)
+		}
+	else
+		return	${	
+			rdf:type		slide:Paragraph ;
+			slide:children	@(
+				childrenCollection
+			)
+		}
+	
+
+# embedded collection view
+add {
+	navView:GroupedNavigationMode hs:classView :GroupedNavModeCVEView 
+	:GroupedNavModeCVEView rdfs:label "Grouped Navigation Mode Line Summary View"
+	:groupedNavModeCVEViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InteractiveViewPart ;
+		rdf:type				navView:CollectionViewEmbeddedViewPart ;
+		ozone:viewDomain		:GroupedNavModeCVEView ;
+		ozone:partDataGenerator	:presentGroupedNavModeCVEView ;
+		ozone:cachePartData			"true" ;
+		ozone:requiresViewInstance	"true" ;
+		ozone:synchronous			"true" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+
+method :presentGroupedNavModeCVEView res
+	#print '************************* in :presentGroupedNavModeCVEView' res
+	#print '*** in presentGroupedNavModeCVEView ***'
+	#print '*** in presentGroupedNavModeCVEView ***'
+
+	= groupedNavModesColl (extract res nav:navMethodValues ?x)	
+	= groupedNavModesCollViewInstance ${
+		rdf:type		ozone:CollectionView ;
+		cv:preview		"false" ;
+		cv:initialLayoutConstraint ${
+			rdf:type			layout:VerticalFlowConstraint ;
+			ozone:viewPartClass	navView:CollectionViewEmbeddedViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			} ;
+		}
+	}
+	add { groupedNavModesColl 
+			hs:view		groupedNavModesCollViewInstance ;
+			rdf:type	hs:Collection ;
+	}
+	
+    return	${	
+    	rdf:type			slide:RowSet ;
+    	slide:children @(
+			${	rdf:type		slide:Block ;
+				slide:marginX	"10" ;
+				slide:marginY	"10" ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+	            			slide:fontBold	"true" ;
+		        			slide:text		(extract res dc:title ?x)
+						}
+	            		slide:colon
+					)
+				}
+			}
+        	${ 	rdf:type				ozone:ViewContainer ;
+        		ozone:initialResource	groupedNavModesColl ;
+        		ozone:initialView		groupedNavModesCollViewInstance ;
+				#ozone:viewPartClass	ozone:InteractiveViewPart
+        		#ozone:viewPartClass	ozone:CollectionView
+        	}
+    	)
+    }
+
+##### search bar
+add { 
+navView:searchBar
+	dc:title					"Search Bar" ;
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					frame:ToolbarItemViewPart ;
+	rdf:type					frame:ToolbarViewPart ;
+	ozone:viewDomain			navView:SearchBarView ;
+	hs:view						${ rdf:type navView:SearchBarView } ;
+	ozone:partDataGenerator		:presentSearchBarToolbarView ;
+#	ozone:cachePartData			"true" ;
+	ozone:synchronous			"true" ;
+	hs:javaImplementation ${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+}
+
+method :presentSearchBarToolbarView
+	= id (UniqueResource)
+
+	uniqueMethod go
+		= srchText (Literal ((__context__.getProperty `id).getContent))
+		<navStudy:log> ':presentSearchBarToolbarView/go' srchText
+		navView:runQuery null (navView:buildNavOptionFromQueryAndTitle 
+											%{ text:contains ?x srchText } 
+											(append 'Results for searching: ' srchText)
+								)
+
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:marginY	"3" ;
+		slide:marginX	"7" ;
+		slide:height	"24" ;
+		slide:child ${
+			rdf:type	slide:Train ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Search for"
+				}
+				slide:space
+				${	rdf:type	slide:Train ;
+					slide:children @(
+						${	rdf:type				ozone:Edit ;
+							slide:color				"#426496" ;
+							slide:fontBold			"false" ;
+							ozone:width				"150" ;
+							ozone:registerService	id ;
+							ozone:onEnterPressed	go
+						}
+						${	rdf:type					slide:Button ;
+							slide:highlightBorder		"true" ;
+							slide:borderColor			"lighterGray" ;
+							slide:borderWidth			"1" ;
+							ozone:onClick				go ;
+							slide:child ${
+								rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/go.gif>
+							}
+						}
+					)
+				}
+			)
+		}
+	}
+
+
+
+### needs an appropriate place to move to
+@prefix collRefExperts: <http://haystack.lcs.mit.edu/navigaion/collectionRefinementExperts#>
+method collRefExperts:cacheCollectionRefinementOptions res
+	#print 'Caching collection refinement options has been disabled'
+	uniqueMethod addCachedRefinementData expertRes	nav:setGroupedExpert = setGroupedExpert
+		replace `res navView:cachedRefinementData ?x expertRes
+	uniqueMethod removeCachedRefinementData expertRes
+		remove `res navView:cachedRefinementData expertRes
+	collRefExperts:getCollectionRefinementExpert res nav:addExpertConsumer = addCachedRefinementData nav:removeExpertConsumer = removeCachedRefinementData
+	
+	# any customize options?
+	= custMeth (extract res nav:customizeRefinementData ?x)
+	if (!= null custMeth)
+		custMeth res

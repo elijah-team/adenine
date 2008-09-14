@@ -1,0 +1,132 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+
+# Haystack Filesystem Agent
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/agents/fs> 
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#> 
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	:			<http://haystack.lcs.mit.edu/agents/fs#> 
+
+
+add { :File
+	rdf:type	daml:Class ;
+	rdfs:label	"File"
+}
+
+add { :FilesystemAgent
+	rdf:type		daml:Class ;
+	rdfs:label		"Filesystem agent" ;
+	rdfs:subClassOf	config:Service
+}
+
+add { :filename
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Filename" ;
+	rdfs:domain		:File ;
+	rdfs:range		xsd:string
+}
+
+add { :lastModifiedTime
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Last modified time" ;
+	rdfs:domain		:File ;
+	rdfs:range		xsd:dateTime
+}
+
+add { :size
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Size" ;
+	rdfs:domain		:File ;
+	rdfs:range		xsd:int
+}
+
+add { :mountedPath
+	rdf:type	daml:DatatypeProperty ;
+	rdfs:label	"Paths visible to Haystack" ;
+	rdfs:domain	:FilesystemAgent ;
+	rdfs:range	xsd:string
+}
+
+# add { :underlyingPath ???
+# add { :mountedDirectory ???
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	if (== null (extract ?x rdf:type :FilesystemAgent))
+		= agent ${
+			dc:title		"File system" ;
+			dc:description	"Bring files, documents, images, and multimedia files located on your computer into your Haystack." ;
+			rdf:type		config:Service ;
+			rdf:type		content:ContentService ;
+			rdf:type		:FilesystemAgent ;
+			config:singleton "true" ;
+			wsdl:port ${
+				rdf:type wsdl:Port ;
+				wsdl:binding ${
+					rdf:type	wsdl:Binding ;
+					rdf:type	config:JavaBinding ;
+					wsdl:type ${
+						rdf:type wsdl:PortType ;
+						config:javaInterface ${
+							rdf:type hs:JavaClass ;
+							hs:className "edu.mit.lcs.haystack.server.core.rdfstore.IRDFStore"
+						} 
+					} 
+				} 
+			} ;
+			hs:javaImplementation ${
+				rdf:type hs:JavaClass ;
+				hs:pluginName "edu.mit.csail.haystack.fs" ;
+				hs:className "edu.mit.lcs.haystack.server.extensions.fs.FilesystemAgent"
+			} ;
+			hs:user			user ;
+			hs:view			${ rdf:type frame:DropdownToolbarView }
+		} 
+		
+		add { server config:hostsService agent }
+		add { opdata:startingPoints hs:member agent }
+
+add { :Directory
+	rdf:type	rdfs:Class ;
+	rdf:type	daml:Class ;
+	rdfs:label	"Directory"
+}
+
+add { :child
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Contained file" ;
+	rdfs:domain		:Directory ;
+	rdfs:range		content:FilesystemContent
+}
+
+

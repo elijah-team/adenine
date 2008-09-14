@@ -1,0 +1,840 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Eclipse task pane UI
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/taskPane>
+
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix	eclipse:	<http://haystack.lcs.mit.edu/ui/eclipse#> 
+@prefix status:		<http://haystack.lcs.mit.edu/ui/status#>
+@prefix op:			<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix dc:			<http://purl.org/dc/elements/1.1/>
+@prefix opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/taskPane#> 
+
+#############################################################################################
+# Task pane
+
+add { :taskListDataSource
+	rdf:type		data:HSListSource ;
+	ozone:dataSource ${
+		rdf:type			data:ResourcePropertySource ;
+		ozone:dataSource	data:currentUserSource ;
+		data:predicate		frame:startPaneCollection
+	}
+}
+
+add { :taskPaneView
+	rdf:type		slide:Slide ;
+	slide:bgcolor	"white" ;
+	slide:color		"black" ;
+	slide:child ${
+		rdf:type			ozone:ViewContainer ;
+		ozone:viewPartClass	:MainTaskPaneViewPart ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			ozone:dataSource	data:currentUserSource ;
+			data:predicate		frame:startPaneCollection
+		}
+	}
+}
+
+add { hs:List
+	hs:classView	:TaskPaneView
+}
+
+add { :taskPaneViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:MainTaskPaneViewPart ;
+	ozone:viewDomain		:TaskPaneView ;
+	ozone:cacheStyle		ozone:cacheDisabled ;
+	ozone:template ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:HSListSource ;
+			ozone:dataSource	data:underlyingSource
+		} ;
+		layout:layoutConstraint ${
+			rdf:type				layout:VerticalFlowConstraint ;
+			ozone:viewPartClass		:TaskPaneViewPart
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+}
+
+#############################################################################################
+# Default hierarchical view part
+
+add { daml:Thing
+	hs:classView	:DefaultHierarchicalView
+}
+
+add { :defaultHierarchicalViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:HierarchicalViewPart ;
+	ozone:viewDomain		:DefaultHierarchicalView ;
+	ozone:template ${
+		rdf:type			slide:ColumnSet ; 
+		slide:children	@(
+			${	rdf:type	slide:Block ;
+				slide:width	"33" ;
+				slide:child	slide:space
+			}
+			${	rdf:type			ozone:ViewContainer ;
+				ozone:viewPartClass	ozone:PhraseViewPart ;
+				ozone:dataSource	data:underlyingSource
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } 
+}
+
+#############################################################################################
+# Default task pane view part
+
+add { :defaultTaskPaneHeader
+	rdf:type				slide:RowSet ;
+	slide:children @(
+		${	rdf:type				slide:Block ;
+			slide:background		<http://haystack.lcs.mit.edu/data/ozone/frame/horizontalBlocks.png> ;
+			slide:backgroundRepeat	"both" ;
+			slide:height			"7" ;
+			slide:cropChildWidth	"true" ;
+			slide:child				slide:null
+		}
+		${	rdf:type				slide:Block ;
+			slide:color				"#274683" ;
+			slide:fontSize			"150%" ;
+			slide:fontBold			"true" ;
+			slide:marginX			"13" ;
+			slide:marginBottom		"7" ;
+			slide:cropChildWidth	"true" ;
+			slide:child ${
+				rdf:type	slide:ColumnSet ;
+				slide:children @(
+					${	rdf:type	summary:MediumIcon
+					}
+					${	rdf:type			slide:Block ;
+						slide:marginLeft	"10" ;
+						slide:marginTop		"20" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type			ozone:ViewContainer ;
+									ozone:dataSource	data:underlyingSource ;
+									ozone:viewPartClass	ozone:InlineViewPart
+								}
+							)
+						}
+					}
+				)
+			}
+		}
+	)
+}
+
+add { daml:Thing hs:classView :DefaultTaskPaneView }
+
+add { :defaultTaskPaneViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneViewPart ;
+	ozone:viewDomain		:DefaultTaskPaneView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:RowSet ;
+		slide:children @(
+			:defaultTaskPaneHeader
+			${	rdf:type				slide:Block ;
+				slide:marginX			"10" ;
+				slide:cropChildWidth	"true" ;
+				slide:child ${
+					rdf:type			ozone:ViewContainer ;
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:AppletViewPart
+				}
+			}
+		)
+	}
+}
+
+#############################################################################################
+# Collection task pane view part
+
+add { hs:Collection hs:classView :CollectionTaskPaneView }
+add { hs:List hs:classView :CollectionTaskPaneView }
+add { data:CollectionDataSet hs:classView :CollectionTaskPaneView }
+
+add { :emptyPartData
+	rdf:type		slide:Text ;
+	slide:text		"No items; drop items here to add" ;
+	slide:color		"gray"
+}
+
+add { :collectionTaskPaneViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneViewPart ;
+	ozone:viewDomain		:CollectionTaskPaneView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:RowSet ;
+		slide:children @(
+			:defaultTaskPaneHeader
+			${	rdf:type	slide:RowSet ;
+				slide:pack	"bottom" ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:marginX			"10" ;
+						slide:cropChildWidth	"true" ;
+						slide:child ${
+							rdf:type					ozone:DataProviderHost ;
+							ozone:hostedDataProvider	eclipse:selectionSource ;
+							ozone:propertyName			lensui:underlyingSource ;
+							slide:child ${
+								rdf:type			layout:Layout ;
+								ozone:dataSource	cv:listDataSource ;
+								layout:layoutConstraint ${ 
+									rdf:type				layout:RowStackerConstraint ;
+									layout:emptyPartData	:emptyPartData ;
+									ozone:viewPartClass		:HierarchicalViewPart
+								}
+							}
+						}
+					}
+					${	rdf:type		slide:Block ;
+						slide:margin	"10" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type	slide:ColumnSet ;
+									slide:children @(
+										${	rdf:type			slide:Image ;
+											slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+										}
+										${	rdf:type		slide:Block ;
+											slide:margin	"3" ;
+											slide:color		"#274683" ;
+											ozone:onClick	:addItem ;
+											slide:fontBold	"true" ;
+											slide:child ${
+												rdf:type				slide:Paragraph ;
+												slide:children @(
+													${	rdf:type		slide:Text ;
+														slide:text		"Navigate to an item of interest, then" ;
+														slide:fontBold	"false" ;
+														slide:color		"darkerGray"
+													}
+													slide:space
+													${	rdf:type	slide:Text ;
+														slide:text	"click here to add" ;
+														slide:color	"darkerGray" 
+													}
+													slide:space
+													${	rdf:type			ozone:ViewContainer ;
+														ozone:dataSource	eclipse:selectionSource ;
+														ozone:viewPartClass	ozone:InactiveInlineViewPart
+													}
+													slide:space
+													${	rdf:type	slide:Text ;
+														slide:text	"to" ;
+														slide:color	"darkerGray"
+													}
+													slide:space
+													${	rdf:type			ozone:ViewContainer ;
+														ozone:dataSource	data:underlyingSource ;
+														ozone:viewPartClass	ozone:InactiveInlineViewPart
+													}
+												)
+											}
+										}
+									)
+								}
+								slide:newLine
+								:openButton
+								slide:newLine
+								:doneButton
+							)
+						}
+					}
+				)
+			}
+		)
+	}
+}
+
+add { :openButton
+	rdf:type	slide:ColumnSet ;
+	slide:children @(
+		${	rdf:type			slide:Image ;
+			slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+		}
+		${	rdf:type		slide:Block ;
+			slide:margin	"3" ;
+			slide:color		"#274683" ;
+			ozone:onClick	ozone:underlyingHyperlink ;
+			slide:fontBold	"true" ;
+			slide:child ${
+				rdf:type				slide:Paragraph ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						slide:text	"Open" ;
+						slide:color	"darkerGray" 
+					}
+					slide:space
+					${	rdf:type			ozone:ViewContainer ;
+						ozone:dataSource	data:underlyingSource ;
+						ozone:viewPartClass	ozone:InactiveInlineViewPart
+					}
+					slide:space
+					${	rdf:type		slide:Text ;
+						slide:text		"in a new window" ;
+						slide:fontBold	"false" ;
+						slide:color		"darkerGray"
+					}
+				)
+			}
+		}
+	)
+}
+
+add { :doneButton
+	rdf:type	slide:ColumnSet ;
+	slide:children @(
+		${	rdf:type			slide:Image ;
+			slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+		}
+		${	rdf:type		slide:Block ;
+			slide:margin	"3" ;
+			slide:color		"#274683" ;
+			ozone:onClick	:done ;
+			slide:fontBold	"true" ;
+			slide:child ${
+				rdf:type				slide:Paragraph ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						slide:text	"I'm done working with" ;
+						slide:color	"darkerGray" 
+					}
+					slide:space
+					${	rdf:type			ozone:ViewContainer ;
+						ozone:dataSource	data:underlyingSource ;
+						ozone:viewPartClass	ozone:InactiveInlineViewPart
+					}
+				)
+			}
+		}
+	)
+}
+
+method :done
+	frame:removeFromStartPaneCollection (data:getUnderlying)
+
+method :addItem
+	cv:addToCollectionOperation cv:collectionDNDDragSource = @((eclipse:getSelection)) cv:collectionTarget = @((data:getUnderlying))
+
+add { :collectionTarget
+	rdfs:label	"Collection/list to add to" ;
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	rdf:type	daml:UniqueProperty ;
+	op:required	"true" ;
+	rdfs:range	hs:List ;
+	rdfs:range	hs:Collection
+}
+
+method :addExistingItems :collectionTarget = targets ;
+rdf:type			op:Operation ;
+op:primaryParameter	:collectionTarget ;
+dc:title			"Add existing items"
+	frame:addToStartPaneCollection targets[0]
+
+#############################################################################################
+# Collection hierarchical view part
+
+add { hs:Collection hs:classView :HierarchicalCollectionView }
+add { hs:List hs:classView :HierarchicalCollectionView }
+add { data:CollectionDataSet hs:classView :HierarchicalCollectionView }
+
+add { :checkbox
+	rdf:type		slide:Block ;
+	slide:maxWidth	"15" ;
+	slide:child ${
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	rdf:type	slide:Checkbox ;
+				slide:children @(
+				) ;
+				ozone:dataSource ${
+					rdf:type				data:StatementExistenceSource ;
+					data:subjectDataSource	data:underlyingSource ;
+					data:predicate			hs:member ;
+					data:objectDataSource	lensui:underlyingSource
+				}
+			}
+		)
+	}
+}
+
+add { :collectionHierarchicalViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:HierarchicalViewPart ;
+	ozone:viewDomain		:HierarchicalCollectionView ;
+	ozone:template ${
+		rdf:type				ozone:MultiplexPartContainer ;
+		ozone:children @(
+			${	rdf:type					slide:Block ;
+				slide:child ${
+					rdf:type	slide:ColumnSet ;
+					slide:children @(
+						${	rdf:type					slide:Button ;
+							slide:margin				"3" ;
+							ozone:onClick				ozone:showMultiplexPart1 ;
+							slide:child	${
+								rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/plus.gif> ;
+								slide:textAlign	"center"
+							}
+						}
+						slide:nonwrappingSpace
+						:checkbox
+						${ rdf:type summary:Icon }
+						slide:nonwrappingSpace
+						${	rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type		summary:Title ; 
+									ozone:onClick	ozone:underlyingHyperlink 
+								}
+								slide:space
+								${	rdf:type	slide:Train ;
+									slide:children @(
+										slide:leftParenthesis
+										${	rdf:type			slide:Text ;
+											slide:defaultText	"0" ;
+											ozone:dataSource ${
+												rdf:type			data:SetSizeSource ;
+												ozone:dataSource	cv:naturalDataSource
+											}
+										}
+										slide:space
+										${	rdf:type	slide:Text ;
+											slide:text	"items"
+										}
+										slide:rightParenthesis
+									)
+								}
+							)
+						}
+					)
+				}
+			}
+			${	rdf:type					slide:Block ;
+				slide:marginBottom			"3" ;
+				slide:child ${
+					rdf:type				slide:RowSet ;
+					slide:children @(
+						${	rdf:type	slide:ColumnSet ;
+							slide:children @(
+								${	rdf:type					slide:Button ;
+									slide:margin				"3" ;
+									ozone:onClick				ozone:showMultiplexPart0 ;
+									slide:child	${
+										rdf:type		slide:Image ;
+										slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/minus.gif> ;
+										slide:textAlign	"center"
+									}
+								}
+								slide:nonwrappingSpace
+								:checkbox
+								${ rdf:type summary:Icon }
+								slide:nonwrappingSpace
+								${	rdf:type	slide:Paragraph ;
+									slide:children @(
+										${	rdf:type		summary:Title ; 
+											ozone:onClick	ozone:underlyingHyperlink 
+										}
+									)
+								}
+							)
+						}
+						${	rdf:type			slide:Block ;
+							slide:marginLeft	"20" ;
+							slide:marginTop		"1" ;
+							slide:child ${
+								rdf:type			layout:Layout ;
+								ozone:dataSource	cv:listDataSource ;
+								layout:layoutConstraint ${ 
+									rdf:type				layout:RowStackerConstraint ;
+									layout:emptyPartData	:emptyPartData ;
+									ozone:viewPartClass		:HierarchicalViewPart
+								}
+							}
+						}
+					)
+				}
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Category set task pane view part
+#[
+add { hs:CategorizationScheme hs:classView :CategorySetTaskPaneView }
+
+add { :categorySetTaskPaneViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneViewPart ;
+	ozone:viewDomain		:CategorySetTaskPaneView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:RowSet ;
+		slide:children @(
+			:defaultTaskPaneHeader
+			${	rdf:type		slide:Block ;
+				slide:margin	"10" ;
+				slide:marginTop	"0" ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:color	"#274683" ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Use the checkboxes below to categorize" ;
+							slide:color	"black" 
+						}
+						slide:space
+						${	rdf:type			ozone:ViewContainer ;
+							ozone:dataSource	eclipse:selectionSource ;
+							ozone:viewPartClass	ozone:InactiveInlineViewPart
+						}
+						slide:colon
+					)
+				}
+			}
+			${	rdf:type	slide:RowSet ;
+				slide:pack	"last" ;
+				slide:children @(
+					${	rdf:type				slide:Block ;
+						slide:marginX			"10" ;
+						slide:cropChildWidth	"true" ;
+						slide:child				:categorySetCheckboxBlock
+					}
+					${	rdf:type		slide:Block ;
+						slide:margin	"10" ;
+						slide:child ${
+							rdf:type	slide:Paragraph ;
+							slide:children @(
+								:doneButton
+							)
+						}
+					}
+				)
+			}
+		)
+	}
+}
+
+add { :categorySetCheckboxBlock
+	rdf:type					ozone:DataProviderHost ;
+	ozone:hostedDataProvider	eclipse:selectionSource ;
+	ozone:propertyName			lensui:underlyingSource ;
+	slide:child ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			ozone:dataSource	data:underlyingSource ;
+			data:predicate		hs:member
+		} ;
+		layout:layoutConstraint ${ 
+			rdf:type				layout:RowStackerConstraint ;
+			layout:emptyPartData ${
+				rdf:type	slide:Text ;
+				slide:text	"No categories defined"
+			} ;
+			ozone:viewPartClass		organize:OrganizePaneItemViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+	}
+}
+
+#############################################################################################
+# Category set hierarchical view part
+
+add { hs:CategorizationScheme hs:classView :CategorySetHierarchicalView }
+
+add { :categorySetHierarchicalViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:HierarchicalViewPart ;
+	ozone:viewDomain		:CategorySetHierarchicalView ;
+	ozone:template ${
+		rdf:type				ozone:MultiplexPartContainer ;
+		ozone:children @(
+			${	rdf:type					slide:Block ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type					slide:Button ;
+							slide:margin				"3" ;
+							ozone:onClick				ozone:showMultiplexPart1 ;
+							slide:child	${
+								rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/plus.gif> ;
+								slide:textAlign	"center"
+							}
+						}
+						${ rdf:type summary:Icon }
+						slide:nonwrappingSpace
+						${ rdf:type summary:Title ; ozone:onClick ozone:underlyingHyperlink }
+					)
+				}
+			}
+			${	rdf:type					slide:Block ;
+				slide:marginBottom			"3" ;
+				slide:child ${
+					rdf:type				slide:RowSet ;
+					slide:children @(
+						${	rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type					slide:Button ;
+									slide:margin				"3" ;
+									ozone:onClick				ozone:showMultiplexPart0 ;
+									slide:child	${
+										rdf:type		slide:Image ;
+										slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/minus.gif> ;
+										slide:textAlign	"center"
+									}
+								}
+								${ rdf:type summary:Icon }
+								slide:nonwrappingSpace
+								${ rdf:type summary:Title ; ozone:onClick ozone:underlyingHyperlink }
+							)
+						}
+						${	rdf:type			slide:Block ;
+							slide:marginLeft	"16" ;
+							slide:child			:categorySetCheckboxBlock
+						}
+					)
+				}
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+]#
+#############################################################################################
+# Status message view part
+
+add { status:StatusItem hs:classView :StatusMessageTaskPaneView }
+
+add { :statusMessageTaskPaneViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneViewPart ;
+	ozone:viewDomain		:StatusMessageTaskPaneView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type				slide:RowSet ;
+		slide:children @(
+			${	rdf:type				slide:Block ;
+				slide:background		<http://haystack.lcs.mit.edu/data/ozone/frame/horizontalBlocks.png> ;
+				slide:backgroundRepeat	"both" ;
+				slide:height			"7" ;
+				slide:cropChildWidth	"true" ;
+				slide:child				slide:null
+			}
+			${	rdf:type		slide:Block ;
+				slide:margin	"10" ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type		slide:Text ;
+							ozone:dataSource ${
+								rdf:type			data:LiteralPropertySource ;
+								data:predicate		status:message ;
+								ozone:dataSource	data:underlyingSource
+							}
+						}
+						slide:break
+						${	rdf:type					slide:Button ;
+							slide:bgcolor				"lightestGray" ;
+							slide:borderWidth			"1" ;
+							slide:margin				"3" ;
+							ozone:onClick				:dismiss ;
+							slide:child ${
+								rdf:type	slide:Text ;
+								slide:text	"Dismiss"
+							}
+						}
+					)
+				}
+			}
+		)
+	}
+}
+
+method :dismiss
+	status:removeStatusItem (data:getUnderlying)
+	
+#############################################################################################
+# File away operation
+
+add { :target
+	rdf:type	op:Parameter ;
+	rdf:type	daml:ObjectProperty ;
+	rdf:type	daml:UniqueProperty ;
+	op:required	"true" ;
+	rdfs:range	daml:Thing
+}
+
+method eclipse:fileAwayOperation :target = target ;
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+adenine:preload		"true" ;
+dc:title			"File away"
+	frame:addToStartPaneCollection ${
+		hs:view				${ rdf:type :FileAwayTaskPaneView } ;
+		summary:titleSlide	:fileAwayTitleSlide ;
+		:target				target[0]
+	}
+	
+add { :fileAwayTitleSlide
+	rdf:type	slide:Paragraph ;
+	slide:children @(
+		${	rdf:type	slide:Text ;
+			slide:text	"File away"
+		}
+		slide:space
+		${	rdf:type			ozone:ViewContainer ;
+			ozone:viewPartClass	ozone:InactiveInlineViewPart ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		:target
+			}
+		}
+	)
+}
+	
+add { :fileAwayTaskPaneViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:TaskPaneViewPart ;
+	ozone:viewDomain		:FileAwayTaskPaneView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			ozone:DataProviderHost ;
+		ozone:hostedDataProvider ${
+			rdf:type			data:ResourcePropertySource ;
+			ozone:dataSource	data:underlyingSource ;
+			data:predicate		:target
+		} ;
+		ozone:propertyName	lensui:underlyingSource ;
+		slide:child ${
+			rdf:type				slide:RowSet ;
+			slide:children @(
+				:defaultTaskPaneHeader
+				${	rdf:type	slide:RowSet ;
+					slide:pack	"bottom" ;
+					slide:children @(
+						${	rdf:type				slide:Block ;
+							slide:marginX			"10" ;
+							slide:cropChildWidth	"true" ;
+							slide:child ${
+								rdf:type				ozone:ViewContainer ;
+								ozone:initialResource	opdata:myItems ;
+								ozone:viewPartClass		:HierarchicalViewPart
+							}
+						}
+						${	rdf:type		slide:Block ;
+							slide:margin	"10" ;
+							slide:child ${
+								rdf:type	slide:Paragraph ;
+								slide:children @(
+									${	rdf:type	slide:ColumnSet ;
+										slide:children @(
+											${	rdf:type			slide:Image ;
+												slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+											}
+											${	rdf:type		slide:Block ;
+												slide:margin	"3" ;
+												slide:color		"#274683" ;
+												ozone:onClick	:done ;
+												slide:fontBold	"true" ;
+												slide:child ${
+													rdf:type				slide:Paragraph ;
+													slide:children @(
+														${	rdf:type		slide:Text ;
+															slide:text		"When you are finished checking the boxes next to the collections into which to save" ;
+															slide:fontBold	"false" ;
+															slide:color		"darkerGray"
+														}
+														slide:space
+														${	rdf:type			ozone:ViewContainer ;
+															ozone:dataSource	lensui:underlyingSource ;
+															ozone:viewPartClass	ozone:InactiveInlineViewPart
+														}
+														slide:comma
+														slide:space
+														${	rdf:type	slide:Text ;
+															slide:text	"click here." ;
+															slide:color	"darkerGray" 
+														}
+													)
+												}
+											}
+										)
+									}
+								)
+							}
+						}
+					)
+				}
+			)
+		}
+	}
+}
+
+	
+	

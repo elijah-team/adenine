@@ -1,0 +1,607 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Generic Navigation Support
+# $Header: /home/stefano/haystack/src/adenine/programs/navigationSupport.ad,v 1.17 2004/03/13 21:03:10 vineet Exp $
+
+@base <http://haystack.lcs.mit.edu/programs/navigationSupport>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	navView:	<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix	cv:			<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix navSupport:	<http://haystack.lcs.mit.edu/programs/navigationSupport#>
+@prefix query:		<http://haystack.lcs.mit.edu/schemata/query#>
+@prefix lucene:		<http://haystack.lcs.mit.edu/agents/lucene#>
+@prefix text:		<http://haystack.lcs.mit.edu/agents/text#>
+@prefix content:	<http://haystack.lcs.mit.edu/schemata/content#>
+@prefix frame:	<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix slide:	<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix navigator:	<http://haystack.lcs.mit.edu/ui/viewNavigator#>
+#@prefix :			<http://haystack.lcs.mit.edu/programs/navigationSupport#>
+
+
+# VS: TODO: remove from navView names-space
+
+#############################################################################################
+# Utility Functions
+
+method :getTitleSub resObj ; rdfs:comment "Get title from dc:title or rdfs:label if resource, otherwise use raw uri/literal" ; adenine:precompile "true" ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	= txtObj null
+	if (== resObj null)
+		return null
+	if (instanceOf resObj Literal)
+		return (Utilities.toUpperCaseFirst (resObj.getContent))
+	if (instanceOf resObj Resource)
+		= txtObj (extract resObj dc:title ?x)
+		if (== txtObj null)
+			= txtObj (extract resObj rdfs:label ?x)
+	if (== txtObj null)
+		= txtObj resObj
+	#return (txtObj.getContent)
+	return (Utilities.toUpperCaseFirst (txtObj.getContent))
+
+method navView:getTitle resObj ; rdfs:comment "Get title from dc:title or rdfs:label if resource, otherwise use raw uri/literal" ; adenine:precompile "true" ; adenine:preload "true"
+	= reverseNextTitle false
+	if (instanceOf resObj Resource)
+		if (contains resObj rdf:type rdf:List)
+			= curTitle ''
+			for it in resObj
+				= titlePred it
+				if (== reverseNextTitle true)
+					= titlePred (extract titlePred hs:reversiblePred ?x)
+					= reverseNextTitle false
+				if (== titlePred navView:reverseNextPred)
+					= reverseNextTitle true
+				else
+					= curTitle (append curTitle ' ' (:getTitleSub titlePred))
+			return curTitle
+
+	return (:getTitleSub resObj)
+
+method navView:getTitleFromResArray resArray ; rdfs:comment "Get title from dc:title or rdfs:label if resource, otherwise use raw uri/literal" ; adenine:precompile "true" ; adenine:preload "true"
+	= reverseNextTitle false
+	= curTitle ''
+	= resArrayData (resArray.getArray)
+	= len (length resArrayData)
+	= i 0
+	while (lt i len)
+		= titlePred resArrayData[i]
+		if (== reverseNextTitle true)
+			= titlePred (extract titlePred hs:reversiblePred ?x)
+			= reverseNextTitle false
+		if (== titlePred navView:reverseNextPred)
+			= reverseNextTitle true
+		else
+			= curTitle (append curTitle ' ' (navView:getTitle titlePred))
+		= i (+ i 1)
+	return curTitle
+
+method navView:UniqueWildcard
+	importjava "edu.mit.lcs.haystack.server.extensions.navigation" NavigationService
+	return (NavigationService.UniqueWildcard)
+
+method navView:buildTitleFromNavOption navigationOption
+	= title (extract navigationOption dc:title ?x)
+	if (!= null title)
+		return (title.getContent)
+	
+	# no dc:title, build it
+	= navOptionPred (extract navigationOption navView:pred ?x)
+	= navOptionValue (extract navigationOption navView:value ?x)
+	= mid ''
+	if (contains navigationOption  navView:containingTextQuery "true")
+		if (contains navigationOption navView:negatedNavOption "true")
+			= mid ' does not contain '
+		else
+			= mid ' contains '
+		return (navSupport:intelliLiteralAppend (navView:getTitle navOptionPred) mid (navView:getTitle navOptionValue))
+	else
+		if (contains navigationOption navView:negatedNavOption "true")
+			= mid ' is not '
+		else
+			= mid ' is '
+		return (navSupport:intelliLiteralAppend (navView:getTitle navOptionPred) mid (navView:getTitle navOptionValue))
+
+method navView:buildShortenedTitleFromNavOption navigationOption
+
+	= navOptionValue (extract navigationOption navView:value ?x)
+	if (!= null navOptionValue)
+		= pre ''
+		= mid ''
+		= post ''
+		if (contains navigationOption navView:negatedNavOption "true")
+			= pre 'Not '
+		if (contains navigationOption navView:containingTextQuery "true")
+			= mid '"'
+			= post '"'
+		return (append pre mid (navView:getTitle navOptionValue) post)
+
+	= title (extract navigationOption dc:title ?x)
+	if (!= null title)
+		return (title.getContent)
+		
+	return '.'
+
+
+method navSupport:intelliStringAppend bef mid aft
+	if (== null bef)
+		return aft
+	else
+		if (== null aft)
+			return bef
+		else
+			return (append bef mid aft)
+
+
+method navSupport:intelliLiteralAppend bef mid aft
+	if (== null bef)
+		return aft
+	else
+		if (== null aft)
+			return bef
+		else
+			if (instanceOf bef Literal)
+				= bef (bef.getContent)
+			if (instanceOf aft Literal)
+				= aft (aft.getContent)
+			return (append bef mid aft)
+
+
+method navSupport:intelliListAppend bef mid aft
+	if (== (bef.size) 0)
+		return aft
+	else
+		if (== (aft.size) 0)
+			return bef
+		else
+			#return (append bef mid aft)
+			= lst bef
+			#lst.addAll bef
+			lst.addAll mid
+			lst.addAll aft
+			return lst
+
+
+method navView:buildCollTitle resColl
+	= current resColl
+	= title null
+	while (!= current null)
+		= currTitle (extract current navView:title ?x)
+		if (== null currTitle)
+			= currTitle (extract current dc:title ?x)
+		= title (navSupport:intelliLiteralAppend currTitle ' > ' title)
+		= current (extract current query:parentObject ?x)
+		if (== null title)
+			break
+		
+	if (== null title)
+		= title (navView:buildTitleFromCollDef (extract resColl navView:collDef ?x))
+
+	return title
+
+
+method navView:buildTitleFromCollDef collDefRes
+	= title null
+	= navOptions (query {collDefRes hs:member ?x})
+	for opt in navOptions
+		= titlet (navView:buildShortenedTitleFromNavOption opt[0])
+		if (!= null (extract opt[0] navView:pred ?x))
+			# simple option append to end
+			= title (navSupport:intelliStringAppend title ' > ' titlet)
+		else
+			#complex append to beg
+			= title (navSupport:intelliStringAppend titlet ' > ' title)
+	return title
+
+
+method navView:buildQueryCondFromNavPathPred navPathPred value containingTextQuery ; adenine:precompile "true" ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.server.extensions.navigation" NavigationService
+	return (NavigationService.buildQueryCondFromNavPathPred __source__ navPathPred value containingTextQuery)
+
+
+method navView:buildQueryCondFromNavProp navPathPred value containingTextQuery ; adenine:precompile "true" ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.server.extensions.navigation" NavigationService
+	return (NavigationService.buildQueryCondFromNavProp __source__ navPathPred value containingTextQuery)
+
+
+method navView:buildQueryCondFromNavOption navigationOption
+	importjava "edu.mit.lcs.haystack.server.extensions.navigation" NavigationService
+	return (NavigationService.buildQueryCondFromNavOption __source__ navigationOption)
+
+
+method navSupport:negNavigationOption navOption
+	# we always generate navOptions!
+	#= newNavOption (extract navOption navView:negatedFrom ?x)
+	#if (!= null newNavOption)
+	#	return newNavOption
+
+	= newNavOption ${
+		rdf:type					navView:NavigationModeValue ; 
+		navView:parentNavOption		navOption ;
+		navView:negatedFrom			navOption ;
+	}
+	add { navOption		navView:negatedFrom	newNavOption }
+
+	= currObj (extract navOption navView:currObj ?x)
+	if (!= null currObj)
+		add {newNavOption navView:currObj currObj}
+
+	# if parent has adenine:setDifference then I won't have it, i.e. make me volatile only if parents
+	# return null on their query
+	if (== null (navSupport:getSingleCondNestedDifferenceCS (navView:buildQueryCondFromNavOption navOption)))
+		add { newNavOption	
+				navView:volatilePath		"true" ;
+				navView:negatedNavOption	"true" ;
+				
+		}
+		
+	if (contains navOption navView:containingTextQuery "true")
+		add { newNavOption navView:containingTextQuery "true"}
+
+	# are there pred's inverted?
+	= navOptionPred (extract navOption navView:pred ?x)
+	= navOptionValue (extract navOption navView:value ?x)
+
+	if (!= null navOptionPred)
+		add { newNavOption
+			navView:pred				navOptionPred ;
+			navView:value				navOptionValue ;
+		}
+	else
+		# I guess we will need to generate the queryCond!
+		= newQueryCond (navSupport:negateQueryCond (navView:buildQueryCondFromNavOption navOption))
+		add { newNavOption		navView:querylet	newQueryCond }
+		
+	= newTitle (navView:buildTitleFromNavOption newNavOption)
+	if (== null newTitle)
+		= newTitle (append 'Not ' (extract navOption dc:title ?x))
+	add { newNavOption dc:title newTitle}
+	add { newNavOption navView:title (navView:buildShortenedTitleFromNavOption newNavOption)}
+
+	return newNavOption
+
+method navSupport:getSingleCondNestedDifferenceCS inQueryCond
+	importjava "edu.mit.lcs.haystack.server.extensions.navigation" NavigationService
+	return (NavigationService.getSingleCondNestedDifferenceCS inQueryCond)
+
+method navSupport:negateQueryCond inQueryCond
+	importjava "edu.mit.lcs.haystack.server.extensions.navigation" NavigationService
+	return (NavigationService.negateQueryCond inQueryCond)
+
+
+method navView:buildOrQueryCond inQueryCond ; adenine:precompile "true" ; adenine:preload "true"
+	importjava "java.util" ArrayList
+	importjava "edu.mit.lcs.haystack.adenine.query" Condition
+
+	= param (ArrayList)
+	param.add inQueryCond
+
+	= outQueryCondition %{}
+	outQueryCondition.add (Condition adenine:or param)
+	return outQueryCondition
+
+method navView:buildAndQueryCond inQueryCond ; adenine:precompile "true" ; adenine:preload "true"
+	importjava "java.util" ArrayList
+	importjava "edu.mit.lcs.haystack.adenine.query" Condition
+
+	= param (ArrayList)
+	param.add inQueryCond
+
+	= outQueryCondition %{}
+	outQueryCondition.add (Condition adenine:and param)
+	return outQueryCondition
+
+method navSupport:buildQueryFromCollDef collDef
+	= queryStatement %{}
+	= volQueryStatements  %{}
+	if (!= null collDef)
+		# first those with no volatile paths
+		= navOptions (query {collDef hs:member ?x})
+		for navOption in navOptions
+			if (contains navOption[0] navView:volatilePath "true")
+				volQueryStatements.addAll (navView:buildQueryCondFromNavOption navOption[0])
+			else
+				queryStatement.addAll (navView:buildQueryCondFromNavOption navOption[0])
+
+		# add the volatile ones to the end
+		queryStatement.addAll volQueryStatements
+		
+	return queryStatement
+
+method navView:buildNestableNavOptionFromQueryAndTitle queryCond queryTitle
+	return ${
+		rdf:type			navView:NavigationModeValue ; 
+		dc:title			queryTitle ;
+		navView:querylet	queryCond
+	}
+
+method navView:buildNavOptionFromQueryAndTitle queryCond queryTitle
+	return ${
+		rdf:type				navView:NavigationModeValue ; 
+		dc:title				queryTitle ;
+		navView:queryStatement	queryCond
+	}
+
+
+method navView:runOrQuery navMode cont
+	# need to build queryStatement here from navigation option / nav. mode value
+	= collTitle null
+	= navModeValues (query{cont hs:member ?x})
+	= orQuery %{}
+	for navModeVal in navModeValues
+		= queryCond (:buildQueryCondFromNavOption navModeVal[0])
+		orQuery.addAll (:buildAndQueryCond queryCond)
+		if (== null collTitle)
+			= collTitle (navView:buildTitleFromNavOption navModeVal[0])
+		else
+			= collTitle (append collTitle ' OR ' (navView:buildTitleFromNavOption navModeVal[0]))
+
+	= parentObj (extract  (extract cont hs:member ?x) navView:currObj ?x)
+
+	:runQuery parentObj (navView:buildNestableNavOptionFromQueryAndTitle (:buildOrQueryCond orQuery) collTitle)
+
+
+method navView:runQuery parentObj navOption
+	# by default navOptions are run for refinement on the current collection
+	#  except when a queryStatement is provided!
+	# ==> goal: build the collection definiton here and then chain for execution
+	= newCollDefinitionRes ${ hs:member navOption }
+
+	if (!= null (extract navOption navView:queryStatement ?x))
+		# we are not using querylets so just give the navOption for chaining with query execution
+		#  {we do not need to give a parentObj since we are not refining}
+		navSupport:execAndNavToQuery newCollDefinitionRes parentObj
+		return
+
+	if (!= null parentObj)
+		# we don't have an override in the form of navView:queryStatement ?x and the navOption
+		#  and we do have a parentObj so build collDef based on parentObj as well
+
+		= prevCollDef (query {parentObj navView:collDef ?x ?x hs:member ?y} @(?y))
+
+		for defs in prevCollDef
+			add { newCollDefinitionRes hs:member defs[0] }
+
+		# if empty make it create default collDef
+		if (== 0 (length prevCollDef))
+			= prevCollDef (navSupport:getDefaultCollDef parentObj)
+			add { newCollDefinitionRes hs:member prevCollDef }
+
+	navSupport:execAndNavToQuery newCollDefinitionRes parentObj parentObj (navView:buildShortenedTitleFromNavOption navOption)
+
+
+method navSupport:getDefaultCollDef resObj
+	if (contains resObj rdf:type hs:Collection)
+		= resQuery %{ hs:member resObj ?x }
+		= defCollDef ${
+				rdf:type			navView:NavigationModeValue ; 
+				dc:title			(navView:getTitle resObj) ;
+				navView:querylet	resQuery
+		}
+		# let's optimize for creating this collection and add the coll def. in
+		add { resObj navView:collDef ${
+				navView:collDefHashCode	(resQuery.hashCode) ;
+				hs:member				defCollDef ;
+			}
+		}
+		return defCollDef
+	else
+		# regular object, lets make a coll def based on the object
+		= resTypes (query {resObj rdf:type ?x})
+		= resQuery %{ }
+		var typeTitle
+		for r in resTypes
+			resQuery.addAll %{ rdf:type ?x r[0] }
+			= typeTitle (navSupport:intelliLiteralAppend typeTitle ', ' (navView:getTitle resObj))
+		= typeTitle (append 'Type: ' typeTitle)
+		return ${
+			rdf:type			navView:NavigationModeValue ; 
+			dc:title			typeTitle ;
+			navView:querylet	resQuery
+		}
+
+#############################################################################################
+# Navigation exec progress stuff
+
+add { :navExecProgressItem
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				frame:ToolbarViewPart ;
+	ozone:viewDomain		:NavExecProgressItemView ;
+	hs:view					${ rdf:type :NavExecProgressItemView } ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:fillParent	"true" ;
+		slide:margin		"3" ;
+		slide:child ${
+			rdf:type		slide:Train ;
+			slide:children	@(
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/browseto.gif>
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:color	"50%" ;
+					slide:text	"Analyzing for providing navigation suggestions..." ;
+				}
+			)
+		}
+	}
+}
+
+
+
+# we should only have *parentObj* be given non-null if the query was formed from querylet's i.e.
+#  more than just the execution of *one* queryStatement
+method navSupport:execAndNavToQuery newCollDefinitionRes prevObj parentObj navTitle
+
+	= queryStatement (navSupport:buildQueryFromCollDef newCollDefinitionRes)
+
+	# see if there is any other collection with a similar hash
+	= queryHash (queryStatement.hashCode)
+	print '** requested query:' queryStatement
+	#print '** query hash code:' queryHash
+
+	= retCollDef (extract ?x navView:collDefHashCode queryHash )
+	if (!= null retCollDef)
+		= newColl (extract ?x navView:collDef retCollDef)
+		ozone:navigate newColl
+		return
+
+	= newColl ${
+		rdf:type		hs:Collection ;
+		navView:collDef	newCollDefinitionRes ;
+	 }
+
+	add { newCollDefinitionRes navView:collDefHashCode queryHash }
+
+	#if (gt (length (query {newCollDefinitionRes hs:member ?x})) 1)
+	if (!= null parentObj)
+		add { newColl query:parentObject parentObj }
+	if (!= null prevObj)
+		add { newColl query:prevObject prevObj }
+	if (!= null navTitle)
+		add { newColl navView:title navTitle }
+
+	# previous object is object at time the query was resolved!!
+	= nm (__context__.getProperty ozone:navigationMaster)
+	= vn (nm.getViewNavigator null)
+	add { newColl query:prevObject (vn.getCurrentResource) }
+
+
+	# put in the new member in the new collection
+	#print 'asking query'
+	= items (ask queryStatement @(?x))
+	if (== null items)
+		print 'items is null'
+	print 'Results set size: ' (length items)
+	for item in items
+		add { newColl hs:member item[0] }
+	#print 'Members length: ' (length (query {newColl hs:member ?x}))
+
+	add { newColl dc:title (navView:buildCollTitle newColl) }
+
+	# put in light view for large number of items
+	navView:addInheritedCollView newColl
+	#navView:addLightCollView newColl
+	#print 'Supposed to be navigating to:' newColl
+	ozone:navigate newColl
+
+method :sbRepl sb srcStr tgtStr
+	= n ((sb.toString).indexOf srcStr)
+	if (!= n -1)
+		= e (+ n (srcStr.length))
+		sb.replace n e tgtStr
+		return true
+	return false
+
+method :magic sb a b
+	= retVal (:sbRepl sb (a.toString) b)
+	if retVal
+		:magic sb a b
+		
+
+method <cleanQuery> queryTxt
+	importjava "java.lang" StringBuffer
+	= qSB (StringBuffer queryTxt)
+
+	:magic qSB rdf:type 'rdf:type'
+	:magic qSB dc:title 'dc:title'
+	:magic qSB hs:member 'hs:member'
+	:magic qSB adenine:setDifference 'adenine:setDifference'
+	:magic qSB adenine:identity 'adenine:identity'
+	:magic qSB text:contains 'text:contains'
+	:magic qSB text:extractedText 'text:extractedText'
+	:magic qSB content:HttpContent 'content:HttpContent'
+	:magic qSB lucene:content 'lucene:content'
+	
+	print '@prefix text: ' text:
+	print '@prefix lucene: ' lucene:
+	print '@prefix content: ' content:
+	
+	
+	print (qSB.toString)
+
+
+method navView:addInheritedCollView resColl
+	# this method by tries to inherit the current collections view
+
+	= nm (__context__.getProperty ozone:navigationMaster)
+	= viewInstance null
+	for navPane in (query { ?x rdf:type navView:NavigationPane })
+		# see which ones are valid
+		= vnId (extract ?x navigator:navigatePane navPane[0])
+		= vn (nm.getViewNavigator vnId)
+		if (!= null vn)
+			= viewInstance (vn.getCurrentViewInstance)
+			break
+
+	# let's put new view in
+	if (== null viewInstance)
+		navView:addLightCollView resColl
+	else
+		remove resColl hs:view ?x
+		= newViewInstance (UniqueResource)
+		add { resColl hs:view newViewInstance }
+		= curViewInfo (query {viewInstance ?x ?y} @(?x ?y))
+		for viewStatements in curViewInfo
+			add { newViewInstance viewStatements[0] viewStatements[1]}
+
+
+method navView:addLightCollView resColl
+
+	
+	remove resColl hs:view ?x
+	add {
+		resColl hs:view ${
+			rdf:type	ozone:CollectionView ;
+			cv:initialLayoutConstraint	${
+				rdf:type		layout:ListViewConstraint ;
+				ozone:viewPartClass	ozone:LineSummaryViewPart ;
+			} ;
+			cv:sortBy ${ rdf:type data:SetToListSource ; }
+		}
+	}
+
+	
+method navView:addLightCollViewWithoutPreview resColl
+	remove resColl hs:view ?x
+	add { 
+		resColl hs:view ${
+			rdf:type	ozone:CollectionView ;
+			cv:preview	"false" ;
+			cv:initialLayoutConstraint	${
+				rdf:type		layout:ListViewConstraint ;
+				ozone:viewPartClass	ozone:LineSummaryViewPart ;
+			} ;
+			cv:sortBy ${ rdf:type data:SetToListSource ; }
+		}
+	}

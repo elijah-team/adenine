@@ -1,0 +1,241 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Haystack Picture Ontology
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/schemata/picture>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	serine:		<http://haystack.lcs.mit.edu/agents/serine#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	picture:	<http://haystack.lcs.mit.edu/schemata/picture#>
+
+add { ^
+	rdf:type	daml:Ontology ;
+	dc:title	"Haystack Picture Ontology"
+}
+
+#############################################################################################
+# Album
+
+add { picture:Album
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Picture Album" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:subClassOf		hs:Collection ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/album.gif>
+}
+
+#############################################################################################
+# Picture
+
+add { picture:Picture
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Picture" ;
+	rdfs:isDefinedBy	^ ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/picture.gif>
+}
+
+add { picture:contains
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Contains" ;
+	rdfs:comment		"Indicates the presence of a person or other object in the picture." ;
+	rdfs:domain			picture:Picture ;
+	rdfs:range			hs:Person
+}
+
+add { picture:width
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Width" ;
+	rdfs:domain			picture:Picture ;
+	rdfs:range			xsd:int
+}
+
+add { picture:height
+	rdf:type			daml:DatatypeProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Height" ;
+	rdfs:domain			picture:Picture ;
+	rdfs:range			xsd:int
+}
+
+add { picture:content
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Content" ;
+	rdfs:domain			picture:Picture ;
+	rdfs:range			content:Content
+}
+
+add { picture:thumbnail
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Thumbnail" ;
+	rdfs:domain			picture:Picture ;
+	rdfs:range			picture:Picture
+}
+
+add { picture:transformedFrom
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Transformed from" ;
+	rdfs:domain			picture:Picture ;
+	rdfs:range			picture:Transformation
+}
+
+#############################################################################################
+# Transformations
+
+add { picture:Transformation
+	rdf:type				rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Transformation" ;
+	rdfs:isDefinedBy ^
+}
+
+add { picture:transformationSource
+	rdf:type		daml:ObjectProperty ;
+	rdfs:isDefinedBy ^ ;
+	rdfs:label		"Transformation Source" ;
+	rdfs:domain		picture:Transformation ;
+	rdfs:range		picture:Picture
+}
+
+add { picture:bmpDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"image/x-bitmap"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		picture:Picture
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	picture:content ;
+		serine:object		?x
+	}
+}
+
+add { picture:gifDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"image/gif"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		picture:Picture
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	picture:content ;
+		serine:object		?x
+	}
+}
+
+add { picture:jpegDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"image/jpeg"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		picture:Picture
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	picture:content ;
+		serine:object		?x
+	}
+}
+
+add { picture:pngDetector
+	rdf:type				serine:Transformation ;
+	serine:priority			"true" ;
+	serine:precondition		${
+		rdf:type			serine:Pattern ;
+		serine:existentials	@(?x) ;
+		serine:statement	${
+			rdf:type			serine:PatternStatement ;
+			serine:subject		?x ;
+			serine:predicate	dc:format ;
+			serine:object		"image/png"
+		}
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	rdf:type ;
+		serine:object		picture:Picture
+	} ;
+	serine:resultStatement	${
+		rdf:type			serine:PatternStatement ;
+		serine:subject		?x ;
+		serine:predicate	picture:content ;
+		serine:object		?x
+	}
+}
+

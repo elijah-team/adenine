@@ -1,0 +1,39 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Haystack Core
+Bundle-SymbolicName: edu.mit.csail.haystack.core; singleton:=true
+Bundle-Version: 1.0.13
+Bundle-ClassPath: core.jar
+Bundle-Vendor: MIT CSAIL Haystack Project
+Bundle-Localization: plugin
+Export-Package: edu.mit.lcs.haystack,
+ edu.mit.lcs.haystack.adenine,
+ edu.mit.lcs.haystack.adenine.compiler,
+ edu.mit.lcs.haystack.adenine.compilers,
+ edu.mit.lcs.haystack.adenine.compilers.javaByteCode,
+ edu.mit.lcs.haystack.adenine.compilers.rdfCode,
+ edu.mit.lcs.haystack.adenine.compilers.utils,
+ edu.mit.lcs.haystack.adenine.constructs,
+ edu.mit.lcs.haystack.adenine.functions,
+ edu.mit.lcs.haystack.adenine.instructions,
+ edu.mit.lcs.haystack.adenine.interpreter,
+ edu.mit.lcs.haystack.adenine.parser,
+ edu.mit.lcs.haystack.adenine.parser2,
+ edu.mit.lcs.haystack.adenine.parser2.constructs,
+ edu.mit.lcs.haystack.adenine.query,
+ edu.mit.lcs.haystack.adenine.tokenizer,
+ edu.mit.lcs.haystack.content,
+ edu.mit.lcs.haystack.core,
+ edu.mit.lcs.haystack.proxy,
+ edu.mit.lcs.haystack.rdf,
+ edu.mit.lcs.haystack.rdf.converters,
+ edu.mit.lcs.haystack.rdf.n3,
+ edu.mit.lcs.haystack.security,
+ edu.mit.lcs.haystack.server.core.content,
+ edu.mit.lcs.haystack.server.core.rdfstore,
+ edu.mit.lcs.haystack.server.core.service,
+ edu.mit.lcs.haystack.server.rdfstore
+Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
+ org.eclipse.ui;visibility:=reexport,
+ org.eclipse.ui.ide;visibility:=reexport,
+ edu.mit.csail.haystack.subfloor;visibility:=reexport

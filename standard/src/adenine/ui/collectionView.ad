@@ -1,0 +1,1388 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Collection view
+# Written by David Huynh and Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/ui/collectionView>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	vc:				<http://haystack.lcs.mit.edu/ui/viewContainer#> 
+@prefix	contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#> 
+@prefix	modeless:		<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix op:				<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix dnd:			<http://haystack.lcs.mit.edu/schemata/dnd#>
+@prefix	cv:				<http://haystack.lcs.mit.edu/ui/collectionView#> 
+@prefix	lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	vowl:			<http://haystack.lcs.mit.edu/schemata/vowl#> 
+@prefix	frame:			<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	:				<http://haystack.lcs.mit.edu/ui/collectionView#> 
+
+#############################################################################################
+# Collection data source specifications
+
+# (6/1/2005: copied here from collectionView-legacy.ad)
+add { 
+	ozone:CollectionView	rdfs:label		"Collection View"
+	hs:Collection			hs:classView	ozone:CollectionView
+	hs:List					hs:classView	ozone:CollectionView
+	data:CollectionDataSet	hs:classView	ozone:CollectionView
+}
+
+add { hs:Collection
+	:setDataSourceSpecification ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		hs:member ;
+		ozone:dataSource	data:underlyingSource
+	} ;
+	:listDataSourceSpecification ${
+		rdf:type			data:SortingListSource ;
+		data:sortDataSource ${ rdf:type summary:TitleSource } ;
+		ozone:dataSource ${
+			rdf:type			data:PredicateSetSource ;
+			data:predicate		hs:member ;
+			ozone:dataSource	data:underlyingSource
+		}
+	} ;
+	:naturalDataSourceSpecification ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		hs:member ;
+		ozone:dataSource	data:underlyingSource
+	}
+}
+
+add { hs:List
+	:listDataSourceSpecification ${
+		rdf:type			data:HSListSource ;
+		ozone:dataSource	data:underlyingSource
+	} ;
+	:naturalDataSourceSpecification ${
+		rdf:type			data:HSListSource ;
+		ozone:dataSource	data:underlyingSource
+	}
+}
+
+add { data:CollectionDataSet
+	:setDataSourceSpecification ${
+		rdf:type			data:ProviderConstructorSource ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			ozone:dataSource	data:underlyingSource ;
+			data:predicate		data:dataSource
+		}
+	} ;
+	:listDataSourceSpecification ${
+		rdf:type			data:SortingListSource ;
+		data:sortDataSource ${ rdf:type summary:TitleSource } ;
+		ozone:dataSource ${
+			rdf:type			data:ProviderConstructorSource ;
+			ozone:dataSource ${
+				rdf:type			data:ResourcePropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		data:dataSource
+			}
+		}
+	} ;
+	:naturalDataSourceSpecification ${
+		rdf:type			data:ProviderConstructorSource ;
+		ozone:dataSource ${
+			rdf:type			data:ResourcePropertySource ;
+			ozone:dataSource	data:underlyingSource ;
+			data:predicate		data:dataSource
+		}
+	}
+}
+
+add { :setDataSource
+	rdf:type			data:ProviderConstructorSource ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?y ) ;
+		data:targetExistential	?y ;
+		data:extract			"true" ;
+		data:statement ${
+			data:subjectDataSource	data:underlyingSource ;
+			data:predicate			rdf:type ;
+			data:object				?x
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	:setDataSourceSpecification ;
+			data:object		?y
+		}
+	}
+}
+
+add { :naturalDataSource
+	rdf:type			data:ProviderConstructorSource ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?y ) ;
+		data:targetExistential	?y ;
+		data:extract			"true" ;
+		data:statement ${
+			data:subjectDataSource	data:underlyingSource ;
+			data:predicate			rdf:type ;
+			data:object				?x
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	:naturalDataSourceSpecification ;
+			data:object		?y
+		}
+	}
+}
+
+add { :listDataSource
+	rdf:type			data:ProviderConstructorSource ;
+	ozone:dataSource ${
+		rdf:type				data:RDFQuerySetSource ;
+		data:existentials		@( ?x ?y ) ;
+		data:targetExistential	?y ;
+		data:extract			"true" ;
+		data:statement ${
+			data:subjectDataSource	data:underlyingSource ;
+			data:predicate			rdf:type ;
+			data:object				?x
+		} ;
+		data:statement ${
+			data:subject	?x ;
+			data:predicate	:listDataSourceSpecification ;
+			data:object		?y
+		}
+	}
+}
+
+#############################################################################################
+# Collection members aspect
+
+add { :collectionMembersAspect
+	rdf:type			lensui:DataSetAspect ;
+	dc:title			"Items" ;
+	lensui:dataSource ${
+		rdf:type			data:PredicateSetSource ;
+		data:predicate		hs:member ;
+		ozone:dataSource	lensui:underlyingSource
+	} ;
+	lensui:layoutConstraint ${
+		rdf:type				layout:RowStackerConstraint ;
+		ozone:viewPartClass		ozone:PhraseViewPart ;
+		layout:sortBy ${
+			rdf:type			data:SortingListSource ;
+			data:sortDataSource ${ rdf:type summary:TitleSource }
+		}
+	}
+}
+
+add { hs:Collection 
+	vowl:hasLens		:collectionMembersAspect ;
+	lensui:appletAspect	:collectionMembersAspect
+}
+
+#############################################################################################
+# Collection size aspect
+
+add {
+	:collectionSizeAspect rdf:type :CollectionSizeAspect ; dc:title "Item count"
+
+	:collectionSizeAspect
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		:CollectionSizeAspect ;
+		ozone:template ${
+			rdf:type			slide:Text ;
+			ozone:dataSource ${
+				rdf:type			data:SetSizeSource ;
+				ozone:dataSource ${
+					rdf:type			data:PredicateSetSource ;
+					ozone:dataSource	lensui:underlyingSource ;
+					data:predicate		hs:member
+				}
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Report view part (was not in collectionView-legacy.ad, because it is used only by eclipse.ad)
+
+add { 
+	hs:Collection			hs:possibleClassView	cv:ReportView
+	hs:List					hs:possibleClassView	cv:ReportView
+	data:CollectionDataSet	hs:possibleClassView	cv:ReportView
+}
+
+add { :reportViewPart
+	rdf:type			ozone:SWTPart ;
+	rdf:type			ozone:Part ;
+	rdf:type			ozone:ViewPart ;
+	rdf:type			ozone:InteractiveViewPart ;
+	ozone:viewDomain	cv:ReportView ;
+	vc:toolbarCaption	"Tabular view" ;
+	ozone:template ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource		cv:listDataSource ;
+		layout:layoutConstraint	:reportLayoutConstraint
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+add { :reportLayoutConstraint
+	rdf:type			layout:ListViewConstraint ;
+	ozone:viewPartClass	ozone:FieldSetViewPart ;
+	layout:sortBy ${
+		rdf:type				data:SortingListSource ;
+		data:sortOrder			"ascending" ;
+		data:sortDataSource		${ rdf:type summary:TitleSource } ;
+		layout:sortCriterionFor	:reportLayoutConstraint
+	} ;
+	layout:fields ${
+		rdf:type	data:HSListSource ;
+		data:hsList ${
+			rdf:type	hs:List ;
+			hs:list @(
+				${	rdf:type					layout:Field ;
+					layout:fieldID				summary:iconAspect ;
+					layout:fieldDimension		"20" ;
+					layout:layoutConstraint		:reportLayoutConstraint
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				summary:documentTypeAspect ;
+					layout:fieldDimension		"25%" ;
+					layout:layoutConstraint		:reportLayoutConstraint ;
+					layout:sortDataSourceType	summary:DocumentTypeSource
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				summary:titleAspect ;
+					layout:fieldDimension		"25%" ;
+					layout:layoutConstraint		:reportLayoutConstraint ;
+					layout:fieldSorted			"descending" ;
+					layout:sortDataSourceType	summary:TitleSource
+				}
+				${	rdf:type					layout:Field ;
+					layout:fieldID				dc:date ;
+					layout:fieldDimension		"25%" ;
+					layout:layoutConstraint		:reportLayoutConstraint
+				}
+			)
+		}
+	} ;
+	layout:headers							layout:defaultHeaders
+}
+
+#############################################################################################
+# List view part (was not in collectionView-legacy.ad, because it is used only by eclipse.ad)
+
+add { 
+	hs:Collection			hs:possibleClassView	cv:ListView
+	hs:List					hs:possibleClassView	cv:ListView
+	data:CollectionDataSet	hs:possibleClassView	cv:ListView
+}
+
+add { :listViewPart
+	rdf:type			ozone:SWTPart ;
+	rdf:type			ozone:Part ;
+	rdf:type			ozone:ViewPart ;
+	rdf:type			ozone:InteractiveViewPart ;
+	ozone:viewDomain	cv:ListView ;
+	vc:toolbarCaption	"List" ;
+	ozone:template ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource	:listDataSource ;
+		layout:layoutConstraint ${
+			rdf:type			layout:ListViewConstraint ;
+			ozone:viewPartClass	ozone:MultilineSummaryViewPart
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Portal view part  (6/1/2005: copied to collectionView.ad for use in programs/create.ad)
+
+add { 
+	hs:List					hs:possibleClassView	cv:PortalView
+}
+
+add { :portalViewPart
+	rdf:type			ozone:SWTPart ;
+	rdf:type			ozone:Part ;
+	rdf:type			ozone:ViewPart ;
+	rdf:type			ozone:InteractiveViewPart ;
+	ozone:viewDomain	cv:PortalView ;
+	vc:toolbarCaption	"Portal" ;
+	ozone:template ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource	:naturalDataSource ;
+		layout:layoutConstraint ${
+			rdf:type					layout:VerticalFlowConstraint ;
+			ozone:viewPartClass			ozone:VerticalAppletViewPart ;
+			layout:spansAllColumnsDataSource ${
+				rdf:type		data:StatementExistenceSource ;
+				data:predicate	layout:spansAllColumns ;
+				data:object		"true"
+			}
+		}
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Preview pane (6/1/2005: copied here from collectionView-legacy.ad, for use in ui/catScheme.ad)
+
+add { cv:previewPaneContainerPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		cv:PreviewPaneContainer ;
+	ozone:partDataGenerator	:presentPreviewPane ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentPreviewPane input
+	= properties (extract input :properties ?x)
+	= focusDataSource (extract input ozone:dataSource ?x)
+	= contentPane (extract input :contentPane ?x)
+	= expandedPreview (UniqueResource)
+	= collapsedPreview (UniqueResource)
+	
+	uniqueMethod collapsePreview
+		replace `expandedPreview ozone:visible ?x "false"
+		replace `collapsedPreview ozone:visible ?x "true"
+
+	uniqueMethod expandPreview
+		replace `collapsedPreview ozone:visible ?x "false"
+		replace `expandedPreview ozone:visible ?x "true"
+
+	add { expandedPreview
+		rdf:type				slide:Block ;
+		slide:bgcolor			"lightestGray" ;
+		slide:borderTopWidth	"1" ;
+		slide:borderTopColor	"gray" ;
+		slide:marginTop			"1" ;
+		slide:child ${
+			rdf:type		slide:ColumnSet ;
+			slide:children @(
+				${	rdf:type		ozone:Connector ;
+					ozone:connect	properties ;
+					ozone:trigger	layout:focused ;
+					ozone:onChange	:onFocusChange
+				}
+				${	rdf:type		slide:Block ;
+					slide:margin	"4" ;
+					slide:color		"gray" ;
+					slide:child ${
+						rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/minus.gif> ;
+						slide:textAlign	"top"
+					} ;
+					ozone:onClick	collapsePreview
+				}
+				${	rdf:type				slide:Block ;
+					slide:borderLeftWidth	"1" ;
+					slide:borderLeftColor	"gray" ;
+					slide:marginLeft		"1" ;
+					slide:child				(vc:createViewContainerWithTitleBar focusDataSource false)
+				}
+			)
+		}
+	}
+
+	add { collapsedPreview
+		rdf:type				slide:Block ;
+		slide:margin			"4" ;
+		slide:bgcolor			"lightestGray" ;
+		slide:color				"gray" ;
+		slide:borderTopWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type		ozone:Connector ;
+					ozone:connect	properties ;
+					ozone:trigger	layout:focused ;
+					ozone:onChange	:onFocusChange
+				}
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/plus.gif>
+				}
+				slide:space
+				${	rdf:type		slide:Text ;
+					slide:text		"See preview"
+				}
+			)
+		} ;
+		ozone:onClick	expandPreview
+	}
+
+	= preview (extract input cv:preview ?x)
+	if (!= preview null)
+		if ((preview.getContent).equals 'false')
+			add { expandedPreview ozone:visible "false" }
+		else
+			add { collapsedPreview ozone:visible "false" }
+	else
+		add { collapsedPreview ozone:visible "false" }
+
+	= ui ${
+		rdf:type			layout:Layout ;
+		ozone:dataSource	${
+			rdf:type			data:VisibleResourceListSource ;
+			ozone:dataSource	${
+				rdf:type		data:DAMLListSource ;
+				data:damlList	@( contentPane expandedPreview collapsedPreview )
+			}
+		} ;
+		layout:layoutConstraint ${
+			rdf:type			layout:RowSplitterConstraint ;
+			layout:constraint	${ layout:element expandedPreview ; layout:dimension "50%" } ;
+			layout:constraint	${ layout:element collapsedPreview ; layout:resizable "false" }
+		}
+	}
+
+	return ui
+
+#############################################################################################
+# collectionViewPart
+
+add { cv:collectionViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+	ozone:viewDomain		ozone:CollectionView ;
+	ozone:dataDomain		ozone:Collection ;
+	vc:toolbarCaption	"Show with collection elements" ;
+	ozone:partDataGenerator	:presentCollectionView ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentCollectionView input ; rdfs:comment "Presents a collection view as an Ozone Slide" 
+#; adenine:precompile "true" ; adenine:preload "true"
+	= viewInstance (__context__.getLocalProperty ozone:viewInstance)
+
+	var dataSource sortBy viewPartClass
+
+	with __source__ __infosource__
+#[		if (contains input rdf:type hs:List)
+			= dataSource ${
+				rdf:type		data:HSListSource ;
+				data:hsList		input
+			}
+		else
+			if (contains input rdf:type data:CollectionDataSet)
+				= dataSource (extract input data:dataSource ?x)
+			else
+				= dataSource (extract viewInstance cv:dataSource ?x)
+				if (== dataSource null)
+					= dataSource ${
+						rdf:type		data:PredicateSetSource ;
+						data:subject	input ;
+						data:predicate	hs:member
+					}
+
+		if (== (queryExtract { dataSource rdf:type ?x ?y ozone:dataDomain ?x ; rdf:type data:ListDataProvider }) null)#]
+		= sortBy (extract viewInstance cv:sortBy ?x)
+		if (== sortBy null)
+			= sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		= dataSource :naturalDataSource
+
+		= viewPartClass (extract viewInstance ozone:viewPartClass ?x)
+		if (== viewPartClass null)
+			= viewPartClass ozone:LineSummaryViewPart
+
+	= properties (UniqueResource)
+	= focusDataSource ${
+		rdf:type		data:ResourcePropertySource ;
+		data:subject	properties ;
+		data:predicate	layout:focused
+	}
+
+	= layout ${
+		rdf:type				layout:Layout ;
+		ozone:dataSource		dataSource ;
+		ozone:partDataFromInformationSource "true" ;
+		layout:selection ${
+			rdf:type				data:PredicateSetSource ;
+			data:subject			properties ;
+			data:predicate			layout:selected
+		} ;
+		layout:focus				focusDataSource
+	}
+
+	var layoutConstraint layoutManagerPart
+	with __source__ __infosource__
+		= layoutConstraint (extract viewInstance cv:initialLayoutConstraint ?x)
+		if (!= layoutConstraint null)
+			add { layoutConstraint layout:layoutConstraintOf layout }
+		else
+			= layoutManagerPart (extract viewInstance cv:layoutManagerPart ?x)
+			if (== layoutManagerPart null)
+				= layoutManagerPart layout:listViewLayoutManagerPart
+			= layoutConstraint (cv:setLayoutConstraint layoutManagerPart layout)
+	add { layout layout:layoutConstraint layoutConstraint }
+
+	if (!= sortBy null)
+		add { layoutConstraint layout:sortBy sortBy }
+	if (!= viewPartClass null)
+		if (== (extract layoutConstraint ozone:viewPartClass ?x) null)
+			add { layoutConstraint ozone:viewPartClass viewPartClass }
+
+	= expandedPreview (UniqueResource)
+	= collapsedPreview (UniqueResource)
+	
+	uniqueMethod collapsePreview
+		replace `expandedPreview ozone:visible ?x "false"
+		replace `collapsedPreview ozone:visible ?x "true"
+
+	uniqueMethod expandPreview
+		replace `collapsedPreview ozone:visible ?x "false"
+		replace `expandedPreview ozone:visible ?x "true"
+
+	add { expandedPreview
+		rdf:type				slide:Block ;
+		slide:bgcolor			"lightestGray" ;
+		slide:borderTopWidth	"1" ;
+		slide:borderTopColor	"gray" ;
+		slide:marginTop			"1" ;
+		slide:child ${
+			rdf:type		slide:ColumnSet ;
+			slide:children @(
+				${	rdf:type		ozone:Connector ;
+					ozone:connect	properties ;
+					ozone:trigger	layout:focused ;
+					ozone:onChange	:onFocusChange
+				}
+				${	rdf:type		slide:Block ;
+					slide:margin	"4" ;
+					slide:color		"gray" ;
+					slide:child ${
+						rdf:type		slide:Image ;
+						slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/minus.gif> ;
+						slide:textAlign	"top"
+					} ;
+					ozone:onClick	collapsePreview
+				}
+				${	rdf:type				slide:Block ;
+					slide:borderLeftWidth	"1" ;
+					slide:borderLeftColor	"gray" ;
+					slide:marginLeft		"1" ;
+					slide:child				(vc:createViewContainerWithTitleBar focusDataSource false)
+				}
+			)
+		}
+	}
+
+	add { collapsedPreview
+		rdf:type				slide:Block ;
+		slide:margin			"4" ;
+		slide:bgcolor			"lightestGray" ;
+		slide:color				"gray" ;
+		slide:borderTopWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type		ozone:Connector ;
+					ozone:connect	properties ;
+					ozone:trigger	layout:focused ;
+					ozone:onChange	:onFocusChange
+				}
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/plus.gif>
+				}
+				slide:space
+				${	rdf:type		slide:Text ;
+					slide:text		"See preview"
+				}
+			)
+		} ;
+		ozone:onClick	expandPreview
+	}
+
+	= preview (extract viewInstance cv:preview ?x)
+	if (!= preview null)
+		if ((preview.getContent).equals 'false')
+			add { expandedPreview ozone:visible "false" }
+		else
+			add { collapsedPreview ozone:visible "false" }
+	else
+		add { collapsedPreview ozone:visible "false" }
+
+	= toolbar @(
+		${	rdf:type						cv:LayoutChangeControl ;
+			:layoutPartData					layout ;
+			hs:view							${ rdf:type cv:LayoutChangeControlToolbarView }
+		}
+	)
+	= customToolbar (extract viewInstance cv:toolbar ?x)
+	if (!= customToolbar null)
+		for x in (adenine:convertList customToolbar)
+			toolbar.add x
+
+	= ui ${
+		rdf:type				slide:Block ;
+		slide:bgcolor			"white" ;
+		slide:color				"#426496" ;
+		ozone:registerToolbar	toolbar ;
+		slide:child ${
+			rdf:type			layout:Layout ;
+			ozone:dataSource	${
+				rdf:type			data:VisibleResourceListSource ;
+				ozone:dataSource	${
+					rdf:type		data:DAMLListSource ;
+					data:damlList	@( layout expandedPreview collapsedPreview )
+				}
+			} ;
+			layout:layoutConstraint ${
+				rdf:type			layout:RowSplitterConstraint ;
+				layout:pack			"last" ;
+				layout:constraint	${ layout:element expandedPreview ; layout:dimension "50%" } ;
+				layout:constraint	${ layout:element collapsedPreview ; layout:resizable "false" }
+			}
+		}
+	}
+
+	for x in (query { viewInstance cv:putProperty ?x })
+		add { ui ozone:putProperty x[0] }
+
+	return ui
+#	return ${
+#		rdf:type				ozone:ProgressiveDisplayContainer ;
+#		ozone:switchImmediately	"true" ;
+#		ozone:initialChild		:progressMessage ;
+#		ozone:child				ui
+#	}
+
+add { :progressMessage
+	rdf:type	slide:Block ;
+	slide:child ${
+		rdf:type		slide:Paragraph ;
+		slide:alignX	"center" ;
+		slide:alignY	"center" ;
+		slide:children @(
+			${	rdf:type		slide:Text ;
+				slide:fontSize	"14" ;
+				slide:text		"Please wait while Haystack loads and sorts your information..."
+			}
+		)
+	}
+}
+	
+method :onFocusChange ; adenine:precompile "true" ; adenine:preload "true"
+	with __source__ __infosource__
+		= partData (__context__.getLocalProperty ozone:partData)
+		= properties (extract partData ozone:connect ?x)
+		= focus (extract properties layout:focused ?x)
+		= navigator (__context__.getProperty ozone:viewNavigator)
+		
+#		print "OnFocusChange partData" partData
+#		print "OnFocusChange properties" properties
+#		print "OnFocusChange focus" focus
+#		print "OnFocusChange navigator" navigator
+		
+		= resource (navigator.getCurrentResource)
+		= navigatorProperties (extract resource ozone:navigatorProperties ?x)
+
+#		print "OnFocusChange resource" resource
+#		print "OnFocusChange navigatorProperties" navigatorProperties
+		if (== focus null)
+			remove navigatorProperties ozone:preview ?x
+		else
+			frame:select focus
+#			replace navigatorProperties ozone:preview ?x focus
+
+method cv:setLayoutConstraint layoutManagerPart layoutPartData
+	= generator (extract layoutManagerPart ozone:partDataGenerator ?x)
+	return (generator layoutPartData)
+
+#############################################################################################
+# Layout change control view part (6/1/2005: copied here from collectionView-legacy.ad)
+
+add { :layoutChangeControlViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				vc:ToolbarViewPart ;
+	ozone:viewDomain		cv:LayoutChangeControlToolbarView ;
+	ozone:partDataGenerator	:presentLayoutChangeControlToolbarView ;
+#	ozone:cachePartData		"true" ;
+	ozone:synchronous		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentLayoutChangeControlToolbarView underlying ; adenine:precompile "true" ; adenine:preload "true"
+	= layoutPartData (extract underlying :layoutPartData ?x)
+	= layoutChangeControlID (UniqueResource)
+
+	return ${
+		rdf:type				slide:Train ;
+		ozone:registerService	layoutChangeControlID ;
+		ozone:putProperty		${ ozone:name :layoutPartData ; ozone:value layoutPartData } ;
+		ozone:putProperty		${ ozone:name :layoutChangeControlID ; ozone:value layoutChangeControlID } ;
+		ozone:onClick			:showLayoutChangeDropdownMenu ;
+		slide:children @(
+			${	rdf:type	slide:Text ;
+#[				ozone:dataSource ${
+					rdf:type		data:LiteralPropertySource ;
+					data:predicate	layout:description ;
+					ozone:dataSource ${
+						rdf:type		data:ResourcePropertySource ;
+						data:predicate	ozone:dataDomain ;
+						data:reverse	"true" ;
+						ozone:dataSource ${
+							rdf:type		data:ResourcePropertySource ;
+							data:predicate	rdf:type ;
+							ozone:dataSource ${
+								rdf:type	data:ResourcePropertySource ;
+								data:subject	layoutPartData ;
+								data:predicate	layout:layoutConstraint
+							}
+						}
+					}
+				}#]
+				slide:text	"Change layout"
+			}
+			slide:space
+			${	rdf:type		slide:Image ;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/drop.gif>
+			}
+		)
+	}
+
+method :showLayoutChangeDropdownMenu
+	= layoutChangeControlID (__context__.getProperty :layoutChangeControlID)
+	= layoutChangeControl (__context__.getProperty layoutChangeControlID)
+
+	= menu ${
+		rdf:type		modeless:Modeless ;
+		modeless:child ${
+			rdf:type			slide:Block ;
+			slide:alignX		"left" ;
+			slide:fontBold		"false" ;
+			slide:fontFamily	"Tahoma, Arial, Times New Roman" ;
+			slide:fontSize		"8" ;
+			slide:bgcolor		"white" ;
+			slide:color			"#3B5377" ;
+			slide:borderWidth	"1" ;
+			slide:borderColor	"lightGray" ;
+			slide:margin		"2" ;
+			slide:width			"200" ;
+			slide:child	${
+			rdf:type				layout:Layout ;
+				ozone:dataSource	${
+					rdf:type			data:PredicateSetSource ;
+					data:predicate		rdf:type ;
+					data:object			layout:ScrollableLayoutManager ;
+				} ;
+				layout:layoutConstraint ${
+					rdf:type			layout:RowStackerConstraint ;
+					ozone:viewPartClass	cv:LayoutChangeMenuItemViewPart ;
+					layout:sortBy ${
+						rdf:type				data:SortingListSource ;
+						data:sortOrder			"ascending" ;
+						data:sortDataSource		${ rdf:type data:LiteralPropertySource ; data:predicate layout:description }
+					}
+				}
+			}
+		}
+	}
+
+	(__context__.getProperty modeless:modelessCreator).createModelessPart menu (layoutChangeControl.getBounds) true false __context__
+
+#############################################################################################
+# Layout change menu item view part  (6/1/2005: copied here from collectionView-legacy.ad)
+
+add {
+	:layoutChangeMenuItemViewPart
+		rdf:type				ozone:SWTPart ;
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				cv:LayoutChangeMenuItemViewPart ;
+		ozone:viewDomain		:LayoutChangeMenuItemView ;
+		ozone:partDataGenerator	:presentLayoutChangeMenuItemView ;
+		ozone:synchronous		"true" ;
+		ozone:cachePartData		"false" ;
+		ozone:needsViewInstance	"true" ;
+		ozone:cacheStyle		ozone:cacheDisabled ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	daml:Thing hs:classView :LayoutChangeMenuItemView
+}
+
+method :presentLayoutChangeMenuItemView underlying ; adenine:precompile "true" ; adenine:preload "true"
+	return ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					ozone:dataSource ${
+						rdf:type		data:LiteralPropertySource ;
+						data:subject	underlying ;
+						data:predicate	layout:description
+					}
+				}
+			)
+		} ;
+		ozone:onClick ${
+			rdf:type			ozone:AdenineCall ;
+			ozone:method		:changeLayout ;
+			ozone:parameters	@( underlying )
+		}
+	}
+
+method :changeLayout layoutManagerPart ; adenine:precompile "true" ; adenine:preload "true"
+	= layoutPartData (__context__.getProperty :layoutPartData)
+	= layoutConstraint (cv:setLayoutConstraint layoutManagerPart layoutPartData)
+
+	replace layoutPartData layout:layoutConstraint ?x layoutConstraint
+
+	(__context__.getProperty modeless:modelessParent).dispose
+
+#############################################################################################
+# Remove from data provider
+
+method :removeFromDataSource element index layoutInstance ; adenine:preload "true"
+	# Walk the context tree
+	= context __context__
+	while (!= null context)
+		if (== layoutInstance (context.getLocalProperty ozone:layoutInstance))
+			break
+
+		= context (context.getParentContext)
+
+	= dataProvider (context.getLocalProperty ozone:dataProvider)
+	if (== null dataProvider)
+		print '>> Failed to find data provider from which to remove object'
+		return
+
+	if (!= "null" element)
+		dataProvider.requestChange data:setRemoval element
+	else
+		importjava "edu.mit.lcs.haystack.ozone.data" ListDataChange
+		importjava "java.lang" Integer
+
+		= index2 (Integer.parseInt (index.getContent))
+		if (!= index2 -1)
+			= change (ListDataChange index2 1 null)
+			dataProvider.requestChange data:listRemoval change
+		
+method :removeAllFromDataSource layoutInstance ; adenine:preload "true"
+	# Walk the context tree
+	= context __context__
+	while (!= null context)
+		if (== layoutInstance (context.getLocalProperty ozone:layoutInstance))
+			break
+
+		= context (context.getParentContext)
+
+	= dataProvider (context.getLocalProperty ozone:dataProvider)
+	if (== null dataProvider)
+		print '>> Failed to find data provider from which to remove object'
+		return
+
+	if (dataProvider.supportsChange data:setClear)
+		dataProvider.requestChange data:setClear null
+	else
+		if (dataProvider.supportsChange data:listClear)
+			dataProvider.requestChange data:listClear null
+		
+method cv:createRemoveOperation partData layoutInstance element index ; adenine:preload "true"
+	if (or (!= null element) (!= null index))
+		# Set up remove individual item
+		= queryModel { ?x rdf:type op:Operation ; rdf:type cv:RemoveElementOperation ; :layoutInstance layoutInstance }
+		if (!= element null)
+			queryModel.add { ?x :element element }
+		if (!= index -1)
+			queryModel.add { ?x :index index }
+
+		= operation (queryExtract queryModel)
+
+		if (!= operation null)
+			= operation operation[0]
+		else
+			uniqueMethod operation
+				:removeFromDataSource `element `index `layoutInstance
+
+			add { operation
+				rdf:type				op:Operation ;
+				rdf:type				cv:RemoveElementOperation ;
+				:layoutInstance			layoutInstance ;
+				dc:title				"Remove from List" ;
+				summary:titleSlide	${
+					rdf:type slide:Span ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Remove"
+						}
+						slide:space
+						${	rdf:type				ozone:ViewContainer ;
+							ozone:initialResource	element ;
+							ozone:viewPartClass		ozone:InactiveInlineViewPart
+						}
+					)
+				}
+			}
+
+
+			if (!= element null)
+				add { operation :element element }
+			if (!= index null)
+				add { operation :index index }
+
+		add { partData contextMenu:contextOperation operation }
+
+	# Set up remove all
+	= operation (queryExtract { ?x rdf:type op:Operation ; rdf:type cv:RemoveAllOperation ; :layoutInstance layoutInstance })
+
+	if (!= operation null)
+		= operation operation[0]
+	else
+		uniqueMethod operation
+			:removeAllFromDataSource `layoutInstance
+
+		add { operation
+			rdf:type				op:Operation ;
+			rdf:type				cv:RemoveAllOperation ;
+			:layoutInstance			layoutInstance ;
+			dc:title				"Remove all items" ;
+			summary:titleSlide	${
+				rdf:type slide:Span ;
+				slide:children @(
+					${	rdf:type	slide:Text ;
+						slide:text	"Remove all items"
+					}
+				)
+			}
+		}
+
+	add { partData contextMenu:contextOperation operation }
+
+#############################################################################################
+# DND operations for collections
+
+add { :collectionDNDDragSource
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			dnd:DragParameter ;
+	dc:title			"Thing to add" ;
+	op:required			"true" ;
+	rdfs:range			daml:Thing
+}
+
+add { :collectionTarget
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			dnd:DropParameter ;
+	dc:title			"Collection/List Target" ;
+	op:required			"true" ;
+	rdfs:range			hs:Collection ;
+	rdfs:range			hs:List ;
+	rdfs:range			data:CollectionDataSet
+}
+
+method :addToCollectionOperation :collectionDNDDragSource = sources :collectionTarget = targets ;
+rdf:type		op:Operation ;
+rdf:type		dnd:DNDOperation ;
+dc:title		"Add to collection/list" ;
+dc:description	"Add to collection/list"
+	with __target__ __infosource__
+		if (contains targets[0] rdf:type hs:Collection adenine:source = __infosource__)
+			for s in sources
+				add { targets[0] hs:member s }
+
+			return
+
+		if (contains targets[0] rdf:type hs:List adenine:source = __infosource__)
+			importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+			= list targets[0]
+			for s in sources
+				ListUtilities.appendToHSList list s __infosource__
+
+			return
+
+		if (contains targets[0] rdf:type data:CollectionDataSet adenine:source = __infosource__)
+			:addToDataSource (extract targets[0] data:dataSource ?x adenine:source = __infosource__) sources
+			return
+
+method :clearCollectionOperation :collectionTarget = targets ;
+rdf:type			op:Operation ;
+op:primaryParameter	:collectionTarget ;
+dc:title			"Clear collection/list" ;
+dc:description		"Remove all collection/list members"
+	with __target__ __infosource__
+		if (contains targets[0] rdf:type hs:Collection adenine:source = __infosource__)
+			remove targets[0] hs:member ?x
+			return
+
+		if (contains targets[0] rdf:type hs:List adenine:source = __infosource__)
+			importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+			ListUtilities.clearHSList targets[0] __infosource__
+
+		if (contains targets[0] rdf:type data:CollectionDataSet adenine:source = __infosource__)
+			:clearDataSource (extract targets[0] data:dataSource ?x adenine:source = __infosource__)
+
+
+
+
+method :addToDataSource dataSource items
+#; adenine:precompile "true" ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	= dataProvider (DataUtilities.createDataProvider dataSource context __source__)
+	if (!= dataProvider null)
+		if (dataProvider.supportsChange data:setAddition)
+			dataProvider.requestChange data:setAddition item
+		else
+			if (dataProvider.supportsChange data:listAddition)
+				importjava "edu.mit.lcs.haystack.ozone.data" ListDataChange
+				dataProvider.requestChange data:listAddition (ListDataChange 0 1 items)
+
+		dataProvider.dispose
+
+method :clearDataSource dataSource
+#; adenine:precompile "true" ; adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	= dataProvider (DataUtilities.createDataProvider dataSource context __source__)
+	if (!= dataProvider null)
+		if (dataProvider.supportsChange data:setClear)
+			dataProvider.requestChange data:setClear
+		else
+			if (dataProvider.supportsChange data:listClear)
+				dataProvider.requestChange data:listClear
+
+		dataProvider.dispose
+
+#############################################################################################
+# Hierarchical view part
+
+add { hs:Collection hs:classView :HierarchicalCollectionView }
+
+add { :hierarchicalViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:HierarchicalViewPart ;
+	ozone:viewDomain		:HierarchicalCollectionView ;
+	ozone:template ${
+		rdf:type				ozone:MultiplexPartContainer ;
+		ozone:children @(
+			${	rdf:type					slide:Block ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type					slide:Button ;
+							slide:margin				"3" ;
+							ozone:onClick				ozone:showMultiplexPart1 ;
+							slide:child	${
+								rdf:type		slide:Image ;
+								slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif> ;
+								slide:textAlign	"center"
+							}
+						}
+						${ rdf:type summary:Icon }
+						slide:nonwrappingSpace
+						${ rdf:type summary:Title ; ozone:onClick ozone:underlyingHyperlink }
+					)
+				}
+			}
+			${	rdf:type					slide:Block ;
+				slide:marginBottom			"3" ;
+				slide:child ${
+					rdf:type				slide:RowSet ;
+					slide:children @(
+						${	rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type					slide:Button ;
+									slide:margin				"3" ;
+									ozone:onClick				ozone:showMultiplexPart0 ;
+									slide:child	${
+										rdf:type		slide:Image ;
+										slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif> ;
+										slide:textAlign	"center"
+									}
+								}
+								${ rdf:type summary:Icon }
+								slide:nonwrappingSpace
+								${ rdf:type summary:Title ; ozone:onClick ozone:underlyingHyperlink }
+							)
+						}
+						${	rdf:type			slide:Block ;
+							slide:marginLeft	"20" ;
+							slide:marginTop		"1" ;
+							slide:child ${
+								rdf:type			layout:Layout ;
+								ozone:dataSource	:naturalDataSource ;
+								layout:layoutConstraint ${ 
+									rdf:type				layout:RowStackerConstraint ;
+									layout:emptyPartData	${ rdf:type slide:Text ; slide:text "This collection is empty; drag and drop items here to add" } ;
+									ozone:viewPartClass		ozone:HierarchicalViewPart ;
+									layout:sortBy ${
+										rdf:type			data:SortingListSource ;
+										data:sortDataSource ${ rdf:type summary:TitleSource }
+									}
+								}
+							}
+						}
+					)
+				}
+			}
+		)
+	} ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+}
+
+#############################################################################################
+# Pushpin parts
+
+add { :pushpinListPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	ozone:dataDomain		:PushpinList ;
+	ozone:partDataGenerator	:presentPushpinList ;
+#	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentPushpinList data ; adenine:preload "true"
+	= primarySource (extract data :primaryDataSource ?x)
+	= viewPartClass (extract data ozone:viewPartClass ?x)
+
+	= mergeSource ${
+		rdf:type			data:MergeSetSource ;
+		ozone:dataSource	primarySource ;
+		data:onAdd			:onAdd
+	}
+
+	for x in (query { data :secondaryDataSource ?x })
+		add { mergeSource ozone:dataSource	x[0] }
+
+	return ${
+		rdf:type			layout:Layout ;
+		ozone:putProperty	${ ozone:name :primaryDataSource ; ozone:value primarySource } ;
+		ozone:putProperty	${ ozone:name :viewPartClass ; ozone:value viewPartClass } ;
+		ozone:dataSource	mergeSource ;
+		layout:layoutConstraint ${ 
+			rdf:type				layout:RowStackerConstraint ;
+			ozone:viewPartClass		:PushpinViewPart ;
+			layout:sortBy ${
+				rdf:type			data:SortingListSource ;
+				data:sortDataSource ${ rdf:type summary:TitleSource }
+			}
+		}
+	}
+
+add { daml:Thing hs:classView :PushpinView }
+
+add { :isInPrimaryDataSource
+	rdf:type				data:MemberOfSetSource ;
+	data:memberDataSource	data:underlyingSource ;
+	data:setDataSource ${
+		rdf:type	data:ProviderConstructorSource ;
+		ozone:dataSource ${
+			rdf:type		data:ContextPropertySource ;
+			data:property	:primaryDataSource
+		}
+	}
+}
+
+add { :pushpinViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				:PushpinViewPart ;
+	ozone:viewDomain		:PushpinView ;
+	ozone:partDataGenerator	:presentPushpinView ;
+#	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentPushpinView
+	return ${
+		rdf:type			ozone:MultiplexPartContainer ;
+		ozone:children		@( :pushpinPresent :noPushpin ) ;
+		ozone:putProperty	${ ozone:name ozone:viewPartClass ; ozone:value (__context__.getProperty :viewPartClass) } ;
+		ozone:dataSource ${
+			rdf:type			data:MappingSource ;
+			data:domain			@( "true" "false" ) ;
+			data:range			@( :noPushpin :pushpinPresent ) ;
+			data:default		:noPushpin ;
+			ozone:dataSource	:isInPrimaryDataSource
+		}
+	}
+
+
+add { :pushpinPresent
+	rdf:type	slide:ColumnSet ;
+	slide:color	"70%" ;
+	slide:pack	"right" ;
+	slide:children @(
+		${	rdf:type			ozone:ViewContainer ;
+			ozone:dataSource	data:underlyingSource
+		}
+		${	rdf:type		slide:Image ;
+			ozone:onClick	:pinTask ;
+			ozone:tooltip	"Pin this item to the list" ;
+			slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/pin.gif>
+		}
+	)
+}
+
+method :onAdd x
+	# Construct destination data source
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider (__context__.getProperty :primaryDataSource) __context__ __source__)
+
+	# Perform add
+	dataProvider.requestChange data:setAddition x
+	dataProvider.dispose
+
+method :pinTask
+	= underlying (data:getUnderlying)
+
+	# Construct destination data source
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	= dataProvider (DataUtilities.createDataProvider (__context__.getProperty :primaryDataSource) __context__ __source__)
+
+	# Perform add
+	dataProvider.requestChange data:setAddition (Set underlying)
+	dataProvider.dispose
+
+add { :noPushpin
+	rdf:type	slide:ColumnSet ;
+	slide:pack	"right" ;
+	slide:children @(
+		${	rdf:type			ozone:ViewContainer ;
+			ozone:dataSource	data:underlyingSource
+		}
+		${	rdf:type		slide:Block ;
+			slide:child		slide:space ;
+			slide:width		"9"
+		}
+	)
+}
+
+#############################################################################################
+# Dropdown view parts
+
+add { hs:Collection hs:classView :CollectionDropdownView }
+add { hs:List hs:classView :CollectionDropdownView }
+add { data:CollectionDataSet hs:classView :CollectionDropdownView }
+
+add { :collectionDropdownViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:DropdownViewPart ;
+	ozone:viewDomain		:CollectionDropdownView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:child ${
+			rdf:type			layout:Layout ;
+			ozone:dataSource	:listDataSource ;
+			layout:layoutConstraint ${ 
+				rdf:type				layout:RowStackerConstraint ;
+				layout:emptyPartData	${ rdf:type slide:Text ; slide:text "This collection is empty; drag and drop items here to add" } ;
+				ozone:viewPartClass		ozone:DropdownItemViewPart ;
+				layout:defaultShowCount	"30"
+			}
+		}
+	}
+}
+
+add { hs:Collection hs:classView :DropdownItemView }
+add { hs:List hs:classView :DropdownItemView }
+add { data:CollectionDataSet hs:classView :DropdownItemView }
+
+add { :dropdownItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:DropdownItemViewPart ;
+	ozone:viewDomain		:DropdownItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:submenu ${
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type				ozone:ViewContainer ;
+				ozone:viewPartClass		ozone:StandaloneDropdownViewPart ;
+				ozone:dataSource		data:underlyingSource
+			}
+		} ;
+		slide:child ${
+			rdf:type		slide:ColumnSet ;
+			ozone:onClick	:onDropdownItemClick ;
+			slide:pack		"right" ;
+			slide:children @(
+				${	rdf:type	slide:Block ;
+					slide:child ${
+						rdf:type	slide:Paragraph ;
+						slide:children @(
+							${	rdf:type	summary:IconBlank
+							}
+							slide:space
+							${	rdf:type	slide:Paragraph ;
+								slide:children @(
+									${	rdf:type	summary:Title
+									}
+								)
+							}
+						)
+					}
+				}
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+				}
+			)
+		}
+	}
+}
+
+method :onDropdownItemClick
+	= menuCreator (__context__.getProperty contextMenu:menuCreator)
+	if (!= null menuCreator)
+		menuCreator.disposeChildren
+
+	ozone:navigate (data:getUnderlying)

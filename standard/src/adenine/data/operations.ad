@@ -1,0 +1,462 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Built-in operations
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/data/operations>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	config:			<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	cont:			<http://haystack.lcs.mit.edu/schemata/continuation#> 
+@prefix	modeless:		<http://haystack.lcs.mit.edu/schemata/ozonemodeless#>
+@prefix	op:				<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix	contui:			<http://haystack.lcs.mit.edu/ui/continuation#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	taskui:			<http://haystack.lcs.mit.edu/ui/task#> 
+@prefix activity:		<http://haystack.lcs.mit.edu/schemata/activity#>
+@prefix setupui:		<http://haystack.lcs.mit.edu/ui/setup#>
+@prefix task:			<http://haystack.lcs.mit.edu/schemata/task#>
+@prefix help:			<http://haystack.lcs.mit.edu/programs/help#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#>
+@prefix editor:			<http://haystack.lcs.mit.edu/ui/ozoneeditor#>
+@prefix lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix eclipse:		<http://haystack.lcs.mit.edu/ui/eclipse#>
+@prefix	:				<http://haystack.lcs.mit.edu/data/operations#>
+
+add { ^ config:dependsOn <http://haystack.lcs.mit.edu/ui/frame> }
+
+#############################################################################################
+# Starting Points collection
+
+add { :startingPoints
+	dc:title	"Starting Points" ;
+	rdf:type	hs:Collection ;
+	hs:view ${
+	 rdf:type	setupui:CollectionView
+	} ;
+	hs:member	:inputOperations ;
+	hs:member	:haystackControls ;	
+	help:message ${
+		rdf:type	slide:RowSet ;
+		slide:children @(
+			${	rdf:type		slide:Block ;
+				slide:margin	"4" ;
+				slide:bgcolor	"#F0F0F0" ;
+				slide:color		"#000080" ;
+				slide:child ${
+					rdf:type		slide:Paragraph ;
+					slide:children @(
+						${	rdf:type		slide:Image ;
+							slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/information.gif>
+						}
+						slide:space
+						${	rdf:type	slide:Text ;
+							slide:text	"Use the items in this collection to begin working with Haystack."
+						}
+					)
+				}
+			}
+			${	rdf:type		slide:Block ;
+				slide:child		slide:space ;
+				slide:height	"5"
+			}
+		)
+	}
+}
+
+
+#############################################################################################
+# Action categories
+
+add { :inputOperations
+	rdf:type				hs:Collection ;
+	rdf:type				activity:Activity ;
+	ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/icons/types/note.gif> ;
+	hs:view ${
+		rdf:type			setupui:CollectionView
+	} ;
+	rdf:type				task:Task ;
+	taskui:showOnStartPane	"true" ;
+	dc:title				"Jot down information" ;
+	task:context			:inputContext ;
+	dc:description			"Quickly create collections or lists."
+}
+
+add { :inputContext
+	rdf:type	task:Context ;
+	dc:title	"Jot down information"
+}
+
+add { :haystackControls
+	rdf:type				hs:Collection ;
+	rdf:type				activity:Activity ;
+	ozone:icon				<http://haystack.lcs.mit.edu/data/ozone/icons/types/connection.gif> ;
+	hs:view ${
+		rdf:type			setupui:CollectionView
+	} ;
+	hs:member				:shutdownOperation;
+	taskui:showOnStartPane	"true" ;
+	dc:title				"Configure Haystack" ;
+	dc:description			"Connect to and control external services."
+}
+
+add { :myItems
+	rdf:type				hs:Collection ;
+	hs:view ${
+		rdf:type			setupui:CollectionView
+	} ;
+	dc:title				"My documents, files and projects"
+}
+
+
+#############################################################################################
+# Built-in operations
+
+method :shutdownOperation ; 
+adenine:preload "true" ;
+rdf:type		op:Operation ;
+dc:title		"Shutdown Haystack" ;
+ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/common/stopSign.gif> ;
+dc:description	"Closes the Haystack environment."
+	importjava "java.lang" System
+	System.exit 10
+
+#############################################################################################
+# Operations with single parameters
+
+add { :target
+	rdf:type			op:Parameter ;
+	rdf:type			daml:ObjectProperty ;
+	dc:title			"Target" ;
+	op:required			"true" ;
+	rdfs:range			daml:Thing
+}
+
+method :copyURIOperation :target = target ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+dc:title			"Copy URI" ;
+adenine:preload 	"true"
+	importjava "org.eclipse.swt.dnd" Clipboard Transfer TextTransfer
+	importjava "edu.mit.lcs.haystack.ozone.core" Ozone
+
+	= clipboard (Clipboard Ozone.s_display)
+	= data @( (target[0].getURI) )
+	= transfers @( (TextTransfer.getInstance) )
+
+	clipboard.setContents data transfers
+
+
+#############################################################################################
+# editTitle operation UI (temporary)
+
+add { :editContinuationOf
+	rdf:type	hs:CachedProperty
+}
+
+method :editTitleOperation :target = res ; 
+rdf:type			op:Operation ;
+op:primaryParameter	:target ;
+hs:view				${ rdf:type :EditTitleOperationContextMenuItemView } ;
+hs:view				${ rdf:type :EditTitleOperationEclipsePaneItemView } ;
+dc:title			"Rename" ;
+adenine:preload 	"true"
+	= res res[0]
+	= cont (extract ?x :editContinuationOf res)
+	if (== cont null)
+		uniqueMethod validator item
+			return false
+
+		uniqueMethod acceptor item
+			return
+
+		= cont ${
+			rdf:type			cont:Continuation ;
+			rdf:type			task:Task ;
+			dc:title			"Rename task" ;
+			cont:validator		validator ;
+			cont:acceptor		acceptor ;
+			cont:origin			res ;
+			:editContinuationOf	res ;
+			hs:view				${ rdf:type :EditTitleContinuationPhraseSummaryView }
+		}
+
+	contui:addContinuation cont
+
+add { :operationContextMenuItemViewPart
+	rdf:type					ozone:SWTPart ;
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					contextMenu:ContextMenuItemViewPart ;
+	ozone:viewDomain			:EditTitleOperationContextMenuItemView ;
+	hs:javaImplementation		${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type					slide:MenuItem ;
+		slide:marginX				"3" ;
+		slide:marginY				"2" ;
+		slide:backgroundHighlight	"lightestGray" ;
+		slide:child ${
+			rdf:type			slide:ColumnSet ;
+			slide:pack			"right" ;
+			slide:children @(
+				${	rdf:type			slide:Train ;
+					ozone:onClick		contextMenu:startOperation ;
+					slide:children		@(
+						${	rdf:type			summary:IconBlank ;
+						}
+						slide:space
+						${	rdf:type	slide:Paragraph ;
+							slide:children @(
+								${	rdf:type			summary:Title
+								}
+							)
+						}
+					)
+				}
+				${	rdf:type			slide:Image ;
+					slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+				}
+			)
+		} ;
+		slide:submenu			:renameModeless
+	}
+}
+
+add { :renameModeless
+			rdf:type		modeless:Modeless ;
+			modeless:child ${
+				rdf:type			slide:Block ;
+				slide:bgcolor		"white" ;
+				slide:borderWidth	"1" ;
+				slide:width			"200" ;
+				slide:borderColor	"lightGray" ;
+				slide:margin		"5" ;
+				slide:child ${
+					rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Edit title:"
+						}
+						slide:break
+						${	rdf:type	editor:LiteralEditor ;
+							ozone:dataSource ${
+								rdf:type			data:LiteralPropertySource ;
+								ozone:dataSource	contextMenu:underlyingSource ;
+								data:predicate		dc:title
+							}
+						}
+					)
+				}
+			}
+		}
+
+add { :renameModeless2
+	rdf:type		modeless:Modeless ;
+	modeless:child ${
+		rdf:type			slide:Block ;
+		slide:bgcolor		"white" ;
+		slide:borderWidth	"1" ;
+		slide:width			"200" ;
+		slide:borderColor	"lightGray" ;
+		slide:margin		"5" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"Edit title:"
+	}
+				slide:break
+				${	rdf:type	editor:LiteralEditor ;
+					ozone:dataSource ${
+						rdf:type			data:LiteralPropertySource ;
+						ozone:dataSource	lensui:underlyingSource ;
+						data:predicate		dc:title
+}
+				}
+			)
+		}
+	}
+}
+
+add { :renameEclipsePaneItemViewPart
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				eclipse:EclipsePaneItemViewPart ;
+	ozone:viewDomain		:EditTitleOperationEclipsePaneItemView ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"2" ;
+		slide:child ${
+			rdf:type	slide:ColumnSet ; 
+			slide:pack	"right" ;
+			slide:children	@(
+				${	rdf:type			ozone:ViewContainer ;	
+					ozone:dataSource	data:underlyingSource ;
+					ozone:viewPartClass	ozone:PhraseViewPart
+				}
+				${	rdf:type					slide:Button ;
+					slide:marginY				"5" ;
+					slide:marginX				"7" ;
+					slide:backgroundHighlight	"95%" ;
+					ozone:onClick				:showDropdown2 ;
+					slide:child ${
+						rdf:type		slide:Train ;
+						slide:children @(
+							${	rdf:type			slide:Image ;
+								slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+							}
+						)
+					}
+				}
+			)
+		}
+	}
+}
+
+method :showDropdown2
+	= modelessCreator (__context__.getProperty modeless:modelessCreator)
+
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	context.putProperty contextMenu:menuCreator modelessCreator
+	context.putProperty contextMenu:oldContext context
+
+	modelessCreator.createModelessPart :renameModeless2 ((__context__.getLocalProperty ozone:parentPart).getBounds) false false context
+
+add { :editTitlePhraseSummaryViewPart
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				ozone:AppletViewPart ;
+	rdf:type				ozone:InteractiveViewPart ;
+
+	ozone:viewDomain		:EditTitleContinuationPhraseSummaryView ;
+	ozone:partDataGenerator	:presentEditTitleContinuationPhrase ;
+	ozone:cachePartData		"true" ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" } 
+}
+
+method :presentEditTitleContinuationPhrase res ; adenine:precompile "true" ; adenine:preload "true"
+	= edit ${
+		rdf:type				ozone:Edit ;
+		ozone:text				:initTitleEdit ;
+		ozone:onEnterPressed	:onOK
+	}
+
+	return ${
+		rdf:type		slide:Block ;
+		slide:margin	"5" ;
+		ozone:putProperty	${ ozone:name :continuation ; ozone:value res } ;
+		ozone:putProperty	${ ozone:name :editPartData ; ozone:value edit } ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type		slide:Text ;
+					slide:text		"Edit title of"
+				}
+				slide:space
+				${	rdf:type		slide:Text ;
+					slide:text		"resource" ;
+					ozone:onClick	${ rdf:type ozone:Hyperlink ; ozone:target res }
+				}
+				slide:colon
+				slide:newLine
+
+				edit
+				slide:newLine
+				${	rdf:type		slide:Paragraph ;
+					slide:alignX	"right" ;
+					slide:children @(
+						${	rdf:type					slide:Button ;
+							slide:borderWidth			"1" ;
+							slide:margin				"3" ;
+							ozone:onClick				:onOK ;
+							slide:child ${
+								rdf:type				slide:Train ;
+								slide:children @(
+									${	rdf:type	slide:Text ;
+										slide:text	"OK"
+									}
+								)
+							}
+						}
+						slide:space
+						${	rdf:type					slide:Button ;
+							slide:borderWidth			"1" ;
+							slide:margin				"3" ;
+							ozone:onClick				:onCancel ;
+							slide:child ${
+								rdf:type				slide:Train ;
+								slide:children @(
+									${	rdf:type	slide:Text ;
+										slide:text	"Cancel"
+									}
+								)
+							}
+						}
+					)
+				}
+			)
+		}
+	}
+
+method :onOK ; adenine:precompile "true" ; adenine:preload "true"
+	= editPartData (__context__.getProperty :editPartData)
+	= continuation (__context__.getProperty :continuation)
+	= res (extract continuation cont:origin ?x)
+
+	with __target__ __infosource__
+		replace res dc:title ?x (extract editPartData ozone:dynamicText ?x)
+	contui:removeContinuation continuation
+
+method :onCancel ; adenine:precompile "true" ; adenine:preload "true"
+	= continuation (__context__.getProperty :continuation)
+	contui:removeContinuation continuation
+
+method :initTitleEdit ; adenine:precompile "true" ; adenine:preload "true"
+	= continuation (__context__.getProperty :continuation)
+	= res (extract continuation cont:origin ?x)
+	with __source__ __infosource__
+		return (extract res dc:title ?x)
+
+#############################################################################################
+# Start pane support
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	with __source__ __infosource__
+		with __target__ __infosource__
+			add { :setupOperations task:homepage server }
+			replace user ozone:home ?x :startingPoints
+
+

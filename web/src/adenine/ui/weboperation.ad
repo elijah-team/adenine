@@ -1,0 +1,415 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Web Operation user interface
+# Written by Ryan Manuel
+
+@base			<http://haystack.lcs.mit.edu/programs/WebOperation>
+
+@prefix	:				<http://haystack.lcs.mit.edu/programs/WebOperation#>
+@prefix	viewContainer:	<http://haystack.lcs.mit.edu/ui/viewContainer#>
+@prefix	op:				<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	dc:				<http://purl.org/dc/elements/1.1/> 
+
+@prefix	content:		<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	web:			<http://haystack.lcs.mit.edu/schemata/web#>
+@prefix webop:			<http://haystack.lcs.mit.edu/schemata/WebOperation#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#>
+@prefix	metadata:		<http://haystack.lcs.mit.edu/ui/metadataEditor#>
+@prefix	progress:	<http://haystack.lcs.mit.edu/ui/progress#>
+
+
+add { webop:WebOperation hs:classView :WebOpView }
+
+method :presentWebOpView ; adenine:preload "true"
+	= weboperation (__context__.getLocalProperty ozone:underlying)
+	= title (extract weboperation dc:title ?x)
+	= operationSummary ${ rdf:type slide:Paragraph ;
+		slide:children @(
+			${ rdf:type slide:Text ;
+				slide:fontSize "200%" ;
+				slide:text "Web Operation:"
+			} 
+			slide:break 
+			${ rdf:type slide:Block ;
+				slide:marginLeft	"16" ;
+				slide:child ${
+					rdf:type	metadata:MetadataEditor ;
+					ozone:dataSource	data:underlyingSource ;
+					metadata:scrollable	"true" ;
+					metadata:propertiesToDisplay :webOperationDataList
+				}
+			}
+		)	
+	}
+	= parameterSummary ${ rdf:type slide:Paragraph ;
+		slide:children @(
+			${ rdf:type slide:Text ;
+				slide:fontSize "200%" ;
+				slide:text "Web Operation Parameters:"
+			} 
+			${ rdf:type slide:Block ;
+				slide:marginLeft	"8" ;
+				slide:child ${ rdf:type layout:Layout ;
+					ozone:dataSource ${
+						rdf:type				data:RDFQuerySetSource ;
+						data:existentials		@(?x ?y) ;
+						data:targetExistential	?y ;
+						data:statement ${
+							data:subject	weboperation ;
+							data:predicate	adenine:namedParameter ;
+							data:object		?x
+						} ;
+						data:statement ${
+							data:subject	?x ;
+							data:predicate	adenine:parameterName ;
+							data:object		?y
+						} ;
+						data:statement ${
+							data:subject	?y ;
+							data:predicate	rdf:type ;
+							data:object		webop:WebOpParameter
+						}
+					} ;	
+					layout:focus ${
+						rdf:type data:ResourcePropertySource ;
+						data:subject :aPropertyBag ;
+						data:predicate :focused
+					} ;
+					layout:selection ${
+						rdf:type data:PredicateSetSource ;
+						data:subject :aPropertyBag ;
+						data:predicate :selected
+					} ;
+					layout:layoutConstraint ${
+						rdf:type layout:ListViewConstraint ;
+						ozone:viewPartClass ozone:PhraseViewPart ;
+						layout:sortBy ${
+							rdf:type data:SortingListSource ;
+							data:sortOrder "ascending" ;
+							data:sortDataSource ${ rdf:type summary:TitleSource }
+						}
+					}
+				}	
+			}
+		)
+	}
+	= initPage (extract weboperation webop:initPage ?x)
+	print initPage
+	= parameterPreview  ${	rdf:type	slide:Paragraph ;
+		slide:children	@(
+			${
+				rdf:type slide:Text ;
+				slide:fontSize "200%" ;
+				slide:text "Initiating Page:"
+			}
+			${
+				rdf:type			ozone:ViewContainer ;
+				ozone:initialResource	initPage
+			}
+		)
+	}
+	#= url (wvp.getCurrentOpURL)
+	#print url
+	#replace parameterPreview ozone:initialResource ?x <http://web.mit.edu>
+	return 	${	rdf:type				slide:Block ;
+		slide:bgcolor			"white" ;
+		slide:color				"#426496" ;
+		slide:child ${
+			rdf:type			layout:Layout ;
+			ozone:dataSource	${
+					rdf:type		data:DAMLListSource ;
+					data:damlList	@( operationSummary parameterSummary parameterPreview)
+			} ;
+			layout:layoutConstraint ${
+				rdf:type			layout:RowSplitterConstraint ;
+				layout:constraint	${ layout:element operationSummary ; layout:dimension "10%" } ;
+				layout:constraint 	${ layout:element parameterPreview ; layout:dimension "50%" } 
+			}
+		}
+	}
+	
+#[${ rdf:type slide:Block ;
+		slide:margin "20" ;
+		slide:bgcolor "lightestGray" ;
+		slide:child ${
+			rdf:type slide:Paragraph ;
+			slide:children @(
+				${ rdf:type slide:Text ;
+					slide:fontBold "true" ;
+					slide:text "The focused item is:"
+				}
+				slide:break
+				${ rdf:type ozone:ViewContainer ;
+					ozone:dataSource ${
+						rdf:type data:ResourcePropertySource ;
+						data:subject :aPropertyBag ;
+						data:predicate :focused
+					} ;
+					ozone:viewPartClass ozone:PhraseViewPart
+				}
+				slide:break
+				${ rdf:type slide:Text ;
+					slide:fontBold "true" ;
+					slide:text "The selected items are:"
+				}
+				slide:break
+				${ rdf:type layout:Layout ;
+					ozone:dataSource ${
+						rdf:type data:PredicateSetSource ;
+						data:subject :aPropertyBag ;
+						data:predicate :selected
+					} ;
+					layout:layoutConstraint ${
+						rdf:type layout:RowStackerConstraint ;
+						ozone:viewPartClass ozone:PhraseViewPart ;
+						layout:sortBy ${
+							rdf:type data:SortingListSource ;
+							data:sortOrder "ascending" ;
+							data:sortDataSource ${
+								rdf:type summary:TitleSource
+							}
+						}
+					}
+				}
+			)
+		}
+	}]#	
+
+add { :webOpViewPart
+	rdf:type ozone:Part ;
+	rdf:type ozone:ViewPart ;
+	rdf:type ozone:InteractiveViewPart ;
+	viewContainer:toolbarCaption "Web Operation View" ;
+	ozone:viewDomain :WebOpView ;
+	ozone:partDataGenerator :presentWebOpView ;
+	hs:javaImplementation ${
+		rdf:type hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart"
+	}
+}
+
+method :presentWebOpParameterPhraseView ; adenine:preload "true"
+	= parameter (__context__.getLocalProperty ozone:underlying)
+	= dispName (extract parameter webop:dispName ?x)
+	= type (extract parameter webop:paramType ?x)
+	= title ${ rdf:type slide:Text ;
+		ozone:dataSource ${
+			rdf:type data:LiteralPropertySource ;
+			data:subject parameter ;
+			data:predicate webop:dispName
+		}
+	}
+	= collapsed ${ rdf:type slide:Paragraph ;
+		slide:children @(
+			title
+			slide:space
+			${ rdf:type slide:Image ;
+				slide:source
+				<http://haystack.lcs.mit.edu/data/ozone/common/expand.gif> ;
+				ozone:onClick ozone:showMultiplexPart1
+			}
+		)
+	}	
+	= expanded ${ rdf:type slide:Paragraph ;
+		slide:children @(
+			title
+			slide:space
+			${ rdf:type slide:Image ;
+				slide:source <http://haystack.lcs.mit.edu/data/ozone/common/collapse.gif> ;
+				ozone:onClick ozone:showMultiplexPart2
+			}
+			slide:newLine
+			${
+				rdf:type slide:Paragraph ;
+				slide:children @(
+					slide:break
+					${ rdf:type slide:Paragraph ;
+						slide:marginLeft "16" ;
+						slide:children @( 
+							${
+								rdf:type	metadata:MetadataEditor ;
+								ozone:dataSource	data:underlyingSource ;
+								metadata:scrollable	"false" ;
+								metadata:propertiesToDisplay :webOpParamDataList
+							}
+							slide:space
+							${
+								rdf:type	metadata:MetadataEditor ;
+								ozone:dataSource	data:underlyingSource ;
+								metadata:scrollable	"false" ;
+								metadata:readOnly	"true" ;
+								metadata:propertiesToDisplay :webOpReadOnlyParamDataList
+							}
+						)
+					}
+				)
+			}
+		)
+	}
+	return ${ rdf:type slide:Block ;
+		slide:margin "8" ;	
+		slide:child ${ rdf:type ozone:MultiplexPartContainer ;
+			ozone:children @( collapsed expanded collapsed ) ;
+		}
+	}
+
+add { webop:WebOpParameter hs:classView :WebOpParameterPhraseView }
+
+add { :webOpParameterPhraseViewPart
+	rdf:type ozone:Part ;
+	rdf:type ozone:ViewPart ;
+	rdf:type ozone:PhraseViewPart ;
+	ozone:viewDomain :WebOpParameterPhraseView ;
+	ozone:partDataGenerator :presentWebOpParameterPhraseView ;
+	hs:javaImplementation ${
+		rdf:type hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart"
+	}
+}
+
+
+add { :webOpParamDataList
+	rdf:type		data:OrderedSetSource ;
+	data:damlList @(
+		webop:dispName
+	)
+}
+
+add { :webOpReadOnlyParamDataList
+	rdf:type		data:OrderedSetSource ;
+	data:damlList @(
+		webop:origName
+		webop:origValue
+		webop:paramType
+		webop:rightText
+		webop:leftText
+	)
+}
+
+add { :webOperationDataList
+	rdf:type	data:OrderedSetSource ;
+	data:damlList @(
+		dc:title
+		op:originalOperation
+	)
+}
+
+add {webop:VisibleWebOperation hs:classView ozone:WebView}
+
+#############################################################################################
+# Standard parts
+
+add {
+	ozone:webViewPart rdf:type				ozone:ViewPart ;
+					rdf:type				ozone:Part ;
+					rdf:type				ozone:InteractiveViewPart ;
+					rdf:type				ozone:AppletViewPart ;
+					rdf:type				ozone:RawViewPart ;
+					rdf:type				<http://haystack.lcs.mit.edu/ui/messageView#BodyViewPart> ;
+					ozone:dataDomain		ozone:WebBrowser ;
+					ozone:viewDomain		ozone:WebView ;
+					viewContainer:toolbarCaption	"Web browser" ;
+					hs:javaImplementation	
+						${ rdf:type hs:JavaClass ; 
+						   hs:className "edu.mit.lcs.haystack.ozone.web.WebViewPart" ;
+						   hs:pluginName "edu.mit.csail.haystack.web" }
+
+	daml:Thing hs:possibleClassView ozone:WebView
+					
+	content:HTTPContent	hs:classView	ozone:WebView
+
+	web:WebPage		hs:classView	ozone:WebView ;
+					ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/icons/types/web.gif>
+
+	ozone:WebView	rdfs:label		"Web Page View"
+}
+
+#############################################################################################
+# Web progress stuff
+
+add { progress:webProgressItem
+	rdf:type				ozone:SWTPart ;
+	rdf:type				ozone:Part ;
+	rdf:type				ozone:ViewPart ;
+	rdf:type				frame:ToolbarItemViewPart ;
+	ozone:viewDomain		:WebProgressItemView ;
+	hs:view					${ rdf:type :WebProgressItemView } ;
+	hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+	ozone:template ${
+		rdf:type			slide:Block ;
+		slide:fillParent	"true" ;
+		slide:margin		"3" ;
+		slide:child ${
+			rdf:type 			slide:Train ;
+			slide:children @(
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/types/web.gif>
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:text	"Navigating to"
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:text	"..." ;
+					ozone:connector	${
+						ozone:connect		progress:webDestinationText ;
+						ozone:trigger		progress:text ;
+						ozone:sources 		@( progress:text ) ;
+						ozone:targets 		@( slide:text )
+					}
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:color	"50%" ;
+					slide:text	"Please wait..." ;
+					ozone:connector	${
+						ozone:connect		progress:webStatusText ;
+						ozone:trigger		progress:text ;
+						ozone:sources 		@( progress:text ) ;
+						ozone:targets 		@( slide:text )
+					}
+				}
+				slide:space
+				${	rdf:type	slide:Text ;
+					slide:color	"50%" ;
+					slide:text	"" ;
+					ozone:connector	${
+						ozone:connect		progress:webProgressText ;
+						ozone:trigger		progress:text ;
+						ozone:sources		@( progress:text ) ;
+						ozone:targets		@( slide:text )
+					}
+				}
+			)
+		}
+	}
+}
+

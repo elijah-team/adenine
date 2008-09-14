@@ -1,0 +1,1001 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Wrapper Induction interface
+# Written by Andrew Hogue
+# Modified by Ryan Manuel
+
+@prefix	:			<http://haystack.lcs.mit.edu/schemata/wrapperinduction#> 
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix address:	<http://haystack.lcs.mit.edu/programs/addressBook#>
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	cont:		<http://haystack.lcs.mit.edu/schemata/continuation#>
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#>
+@prefix	vcard:		<http://haystack.lcs.mit.edu/schemata/vcard#>
+@prefix	web:		<http://haystack.lcs.mit.edu/schemata/web#>
+@prefix	contui:		<http://haystack.lcs.mit.edu/ui/continuation#>
+@prefix	navView:	<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix	pending:	<http://haystack.lcs.mit.edu/ui/pending#>
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#>
+@prefix	navigator:	<http://haystack.lcs.mit.edu/ui/viewNavigator#>
+
+
+add { :unwrappedPage
+	rdf:type		op:Parameter ;
+	op:required		"true" ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Wrapper Source Page" ;
+	rdfs:range		web:WebPage
+}
+
+add { :wrappedPage
+	rdf:type		op:Parameter ;
+	op:required		"true" ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Wrapped Page" ;
+	rdfs:range		:WrappedPage
+}
+
+add { :existingWrapper
+	rdf:type		op:Parameter ;
+	op:required		"true" ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Existing Wrapper" ;
+	rdfs:range		:Pattern ;
+}
+
+add { :semanticClass
+	rdf:type		op:Parameter ;
+	op:required		"true" ;	
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Pattern Class" ;
+	rdfs:range		rdfs:Class ;
+	rdfs:range		daml:Class 
+}
+
+add { :maxExampleSize
+	rdf:type		op:Parameter ;
+	op:required		"true" ;	
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Pattern Size" ;
+	rdfs:range		xsd:int 
+}
+
+add { :wrapperName
+	rdf:type		op:Parameter ;
+	op:required		"true" ;	
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"Wrapper Name" ;
+	rdfs:range		xsd:string
+}
+
+############################################
+##### Method to get the WebViewPart 
+
+method :getWebViewPart
+	= navMaster (__context__.getProperty ozone:navigationMaster)
+	for navPane in (query { ?x rdf:type navView:NavigationPane } )
+		= vnId (extract ?x navigator:navigatePane navPane[0])
+		= vn (navMaster.getViewNavigator vnId)
+		if (!= null vn)
+			= vc (vn.getViewContainer)
+			return (vc.getCurrentViewPart)
+	return null
+
+#########################
+##### Create Wrapper
+
+method :createWrapperWithSize :unwrappedPage = unwrappedPage :semanticClass = semanticClass :wrapperName = wrapperName :maxExampleSize = maxExampleSize ;
+adenine:preload		"true" ;
+dc:description		"Creates a semantic pattern on the Web, allowing the user to specify the maximum pattern size." ;
+op:primaryParameter	:unwrappedPage ;
+dc:title		"Create a Wrapper (Specify Size)" ;
+rdf:type		construct:Constructor ;
+rdf:type		op:Operation 
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= webViewPart (:getWebViewPart)
+	= maxExampleSizeString ((extract maxExampleSize[0] dc:title ?x).getContent)
+	= currPattern (WrapperManager.createPattern __source__ webViewPart semanticClass[0] wrapperName[0] maxExampleSizeString '.25')
+	if (!= null currPattern)
+		= cont ${
+			rdf:type	cont:Continuation ;
+			dc:title	"Confirm Wrapper" ;
+			cont:origin	unwrappedPage[0] ;
+			:currPattern	currPattern ;
+			hs:view		${ rdf:type	:ConfirmWrapperContinuationView }
+		}
+		contui:addContinuation cont
+	
+	
+
+method :createWrapper :unwrappedPage = unwrappedPage :semanticClass = semanticClass :wrapperName = wrapperName ;
+adenine:preload		"true" ;
+dc:description		"Creates a semantic pattern on the Web." ;
+op:primaryParameter	:unwrappedPage ;
+dc:title		"Create a Wrapper" ;
+rdf:type		construct:Constructor ;
+rdf:type		op:Operation 
+	importjava "edu.mit.lcs.haystack.ozone.standard.widgets.parts" PartCache
+	PartCache.clearCache __context__
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= webViewPart (:getWebViewPart)
+	print (append '>>> creating pattern with type ' semanticClass)
+	= currPattern (WrapperManager.createPattern __source__ webViewPart semanticClass[0] wrapperName[0] '40' '.25')
+	if (!= null currPattern)
+		= cont ${
+			rdf:type	cont:Continuation ;
+			dc:title	"Confirm Wrapper" ;
+			cont:origin	unwrappedPage[0] ;
+			:currPattern	currPattern ;
+			hs:view		${ rdf:type	:ConfirmWrapperContinuationView }
+		}
+		contui:addContinuation cont
+
+
+add {
+	:confirmWrapperContinuationViewPart
+		rdf:type		ozone:Part ;
+		rdf:type		ozone:ViewPart ;
+		rdf:type		ozone:AppletViewPart ;
+		rdf:type		pending:ContinuationViewPart ;
+		ozone:viewDomain	:ConfirmWrapperContinuationView ;
+		ozone:partDataGenerator	:presentConfirmWrapperContinuationView ;
+		hs:javaImplementation ${
+			rdf:type	hs:JavaClass ;
+			hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart"
+		}
+}
+
+method :presentConfirmWrapperContinuationView cont
+	= okButton (:makeConfirmWrapperOKButton cont)
+	= cancelButton (:makeConfirmWrapperCancelButton cont)
+	return ${
+		rdf:type	slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Wrapper for:" 
+				}
+				slide:break
+				${ 
+					rdf:type	slide:Block ;
+					slide:margin	"10" ;
+					slide:child ${
+						rdf:type		ozone:ViewContainer ;
+						ozone:initialResource	(extract cont cont:origin ?x) ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+				}
+				slide:break
+				${
+					rdf:type	slide:Text ;
+					slide:text	"Please confirm the highlighted pattern in the browser and click OK, or click cancel to remove the wrapper."
+				}
+				slide:line
+				${
+					rdf:type	layout:Layout ;
+					ozone:dataSource ${
+						rdf:type	data:DAMLListSource ;
+						data:damlList	@( okButton cancelButton )
+					} ;
+					layout:layoutConstraint ${ rdf:type layout:ColumnSplitterConstraint }
+				}
+			)	
+		}
+	}
+						
+method :makeConfirmWrapperOKButton cont
+	return ${	
+		rdf:type		slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"OK" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:confirmWrapperOK ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+method :makeConfirmWrapperCancelButton cont
+	return ${	
+		rdf:type	slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"Cancel" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:confirmWrapperCancel ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+method :confirmWrapperOK cont
+	contui:removeContinuation cont
+
+method :confirmWrapperCancel cont
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= webViewPart (:getWebViewPart)
+	WrapperManager.removeWrapper __source__ webViewPart (extract cont :currPattern ?x)
+	contui:removeContinuation cont
+
+
+
+#########################################
+#### Remove Wrappers
+
+method :removeWrappers :wrappedPage = wrappedPage ;
+adenine:preload		"true" ;
+dc:description		"Removes all wrappers from the given page" ;
+op:primaryParameter	:wrappedPage ;
+dc:title		"Remove Wrappers" ;
+rdf:type		op:Operation 
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= webViewPart (:getWebViewPart)
+	WrapperManager.removeWrappers __source__ webViewPart wrappedPage[0]
+
+method :removeWrapper :existingWrapper = existingWrapper ;
+adenine:preload		"true" ;
+dc:description		"Removes this wrapper" ;
+op:primaryParameter	:existingWrapper ;
+dc:title		"Remove Wrapper" ;
+rdf:type		op:Operation 
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= webViewPart (:getWebViewPart)
+	WrapperManager.removeWrapper __source__ webViewPart existingWrapper[0]
+
+
+#########################################
+#### Add Positive Example
+
+method :addPositiveExampleFromPage :wrappedPage = wrappedPage ;
+adenine:preload		"true" ;
+dc:description		"Adds another example to an existing wrapper." ;
+op:primaryParameter	:wrappedPage ;
+dc:title		"Add an Example to a Wrapper" ;
+rdf:type		construct:Constructor ;
+rdf:type		op:Operation 
+	= cont ${
+		rdf:type	cont:Continuation ;
+		dc:title	"Modify a Wrapper Task" ;
+		cont:origin	wrappedPage[0] ;
+		hs:view		${ rdf:type	:ChooseWrapperContinuationView }
+	}
+	contui:addContinuation cont
+
+method :addPositiveExampleFromWrapper :existingWrapper = existingWrapper ;
+adenine:preload		"true" ;
+dc:description		"Adds another example to an existing wrapper." ;
+op:primaryParameter	:existingWrapper ;
+dc:title		"Add an Example to this Wrapper" ;
+rdf:type		construct:Constructor ;
+rdf:type		op:Operation 
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= webViewPart (:getWebViewPart)
+	= wrappedPage (webViewPart.getUnderlyingResource)
+	= cont ${
+		rdf:type	cont:Continuation ;
+		dc:title	"Modify a Wrapper Task" ;
+		cont:origin	wrappedPage ;
+		:oldPattern	existingWrapper[0] ;		
+		hs:view		${ rdf:type	:ModifyWrapperContinuationView }
+	}
+	contui:addContinuation cont
+
+
+
+add {
+	:modifyWrapperContinuationViewPart
+		rdf:type		ozone:Part ;
+		rdf:type		ozone:ViewPart ;
+		rdf:type		ozone:AppletViewPart ;
+		rdf:type		pending:ContinuationViewPart ;
+		ozone:viewDomain	:ModifyWrapperContinuationView ;
+		ozone:partDataGenerator	:presentModifyWrapperContinuationView ;
+		hs:javaImplementation ${
+			rdf:type	hs:JavaClass ;
+			hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart"
+		}
+}
+
+method :presentModifyWrapperContinuationView cont
+	= okButton (:makeModifyOKButton cont)
+	= cancelButton (:makeModifyCancelButton cont)
+	return ${
+		rdf:type	slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Modify Wrapper for:" 
+				}
+				slide:break
+				${ 
+					rdf:type	slide:Block ;
+					slide:margin	"10" ;
+					slide:child ${
+						rdf:type		ozone:ViewContainer ;
+						ozone:initialResource	(extract cont cont:origin ?x) ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+				}
+				slide:break
+				${
+					rdf:type	slide:Text ;
+					slide:text	"Please select the new example in the browser and click OK"
+				}
+				slide:break
+				slide:line
+				${
+					rdf:type	layout:Layout ;
+					ozone:dataSource ${
+						rdf:type	data:DAMLListSource ;
+						data:damlList	@( okButton cancelButton )
+					} ;
+					layout:layoutConstraint ${ rdf:type layout:ColumnSplitterConstraint }
+				}
+			)	
+		}
+	}
+						
+method :makeModifyOKButton cont
+	return ${	
+		rdf:type		slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"OK" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:modifyWrapperOK ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+method :makeModifyCancelButton cont
+	return ${	
+		rdf:type	slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"Cancel" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:modifyWrapperCancel ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+method :modifyWrapperOK cont
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager Example
+	= oldPattern (extract cont :oldPattern ?x)
+	contui:removeContinuation cont
+
+	= webViewPart (:getWebViewPart)
+	WrapperManager.addPositiveExample __source__ webViewPart oldPattern '.50'
+
+
+method :modifyWrapperCancel cont
+	contui:removeContinuation cont
+
+
+add {
+	:chooseWrapperContinuationViewPart
+		rdf:type		ozone:Part ;
+		rdf:type		ozone:ViewPart ;
+		rdf:type		ozone:AppletViewPart ;
+		rdf:type		pending:ContinuationViewPart ;
+		ozone:viewDomain	:ChooseWrapperContinuationView ;
+		ozone:partDataGenerator	:presentChooseWrapperContinuationView ;
+		hs:javaImplementation ${
+			rdf:type	hs:JavaClass ;
+			hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart"
+		}
+}
+
+method :presentChooseWrapperContinuationView cont
+	= patternSelector (:makePatternSelector cont)
+	= okButton (:makeChooseOKButton cont)
+	= cancelButton (:makeChooseCancelButton cont)
+	return ${
+		rdf:type	slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Choose Wrapper for:" 
+				}
+				slide:break
+				${ 
+					rdf:type	slide:Block ;
+					slide:margin	"10" ;
+					slide:child ${
+						rdf:type		ozone:ViewContainer ;
+						ozone:initialResource	(extract cont cont:origin ?x) ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+				}
+				slide:break
+				patternSelector
+				slide:break
+				slide:line
+				${
+					rdf:type	layout:Layout ;
+					ozone:dataSource ${
+						rdf:type	data:DAMLListSource ;
+						data:damlList	@( okButton cancelButton )
+					} ;
+					layout:layoutConstraint ${ rdf:type layout:ColumnSplitterConstraint }
+				}
+			)	
+		}
+	}
+						
+method :makeChooseOKButton cont
+	return ${	
+		rdf:type		slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"OK" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:chooseWrapperOK ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+method :makeChooseCancelButton cont
+	return ${	
+		rdf:type	slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"Cancel" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:chooseWrapperCancel ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+add { :Pattern	hs:classView	:PatternTitlePhraseView }
+
+method :makePatternSelector cont 
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager 
+
+	= wrappedPage (extract cont cont:origin ?x)
+	= patterns (WrapperManager.getPatternResources __source__ (wrappedPage.getContent))
+	= patternList @()
+	for x in patterns
+		patternList.add x
+
+	return ${	
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	
+				rdf:type	slide:Text ;
+				slide:fontBold	"true" ;
+				slide:text	"Wrapper:"
+			}
+			slide:break
+			${
+				rdf:type		slide:Block ;
+				slide:margin		"10" ;
+				slide:height		"125" ;
+				slide:child	${
+					rdf:type	layout:Layout;
+					ozone:dataSource ${
+						rdf:type	data:DAMLListSource ;
+						data:reverse	"true" ;
+						data:damlList	patternList ;
+					} ;
+					layout:focus ${
+						rdf:type	data:ResourcePropertySource ;
+						data:subject	cont ;
+						data:predicate	:oldPattern
+					} ;
+					layout:layoutConstraint	${
+						rdf:type		layout:ListViewConstraint ;
+						ozone:viewPartClass	:SelListPhraseViewPart ;
+						layout:sortBy ${
+							rdf:type	data:SortingListSource ;
+							data:sortOrder	"ascending" ;
+							data:sortDataSource	${ rdf:type	summary:TitleSource }
+						}
+					}
+				}
+			}
+		)
+	}
+
+
+add { :titleSelListPhraseViewPart		
+	rdf:type		ozone:Part ;
+	rdf:type		ozone:ViewPart ;
+	rdf:type		ozone:PhraseViewPart ;
+	rdf:type		:SelListPhraseViewPart ;
+	ozone:viewDomain	:PatternTitlePhraseView ;
+	ozone:cachePartData	"true" ;
+	ozone:template ${
+		rdf:type		slide:Train;
+		slide:children	@(
+			${ 	rdf:type	slide:Image;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/verbs/lookup.gif>
+			}
+			slide:space 
+			${ rdf:type	summary:Title }
+		)
+	} ;
+	hs:javaImplementation ${
+		rdf:type	hs:JavaClass ;
+		hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" 
+	}
+}
+
+method :chooseWrapperOK cont
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager 
+	= oldPattern (extract cont :oldPattern ?x)
+	= origin (extract cont cont:origin ?x)
+	contui:removeContinuation cont
+	= webViewPart (:getWebViewPart)
+	WrapperManager.addPositiveExample __source__ webViewPart oldPattern '.25'
+
+
+method :chooseWrapperCancel cont
+	contui:removeContinuation cont
+
+#####################################
+#### Add Property
+
+method :addProperty :existingWrapper = existingWrapper ;
+adenine:preload		"true" ;
+dc:description		"Adds a property to an existing wrapper." ;
+op:primaryParameter	:existingWrapper ;
+dc:title		"Add a Wrapper Property" ;
+rdf:type		construct:Constructor ;
+rdf:type		op:Operation 
+	# currently uses the old getPatternContext method, instead of :existingWrapper
+	# (to support LAPIS)
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= webViewPart (:getWebViewPart)
+	= wrappedPage (webViewPart.getUnderlyingResource)
+	= urlContext (WrapperManager.getAttributeSelection __source__ webViewPart WrapperManager.URL_TAGNAME WrapperManager.URL_IDENTIFIER)
+	= imgContext (WrapperManager.getAttributeSelection __source__ webViewPart WrapperManager.SRC_TAGNAME WrapperManager.SRC_IDENTIFIER)
+	= context (WrapperManager.getPatternContext __source__ webViewPart)
+	if (!= context null)
+		if (!= urlContext null)
+			= cont ${
+				rdf:type	cont:Continuation ;
+				dc:title	"Add to a Wrapper Task" ;
+				cont:origin	wrappedPage ;
+				:pattern	context[0] ;
+				:propertyID	context[1] ;
+				:matchText 	context[2] ;
+				:selectedText	context[3] ;
+				:urlID	urlContext[0] ;
+				:urlText	urlContext[1] ;
+				hs:view		${ rdf:type :WrapperPropertyContinuationWithURLView }
+			}
+		else
+			if (!= imgContext null)
+				= cont ${
+					rdf:type	cont:Continuation ;
+					dc:title	"Add to a Wrapper Task" ;
+					cont:origin	wrappedPage ;
+					:pattern	context[0] ;		
+					:propertyID	imgContext[0] ;		
+					:matchText	context[2] ;
+					:selectedText	imgContext[1] ;
+					hs:view		${ rdf:type	:WrapperPropertyContinuationView }
+				}
+			else
+				= cont ${
+					rdf:type	cont:Continuation ;
+					dc:title	"Add to a Wrapper Task" ;
+					cont:origin	wrappedPage ;
+					:pattern	context[0] ;		
+					:propertyID	context[1] ;		
+					:matchText	context[2] ;
+					:selectedText	context[3] ;
+					hs:view		${ rdf:type	:WrapperPropertyContinuationView }
+				}
+		contui:addContinuation cont
+
+add {
+	:wrapperPropertyContinuationWithURLViewPart
+		rdf:type		ozone:Part ;
+		rdf:type		ozone:ViewPart ;
+		rdf:type		ozone:AppletViewPart ;
+		rdf:type		pending:ContinuationViewPart ;
+		ozone:viewDomain	:WrapperPropertyContinuationWithURLView ;
+		ozone:partDataGenerator	:presentWrapperPropertyContinuationWithURLView ;
+		hs:javaImplementation ${
+			rdf:type	hs:JavaClass ;
+			hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart"
+		}
+}
+
+method :presentWrapperPropertyContinuationWithURLView cont
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= wrappedPage (extract cont cont:origin ?x)
+	= pattern (extract cont :pattern ?x)
+	= patternClass (extract pattern :semanticClass ?x)
+	= propertySelector (:makePropertySelector cont patternClass)
+	= okButton (:makePropertyOKButton cont)
+	= cancelButton (:makePropertyCancelButton cont)
+	return ${
+		rdf:type	slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Add to Wrapper for:" 
+				}
+				slide:break
+				${ 
+					rdf:type	slide:Block ;
+					slide:margin	"10" ;
+					slide:child ${
+						rdf:type		ozone:ViewContainer ;
+						ozone:initialResource	wrappedPage ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+				}
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Property Options:" 
+				}
+				slide:break
+				${	rdf:type			slide:Checkbox ;
+					slide:margin	"10" ;
+					slide:children @(
+						${	rdf:type	slide:Text ;
+							slide:text	"Use URL for text"
+						}
+					) ;
+					ozone:dataSource	${
+						rdf:type			data:StatementExistenceSource ;
+						data:subjectDataSource	data:underlyingSource;
+						data:predicate		:useURL ;
+						data:object			"true"
+					}
+				}
+				slide:break
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Semantic Class:" 
+				}
+				slide:break
+				${ 
+					rdf:type	slide:Block ;
+					slide:margin	"10" ;
+					slide:child ${
+						rdf:type		ozone:ViewContainer ;
+						ozone:initialResource	patternClass ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+				}
+				slide:break
+				propertySelector
+				slide:break
+				slide:line
+				${
+					rdf:type	layout:Layout ;
+					ozone:dataSource ${
+						rdf:type	data:DAMLListSource ;
+						data:damlList	@( okButton cancelButton )
+					} ;
+					layout:layoutConstraint ${ rdf:type layout:ColumnSplitterConstraint }
+				}
+			)	
+		}
+	}			
+
+add {
+	:wrapperPropertyContinuationViewPart
+		rdf:type		ozone:Part ;
+		rdf:type		ozone:ViewPart ;
+		rdf:type		ozone:AppletViewPart ;
+		rdf:type		pending:ContinuationViewPart ;
+		ozone:viewDomain	:WrapperPropertyContinuationView ;
+		ozone:partDataGenerator	:presentWrapperPropertyContinuationView ;
+		hs:javaImplementation ${
+			rdf:type	hs:JavaClass ;
+			hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart"
+		}
+}
+
+method :presentWrapperPropertyContinuationView cont
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager
+	= wrappedPage (extract cont cont:origin ?x)
+	= pattern (extract cont :pattern ?x)
+	= patternClass (extract pattern :semanticClass ?x)
+	= propertySelector (:makePropertySelector cont patternClass)
+	= okButton (:makePropertyOKButton cont)
+	= cancelButton (:makePropertyCancelButton cont)
+	return ${
+		rdf:type	slide:Block ;
+		slide:margin	"10" ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Add to Wrapper for:" 
+				}
+				slide:break
+				${ 
+					rdf:type	slide:Block ;
+					slide:margin	"10" ;
+					slide:child ${
+						rdf:type		ozone:ViewContainer ;
+						ozone:initialResource	wrappedPage ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+				}
+				slide:break
+				${	
+					rdf:type	slide:Text ;
+					slide:fontBold	"true" ;
+					slide:text	"Semantic Class:" 
+				}
+				slide:break
+				${ 
+					rdf:type	slide:Block ;
+					slide:margin	"10" ;
+					slide:child ${
+						rdf:type		ozone:ViewContainer ;
+						ozone:initialResource	patternClass ;
+						ozone:viewPartClass	ozone:PhraseViewPart
+					}
+				}
+				slide:break
+				propertySelector
+				slide:break
+				slide:line
+				${
+					rdf:type	layout:Layout ;
+					ozone:dataSource ${
+						rdf:type	data:DAMLListSource ;
+						data:damlList	@( okButton cancelButton )
+					} ;
+					layout:layoutConstraint ${ rdf:type layout:ColumnSplitterConstraint }
+				}
+			)	
+		}
+	}
+
+method :makePropertySelector cont patternClass
+	= propertyList @()
+	= properties (query { ?x rdfs:domain patternClass } @(?x) )
+	for x in properties
+		propertyList.add x[0]
+
+	= thingProps (query { ?x rdfs:domain daml:Thing } @(?x) )
+	for x in thingProps
+		propertyList.add x[0]
+
+	# ahogue: for some reason the queries above don't pick this up
+	propertyList.add dc:title
+
+	# for demo
+	if (== patternClass hs:Person)
+		propertyList.add address:emailAddress
+		propertyList.add vcard:voice
+		propertyList.add vcard:fax
+		propertyList.add vcard:mobile
+
+	return ${	
+		rdf:type	slide:Paragraph ;
+		slide:children @(
+			${	
+				rdf:type	slide:Text ;
+				slide:fontBold	"true" ;
+				slide:text	"Property:"
+			}
+			slide:break
+			${
+				rdf:type		slide:Block ;
+				slide:margin		"10" ;
+				slide:height		"125" ;
+				slide:child	${
+					rdf:type	layout:Layout;
+
+					ozone:dataSource ${
+						rdf:type	data:DAMLListSource ;
+						data:reverse	"true" ;
+						data:damlList	propertyList ;
+					} ;
+					layout:focus ${
+						rdf:type	data:ResourcePropertySource ;
+						data:subject	cont ;
+						data:predicate	:property
+					} ;
+					layout:layoutConstraint	${
+						rdf:type		layout:ListViewConstraint ;
+						ozone:viewPartClass	:SelListPhraseViewPart ;
+						layout:sortBy ${
+							rdf:type	data:SortingListSource ;
+							data:sortOrder	"ascending" ;
+							data:sortDataSource	${ rdf:type	summary:TitleSource }
+						}
+					}
+				}
+			}
+		)
+	}
+
+
+
+add { daml:ObjectProperty	hs:classView	:PropertyIconTitlePhraseView }
+add { rdf:Property		hs:classView	:PropertyIconTitlePhraseView }
+
+add { :propertyIconTitleSelListPhraseViewPart		
+	rdf:type		ozone:Part ;
+	rdf:type		ozone:ViewPart ;
+	rdf:type		:SelListPhraseViewPart ;
+	ozone:viewDomain	:PropertyIconTitlePhraseView ;
+	ozone:cachePartData	"true" ;
+	ozone:template ${
+		rdf:type		slide:Train;
+		slide:children	@(
+			${ 	rdf:type	slide:Image;
+				slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/types/property.gif>
+			}
+			slide:space 
+			${ rdf:type	summary:Title }
+		)
+	} ;
+	hs:javaImplementation ${
+		rdf:type	hs:JavaClass ;
+		hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" 
+	}
+}
+
+method :makePropertyOKButton cont
+	return ${	
+		rdf:type		slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"OK" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:propertyWrapperOK ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+method :makePropertyCancelButton cont
+	return ${	
+		rdf:type	slide:Button ;
+		slide:highlightBorder	"true" ;
+		slide:borderWidth	"1" ;
+		slide:child ${
+			rdf:type	slide:Text ;
+			slide:text	"Cancel" 
+		} ;
+		ozone:onClick ${
+			rdf:type		ozone:AdenineCall ;
+			ozone:method		:propertyWrapperCancel ;
+			ozone:parameters	@( cont )
+		}
+	}
+
+method :propertyWrapperOK cont
+	importjava "edu.mit.lcs.haystack.server.extensions.wrapperinduction" WrapperManager Example
+	= property (extract cont :property ?x)
+	= pattern (extract cont :pattern ?x)
+	= useURL (extract cont :useURL ?x)
+	if(== useURL "true")
+		= propertyID (extract cont :urlID ?x)
+		= selectedText (extract cont :urlText ?x)
+	else
+		= propertyID (extract cont :propertyID ?x)
+		= selectedText (extract cont :selectedText ?x)
+	= matchText (extract cont :matchText ?x)
+	contui:removeContinuation cont
+
+	= webViewPart (:getWebViewPart)
+	WrapperManager.updatePatternProperty __source__ webViewPart pattern propertyID property matchText selectedText
+
+
+method :propertyWrapperCancel cont
+	contui:removeContinuation cont
+
+
+############################
+#[
+add { :ta
+	rdf:type		op:Parameter ;
+	op:required		"true" ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		daml:ObjectProperty ;
+	rdfs:label		"TA" ;
+	rdfs:range		TA:TalkAnnouncement
+}
+
+method :talkAnnouncement1 :ta = ta ;
+adenine:preload		"true" ;
+dc:description		"Dummy announcement operation" ;
+op:primaryParameter	:ta ;
+dc:title		"Add to My Calendar" ;
+rdf:type		construct:Constructor ;
+rdf:type		op:Operation 
+	return null
+
+method :talkAnnouncement2 :ta = ta ;
+adenine:preload		"true" ;
+dc:description		"Dummy announcement operation" ;
+op:primaryParameter	:ta ;
+dc:title		"Create Talk RSS Feed" ;
+rdf:type		construct:Constructor ;
+rdf:type		op:Operation 
+	return null
+#]

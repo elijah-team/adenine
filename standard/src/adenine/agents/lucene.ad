@@ -1,0 +1,231 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Lucene Agent
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/agents/lucene.ad,v 1.52 2004/05/15 15:18:55 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/agents/lucene>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	config:		<http://haystack.lcs.mit.edu/schemata/config#>
+@prefix	wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	query:		<http://haystack.lcs.mit.edu/schemata/query#>
+@prefix	text:		<http://haystack.lcs.mit.edu/agents/text#>
+@prefix	op:			<http://haystack.lcs.mit.edu/schemata/operation#> 
+@prefix opui:		<http://haystack.lcs.mit.edu/ui/operation#>
+@prefix	opdata:		<http://haystack.lcs.mit.edu/data/operations#>
+#@prefix	scheduler:	<http://haystack.lcs.mit.edu/agents/scheduler#> 
+@prefix	lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	content:	<http://haystack.lcs.mit.edu/schemata/content#> 
+@prefix nav: 		<http://haystack.lcs.mit.edu/ui/navigationView#>
+@prefix	lucene:		<http://haystack.lcs.mit.edu/agents/lucene#>
+
+#############################################################################################
+# Predicates used by the lucene agent
+
+add { lucene:globalDocText 
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label 			"Document Text" ;
+	rdfs:isDefinedBy	^
+	# this predicate shouldn't really be seen on any object
+	#rdfs:range			ann:Annotation 
+}
+
+add { lucene:content 
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label 			"Content" ;
+	rdfs:isDefinedBy	^
+	# this predicate shouldn't really be seen on any object
+	#rdfs:range			ann:Annotation 
+}
+
+add { lucene:uri 
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label 			"URI" ;
+	rdfs:isDefinedBy	^
+	# this predicate shouldn't really be seen on any object
+	#rdfs:range			ann:Annotation 
+}
+
+#############################################################################################
+# Lucene index regeneration
+
+add { opdata:setupOperations hs:member :regenerateLuceneIndicesOperation }
+
+method :regenerateLuceneIndicesOperation ; 
+rdf:type		op:Operation ;
+dc:title		"Regenerate text search indices" ;
+dc:description	"Indexes text on visited web pages and in documents stored in your system." ;
+adenine:preload "true"
+	= agents (query {?x rdf:type lucene:LuceneAgent})
+	for agent in agents
+		= y (connect agent[0])
+		print 'regenerating agent: ' agent[0]
+		y.regenerateIndices
+	print 'regeneration complete!'
+
+#############################################################################################
+# Lucene agent - what types are to be cached in Lucene
+
+add { 
+	query:Indexable				nav:enableCaching	"true"
+	content:HttpContent			nav:enableCaching	"true"
+	content:LiteralContent		nav:enableCaching	"true"
+	content:FilesystemContent	nav:enableCaching	"true"
+	op:Operation				nav:enableCaching	"true"
+}
+
+#############################################################################################
+# Lucene agent
+
+add { lucene:LuceneAgent
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Lucene Agent" ;
+	hs:classView		lensui:AspectView ;
+	rdfs:subClassOf		config:Service
+}
+
+method text:contains a b c adenine:existentials = existentials adenine:currentResults = currentResults ; 
+rdf:type adenine:ConditionHandler ; 
+adenine:preload "true"
+	importjava "edu.mit.lcs.haystack.server.extensions.learning" RDFTerm
+	
+	# The first parameter must be an existential and the second must not
+	if (or (! (existentials.contains a)) (existentials.contains b))
+		return (Set)
+
+	= b ((b.getContent).toLowerCase)
+
+	= results (Set)
+	
+	if (!= null c)
+		# 3 param mode (has resources in a particular field)
+		# almost identical to hasResources below
+		= luceneAgents (query { ?x rdf:type lucene:LuceneAgent })
+		for x in luceneAgents
+			= y (connect x[0])
+			for z in (y.query (RDFTerm.getLuceneStr a) b)
+				= datum @()
+				for w in existentials
+					if (== w a)
+						datum.add z
+					else
+						datum.add null
+				results.add datum
+		return results
+
+	# Check for literals
+	= hasResources false
+	= x currentResults[(existentials.indexOf a)]
+	if (!= x null)
+		for y in x
+			if (instanceOf y Literal) 
+				= z ((y.getContent).toLowerCase)
+				if (!= -1 (z.indexOf b))
+					= datum @()
+					for w in existentials
+						if (== w a)
+							datum.add y
+						else
+							datum.add null
+					results.add datum
+			else
+				= hasResources true
+	else
+		= hasResources true
+
+	if hasResources
+		# Ask each available Lucene agent
+		= luceneAgents (query { ?x rdf:type lucene:LuceneAgent })
+		for x in luceneAgents
+			= y (connect x[0])
+			for z in (y.query b)
+				= datum @()
+				for w in existentials
+					if (== w a)
+						datum.add z
+					else
+						datum.add null
+				results.add datum
+
+	return results
+	
+# for now, whenever lucene:content is in a query it is followed by a 
+# text:content, so we can essentially alias it to adenine:identity
+method lucene:content x y adenine:existentials = existentials adenine:currentResults = currentResults ;
+rdf:type			adenine:ConditionHandler
+	return (adenine:identity x y adenine:existentials = existentials adenine:currentResults = currentResults)
+
+
+main
+	= server (__serviceaccessor__.getResource)
+	= user (__identity__.getResource)
+
+	= luceneAgent ${
+		dc:title			"Lucene Agent" ;
+		rdf:type			config:Service ;
+		config:singleton	"true" ;
+		rdf:type			lucene:LuceneAgent ;
+		hs:user				user ;
+		wsdl:port ${
+			rdf:type wsdl:Port ;
+			wsdl:binding ${
+				rdf:type	wsdl:Binding ;
+				rdf:type	config:JavaBinding ;
+				wsdl:type ${
+					rdf:type wsdl:PortType ;
+					config:javaInterface ${
+						rdf:type hs:JavaClass ;
+						hs:className "edu.mit.lcs.haystack.server.extensions.query.ILuceneAgent" 
+					} 
+				} 
+			} 
+		} ;
+		hs:javaImplementation ${
+			rdf:type hs:JavaClass ;
+			hs:className "edu.mit.lcs.haystack.server.extensions.query.LuceneAgent" 
+		}
+	}
+
+	add { :setupLuceneOperation opui:target luceneAgent }
+
+	var x
+	= x (extract user ozone:informationSource ?x)
+	if (!= null x)
+		add { luceneAgent config:informationSource x }
+
+#	${	rdf:type			:Subscription ;
+#		rdf:type			scheduler:Task ;
+#		dc:title			"Lucene Text Indexing" ;
+#		scheduler:service	luceneAgent ;
+#		scheduler:frequency	(* 5 60 1000) 
+#	}.getContent
+
+	add { server
+		config:hostsService luceneAgent
+	}

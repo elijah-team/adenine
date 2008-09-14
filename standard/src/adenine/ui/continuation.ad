@@ -1,0 +1,277 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Continuation UI
+# Written by Dennis Quan, David Huynh
+# $Header: /home/stefano/haystack/src/adenine/ui/continuation.ad,v 1.33 2003/12/17 17:34:23 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/ui/continuation>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/> 
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#> 
+@prefix	slide:		<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	cont:		<http://haystack.lcs.mit.edu/schemata/continuation#> 
+@prefix	summary:	<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	taskui:		<http://haystack.lcs.mit.edu/ui/task#> 
+@prefix	layout:		<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix	:			<http://haystack.lcs.mit.edu/ui/continuation#> 
+
+#############################################################################################
+# Summary view parts for continuations
+
+add { cont:Continuation
+	ozone:icon						<http://haystack.lcs.mit.edu/data/ozone/icons/types/continuation.gif>
+}
+
+add {
+	:ContinuationInlineView	rdfs:label			"Continuation Inline View"
+	:continuationInlineViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:InlineViewPart ;
+		ozone:viewDomain		:ContinuationInlineView ;
+		ozone:template ${
+			rdf:type		summary:Title ;
+			ozone:onClick	taskui:addUnderlyingAsPendingTask
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	cont:Continuation hs:classView :ContinuationInlineView
+}
+
+add {
+	:ContinuationPhraseView	rdfs:label			"Continuation Phrase View"
+	:continuationPhraseViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:SummaryViewPart ;
+		rdf:type				ozone:LineSummaryViewPart ;
+		rdf:type				ozone:PhraseViewPart ;
+		ozone:viewDomain		:ContinuationPhraseView ;
+		ozone:template ${
+			rdf:type		slide:Paragraph ;
+			slide:children @(
+				${	rdf:type		summary:Icon
+				}
+				slide:nonwrappingSpace
+				${	rdf:type		summary:Title ;
+					ozone:onClick	taskui:addUnderlyingAsPendingTask
+				}
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	cont:Continuation hs:classView :ContinuationPhraseView
+}
+
+
+add { :continuationViewPart
+	rdf:type					ozone:Part ;
+	rdf:type					ozone:ViewPart ;
+	rdf:type					ozone:AppletViewPart ;
+	ozone:viewDomain			:ContinuationView ;
+	ozone:partDataGenerator		:presentContinuationView ;
+	ozone:cachePartData			"true" ;
+	hs:javaImplementation	${
+		rdf:type	hs:JavaClass ;
+		hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" 
+	}
+
+	cont:Continuation hs:classView :ContinuationView
+}
+
+method :presentContinuationView cont
+	= param (extract cont :parameter ?x)
+
+	var dataSourceChildren
+
+	= dataSource (extract cont cont:dataSource ?x)
+	if (!= null dataSource)
+		= dataSourceChildren ${
+			rdf:type			layout:Layout ;
+			ozone:dataSource	dataSource ;
+			layout:layoutConstraint ${ 
+				rdf:type				layout:RowStackerConstraint ;
+				ozone:viewPartClass		ozone:PhraseViewPart ;
+				layout:sortBy ${
+					rdf:type			data:SortingListSource ;
+					data:sortDataSource ${ rdf:type summary:TitleSource }
+				}
+			}
+		}
+	else
+		= dataSourceChildren slide:null
+		
+	return ${ 
+		rdf:type		slide:Block ;
+		slide:margin	"3" ;
+		slide:child ${
+			rdf:type		slide:Paragraph ;
+			slide:children	@(
+				${	rdf:type	slide:Text ;
+					slide:text	"The following information is required to complete this task. Drag and drop items into the bin below."
+				}
+				slide:break
+				${	rdf:type	slide:Paragraph ;
+					slide:children @(
+						${	rdf:type		slide:Image ;
+							slide:source	<http://haystack.lcs.mit.edu/data/ozone/icons/types/continuation.gif>
+						}
+						slide:space
+						${	rdf:type			summary:Title
+						}
+						${	rdf:type	slide:Text ;
+							slide:text	":"
+						}
+						slide:newLine
+						${	rdf:type			slide:Block ;
+							slide:marginLeft	16 ;
+							slide:child			dataSourceChildren
+						}
+						slide:break
+					)
+				}
+				${	rdf:type		slide:Paragraph ;
+					slide:alignX	"right" ;
+					slide:children	@(
+						slide:line
+						${	rdf:type					slide:Button ;
+							slide:highlightBorder		"true" ;
+							slide:borderWidth			"1" ;
+							ozone:onClick	${ 
+								rdf:type 			ozone:AdenineCall ;
+								ozone:method		:removeContinuation ;
+								ozone:parameters 	@( cont )
+							} ;
+							slide:child ${
+								rdf:type				slide:Train ;
+								slide:children @(
+									${	rdf:type			slide:Image ;
+										slide:source		<http://haystack.lcs.mit.edu/data/ozone/common/x.gif>
+									}
+									slide:space
+									${	rdf:type		slide:Text ;
+										slide:text		"Cancel task"
+									}
+								)
+							}
+						}
+						slide:space
+						${	rdf:type					slide:Button ;
+							slide:highlightBorder		"true" ;
+							slide:borderWidth			"1" ;
+							ozone:onClick				${ rdf:type ozone:Hyperlink ; ozone:target (extract cont cont:origin ?x) } ;
+							slide:child ${
+								rdf:type				slide:Train ;
+								slide:children @(
+									${	rdf:type			slide:Image ;
+										slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/back.gif>
+									}
+									slide:space
+									${	rdf:type		slide:Text ;
+										slide:text		"Return"
+									}
+								)
+							}
+						}
+						slide:space
+						${	rdf:type					slide:Button ;
+							slide:highlightBorder		"true" ;
+							slide:borderWidth			"1" ;
+							ozone:onClick	${ 
+								rdf:type 				ozone:AdenineCall ;
+								ozone:method			:doneContinuation ;
+								ozone:parameters 		@( cont )
+							} ;
+							slide:child ${
+								rdf:type				slide:Train ;
+								slide:children @(
+									${	rdf:type			slide:Image ;
+										slide:source		<http://haystack.lcs.mit.edu/data/ozone/frame/forward.gif>
+									}
+									slide:space
+									${	rdf:type		slide:Text ;
+										slide:text		"Complete task"
+									}
+								)
+							}
+						}
+						slide:break
+						slide:break
+					)
+				}
+			)
+		}
+	}
+
+
+#############################################################################################
+# UI continuation abstraction
+
+method :getContinuations ; adenine:preload "true" ; adenine:precompile "true"
+	= user (__context__.getProperty ozone:user)
+	= continuations (extract user :continuations ?x)
+
+	if (== continuations null)
+		= continuations ${ rdf:type hs:Collection ; dc:title "UI Continuations" }
+		add { user :continuations continuations }
+
+	return continuations
+
+method :addContinuation c addToPending ; adenine:preload "true" ; adenine:precompile "true"
+	= continuations (:getContinuations)
+	add { continuations hs:member c }
+
+	if (!= false addToPending)
+		taskui:addPendingTask c
+	
+method :removeContinuation c ; adenine:preload "true" ; adenine:precompile "true"
+	= continuations (:getContinuations)
+	remove continuations hs:member c
+
+	taskui:removePendingTask c	
+
+method :doneContinuation c ; adenine:preload "true" ; adenine:precompile "true"
+	:removeContinuation c
+
+	ozone:navigate (extract c cont:origin ?x)
+
+method :createUIContinuationsCollection underlying collection ; adenine:preload "true" ; adenine:precompile "true"
+	function handler x
+		add { collection hs:member x }
+	
+	:listUIContinuations underlying handler
+
+method :listUIContinuations underlying handler ; adenine:preload "true" ; adenine:precompile "true"
+	= conts (:getContinuations)
+	= continuations (query { conts hs:member ?x } )
+	for x in continuations
+		= x x[0]
+		= validator (extract x cont:validator ?x)
+		if (and (!= validator null) (validator underlying))
+			handler x
+
+

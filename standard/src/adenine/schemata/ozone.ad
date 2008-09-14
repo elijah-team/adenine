@@ -1,0 +1,368 @@
+# Copyright (c) 1998-2004 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Ozone ontology
+# Written by Dennis Quan
+
+@base <http://haystack.lcs.mit.edu/schemata/ozone>
+
+@prefix	data:		<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix frame:		<http://haystack.lcs.mit.edu/ui/frame#>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix lensui:		<http://haystack.lcs.mit.edu/ui/lens#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+
+add { ^			rdf:type		daml:Ontology ;
+				dc:title		"Ozone ontology"
+}
+
+#############################################################################################
+# General properties
+
+add {
+	ozone:icon	rdf:type		daml:ObjectProperty ;
+				rdf:type		hs:ProprietalProperty ;
+				rdfs:label		"Icon"
+
+	ozone:underlying 
+				rdf:type		daml:ObjectProperty ;
+				rdf:type		hs:RelationalProperty ;
+				rdfs:label		"Underyling object"
+
+	ozone:home	rdf:type		daml:ObjectProperty ;
+				rdfs:label		"Haystack home base"
+}
+
+add { 
+	ozone:generatedPartData		rdf:type	hs:CachedProperty
+	ozone:navigatorProperties	rdfs:label	"Navigator properties"
+	ozone:defaultFrame			rdfs:label	"Default frame"
+	ozone:categorizationScheme	rdfs:label	"Default categorization scheme"
+}
+
+#############################################################################################
+# Part
+
+add { 
+	ozone:Part	rdf:type			daml:Class ;
+				rdf:type			rdfs:Class ;
+				rdfs:isDefinedBy	^;
+				rdfs:label			"Ozone part" ;
+				rdfs:comment		"Ozone UI component"
+			
+	ozone:dataDomain 
+				rdf:type			daml:ObjectProperty ;
+				rdfs:isDefinedBy	^;
+				rdfs:label			"Data domain" ;
+				rdfs:domain			ozone:Part ;
+				rdfs:range			rdfs:Class
+}
+
+#############################################################################################
+# Data
+
+add {
+	ozone:Data	rdf:type			daml:Class ;
+				rdf:type			rdfs:Class ;
+				rdfs:isDefinedBy 	^;
+				rdfs:label      	"Ozone part data" ;
+				rdfs:comment		"Settings for part initialization"
+
+	ozone:registerService	
+				rdf:type			daml:ObjectProperty ;
+				rdfs:isDefinedBy 	^;
+				rdfs:domain			ozone:Data
+}
+
+#############################################################################################
+# SWTPart
+
+add { ozone:SWTPart			
+				rdf:type			daml:Class ;
+				rdfs:isDefinedBy 	^;
+				rdfs:label			"Ozone SWT part" ;
+				rdfs:comment		"Ozone SWT UI component" ;
+				rdfs:subClassOf		ozone:Part
+}
+				
+#############################################################################################
+# ViewPart
+
+add {
+	ozone:ViewPartClass 	
+				rdf:type			daml:Class;
+				rdf:type			rdfs:Class;
+				rdfs:label			"View part class";
+				dc:description		"A class used to define View Part Classes.";
+				rdfs:isDefinedBy	^ 
+						
+	ozone:ViewPart			
+				rdf:type			daml:Class ;
+				rdf:type			rdfs:Class ;
+				rdfs:label			"Ozone View Part" ;
+				rdfs:comment		"Ozone UI component for displaying rdf:type view." ;
+				rdfs:subClassOf		ozone:SWTPart
+
+	ozone:viewDomain 		
+				rdf:type			daml:ObjectProperty ;
+				rdfs:label			"View Domain" ;
+				rdfs:comment		"The View class this View Part is capable of displaying" ;
+				rdfs:domain			ozone:ViewPart ;
+				rdfs:range			rdfs:Class
+}
+
+#############################################################################################
+# Standard parts
+
+add {
+	ozone:adenineConsolePart
+				rdf:type				ozone:SWTPart ;
+				rdf:type				ozone:Part ;
+				rdf:type				ozone:ViewPart ;
+				rdf:type				ozone:InteractiveViewPart ;
+				ozone:dataDomain		ozone:AdenineConsole ;
+				ozone:viewDomain		ozone:AdenineConsole ;
+				hs:javaImplementation	${ rdf:type	hs:JavaClass ;	hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdenineConsolePart" }
+
+	ozone:partViewPart	
+				rdf:type				ozone:SWTPart ;
+				rdf:type				ozone:Part ;
+				rdf:type				ozone:ViewPart ;
+				dc:title				"Part View" ;
+				ozone:viewDomain		ozone:PartView ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.parts.PartViewPart" }
+
+	ozone:partContainerPart
+				rdf:type				ozone:Part ;
+				ozone:dataDomain		ozone:PartContainer ;
+				dc:title				"Part Container Part" ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.PartContainerPart" }
+
+	ozone:adeninePartContainerPart
+				rdf:type				ozone:Part ;
+				ozone:dataDomain		ozone:AdeninePartContainer ;
+				dc:title				"Adenine Part Container Part" ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }
+
+	ozone:informationSourceManagedContainerPart
+				rdf:type				ozone:SWTPart ;
+				rdf:type				ozone:Part ;
+				rdf:type				ozone:ViewPart ;
+				ozone:dataDomain		ozone:InformationSourceManagedContainer ;
+				dc:title				"Information Source Managed Container Part" ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.InformationSourceManagedContainerPart" }
+
+	ozone:partView	rdf:type			hs:View
+	ozone:Part		hs:classView		ozone:PartView
+
+	ozone:connectorPart 
+				rdf:type 				ozone:Part ;
+				dc:title				"Connector" ;
+				ozone:dataDomain		ozone:Connector ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.ConnectorPart" }
+					
+	ozone:dataConsumerPart 
+				rdf:type 				ozone:Part ;
+				dc:title				"Data consumer" ;
+				ozone:dataDomain		ozone:DataConsumer ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.DataConsumerPart" }
+					
+	ozone:dataProviderHostPart
+				rdf:type 				ozone:Part ;
+				dc:title				"Data provider host" ;
+				ozone:dataDomain		ozone:DataProviderHost ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.DataProviderHostPart" }
+					
+	ozone:editPart	
+				rdf:type				ozone:SWTPart ;
+				rdf:type				ozone:Part ;
+				dc:title				"Textbox" ;
+				ozone:dataDomain		ozone:Edit ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.EditPart" }
+
+	ozone:thumbnailPart
+				rdf:type				ozone:Part ;
+				dc:title				"Thumbnail" ;
+				ozone:dataDomain		ozone:Thumbnail ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.ThumbnailPart" }
+
+	ozone:resizablePartContainerPart 
+				rdf:type				ozone:Part ;
+				dc:title				"Resizable part container part" ;
+				ozone:dataDomain		ozone:ResizablePartContainer ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.ResizablePartContainerPart" }
+
+	ozone:multiplexPartContainerPart 
+				rdf:type				ozone:Part ;
+				dc:title				"Multiplex part container part" ;
+				ozone:dataDomain		ozone:MultiplexPartContainer ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.MultiplexPartContainerPart" }
+
+	ozone:quickPropertyTextPart
+				rdf:type				ozone:Part ;
+				dc:title				"Quick property text part" ;
+				ozone:dataDomain		ozone:QuickPropertyText ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.QuickPropertyTextPart" }
+
+}
+
+#############################################################################################
+# Slide behavior
+
+add { ozone:Behavior
+				rdf:type				rdfs:Class ;
+				rdf:type               	daml:Class ;
+				rdfs:label      		"Ozone Behavior" ;
+				rdfs:subClassOf			ozone:Part
+}
+			
+#############################################################################################
+# Slide behaviors
+
+method ozone:underlyingHyperlink element context part event
+	importjava "org.eclipse.swt.events" MouseEvent
+	importjava "org.eclipse.swt" SWT
+	if (!= null event)
+		if (instanceOf event MouseEvent)
+			if (& event.stateMask SWT.SHIFT)
+				if (!= null (ozone:navigateInNewWindowIfPossible (data:getUnderlying)))
+					return
+				else
+					frame:addToStartPaneCollection (data:getUnderlying)
+			else
+				ozone:navigate (data:getUnderlying)
+
+method ozone:underlyingHyperlinkInNewWindowIfPossible element context part event
+	importjava "org.eclipse.swt.events" MouseEvent
+	importjava "org.eclipse.swt" SWT
+	if (!= null event)
+		if (instanceOf event MouseEvent)
+			if (!= null (ozone:navigateInNewWindowIfPossible (data:getUnderlying)))
+				return
+			else
+				ozone:navigate (data:getUnderlying)
+
+method ozone:aspectHyperlink element context part event
+	importjava "org.eclipse.swt.events" MouseEvent
+	importjava "org.eclipse.swt" SWT
+	if (!= null event)
+		if (instanceOf event MouseEvent)
+			if (& event.stateMask SWT.SHIFT)
+				if (!= null (ozone:navigateInNewWindowIfPossible (lensui:getUnderlying)))
+					return
+				else
+					frame:addToStartPaneCollection (lensui:getUnderlying)
+			else
+				ozone:navigate (lensui:getUnderlying)
+
+add {
+	ozone:hyperlinkBehavior
+				rdf:type				ozone:SlideBehavior ;
+				rdf:type				ozone:Part ;
+				ozone:dataDomain		ozone:Hyperlink ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.behaviors.HyperlinkBehavior" }
+
+	ozone:target
+				rdf:type				daml:ObjectProperty ;
+				rdfs:label				"Target" ;
+				rdfs:domain				ozone:Hyperlink
+
+	ozone:adenineBehavior
+				rdf:type				ozone:SlideBehavior ;
+				rdf:type				ozone:Part ;
+				ozone:dataDomain		adenine:Method ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.behaviors.AdenineBehavior" }
+
+	ozone:adenineCallBehavior
+				rdf:type				ozone:SlideBehavior ;
+				rdf:type				ozone:Part ;
+				ozone:dataDomain		ozone:AdenineCall ;
+				hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.behaviors.AdenineCallBehavior" }
+}
+
+#############################################################################################
+# Utilities
+
+method ozone:createPart part partData ; 
+rdfs:comment		"Creates a part" ; 
+adenine:preload		"true" ; 
+adenine:precompile	"true"
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	# Create the object
+	= cls (Utilities.loadClass part __source__)
+	= instance (cls)
+
+	# Set up the context
+	= context (Context __context__)
+	context.putLocalProperty ozone:part part
+	if (!= partData null)
+		context.putLocalProperty ozone:partData partData
+	
+	instance.initialize __source__ context
+	return instance
+
+method ozone:showMultiplexPart0 ; adenine:preload "true" ; adenine:precompile "true"
+	= part (__context__.getProperty ozone:multiplexPart)
+	part.setPartByIndex 0
+
+method ozone:showMultiplexPart1 ; adenine:preload "true" ; adenine:precompile "true"
+	= part (__context__.getProperty ozone:multiplexPart)
+	part.setPartByIndex 1
+
+method ozone:showMultiplexPart2 ; adenine:preload "true" ; adenine:precompile "true"
+	= part (__context__.getProperty ozone:multiplexPart)
+	part.setPartByIndex 2
+
+method ozone:navigateInNewWindowIfPossible uri view ; adenine:preload "true"
+	= bw (__context__.getProperty ozone:browserWindow)
+	if (!= null bw)
+		return (bw.navigate uri view true)
+	else
+		return null
+		
+method ozone:navigate uri view ; adenine:preload "true"
+	= nm (__context__.getProperty ozone:navigationMaster)
+	if (!= null nm)
+		#print "Navigating using navigationMaster"
+		if (!= null view)
+			nm.requestViewing uri view
+		else
+			nm.requestViewing uri
+	else
+		= bw (__context__.getProperty ozone:browserWindow)
+		if (!= null bw)
+			#print "Navigating using browserWindow"
+			if (!= null view)
+				bw.navigate uri view false
+			else
+				bw.navigate uri	
+		else
+			print "Unable to navigate"
+	
+
+		
+		

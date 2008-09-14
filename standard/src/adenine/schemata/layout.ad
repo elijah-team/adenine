@@ -1,0 +1,678 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Layout Ontology
+# Written by David Huynh and Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/schemata/layout.ad,v 1.56 2004/05/15 15:18:59 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/schemata/layout>
+
+@prefix	dc:				<http://purl.org/dc/elements/1.1/>
+@prefix	hs:				<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:			<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix	slide:			<http://haystack.lcs.mit.edu/schemata/ozoneslide#> 
+@prefix	data:			<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+@prefix	summary:		<http://haystack.lcs.mit.edu/ui/summaryView#> 
+@prefix	layout:			<http://haystack.lcs.mit.edu/schemata/layout#>
+@prefix op:				<http://haystack.lcs.mit.edu/schemata/operation#>
+@prefix	contextMenu:	<http://haystack.lcs.mit.edu/ui/contextMenu#> 
+@prefix	lensui:			<http://haystack.lcs.mit.edu/ui/lens#>
+
+#############################################################################################
+# Common
+
+add {
+	layout:pack
+		rdf:type				daml:ObjectProperty ;
+		rdfs:domain				layout:Splitter ;
+		rdfs:domain				layout:Stacker ;
+		rdfs:range				xsd:string ;
+		rdfs:label				"Pack"
+
+	layout:columnSplitterLayoutManagerPart	
+		rdf:type				ozone:Part ;
+		rdf:type				layout:LayoutManager ;
+		ozone:dataDomain		layout:ColumnSplitterConstraint ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.ColumnSplitterLayoutManager" }
+
+	layout:rowSplitterLayoutManagerPart	
+		rdf:type				ozone:Part ;
+		rdf:type				layout:LayoutManager ;
+		ozone:dataDomain		layout:RowSplitterConstraint ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.RowSplitterLayoutManager" }
+
+	layout:rowStackerLayoutManagerPart	
+		rdf:type				ozone:Part ;
+		rdf:type				layout:LayoutManager ;
+		ozone:dataDomain		layout:RowStackerConstraint ;
+		rdfs:label				"Row Stacker Layout" ;
+		dc:title				"List" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.RowStackerLayoutManager" }
+
+	layout:multiColumnStackerLayoutManagerPart
+		rdf:type				ozone:Part ;
+		rdf:type				layout:LayoutManager ;
+		rdf:type				layout:ScrollableLayoutManager ;
+		ozone:dataDomain		layout:MultiColumnStackerConstraint ;
+		rdfs:label				"Multicolumn Stacker Layout" ;
+		dc:title				"List" ;
+		layout:description		"Lay out in multiple columns" ;
+		ozone:partDataGenerator	:multiColumnLayoutGenerator ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.MultiColumnStackerLayoutManager" }
+
+	layout:verticalFlowLayoutManagerPart
+		rdf:type				ozone:Part ;
+		rdf:type				layout:LayoutManager ;
+		rdf:type				layout:ScrollableLayoutManager ;
+		ozone:dataDomain		layout:VerticalFlowConstraint ;
+		rdfs:label				"Vertical Flow Layout" ;
+		dc:title				"List" ;
+		layout:description		"Lay out like a portal" ;
+		ozone:partDataGenerator	:verticalFlowLayoutGenerator ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.VerticalFlowLayoutManager" }
+
+	layout:listViewLayoutManagerPart	
+		rdf:type				ozone:Part ;
+		rdf:type				layout:LayoutManager ;
+		rdf:type				layout:ScrollableLayoutManager ;
+		ozone:dataDomain		layout:ListViewConstraint ;
+		rdfs:label				"List View Layout" ;
+		dc:title				"List" ;
+		layout:description		"Lay out in rows" ;
+		ozone:partDataGenerator	:listViewLayoutGenerator ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.ListViewLayoutManager" }
+
+	layout:inlineLayoutManagerPart	
+		rdf:type				ozone:Part ;
+		rdf:type				layout:LayoutManager ;
+		ozone:dataDomain		layout:InlineConstraint ;
+		rdfs:label				"Inline Layout" ;
+		dc:title				"List" ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.InlineLayoutManager" }
+
+	layout:layoutPart	
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:SWTPart ;
+		ozone:dataDomain		layout:Layout ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.LayoutPart" }
+
+	layout:fieldSetPart	
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:SWTPart ;
+		ozone:dataDomain		layout:FieldSet ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.FieldSetPart" }
+
+	layout:aspectFieldSetPart	
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:SWTPart ;
+		ozone:dataDomain		layout:AspectFieldSet ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.AspectFieldSetPart" }
+
+	layout:fieldSetContainerPart	
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:SWTPart ;
+		ozone:dataDomain		layout:FieldSetContainer ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.layout.FieldSetContainerPart" }
+}
+
+#############################################################################################
+# Data sources
+
+add { layout:itemIndexSource
+	rdf:type		data:ContextSource ;
+	data:property	layout:itemIndex
+}
+
+add {
+	:indexPart
+		rdf:type				ozone:Part ;
+		ozone:dataDomain		layout:Index ;
+		ozone:template ${
+			rdf:type		slide:Paragraph ;
+			slide:alignX	"right" ;
+			slide:children @(
+				${	rdf:type			slide:Text ;
+					ozone:dataSource	layout:itemIndexSource
+				}
+				slide:period
+			)
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className "edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+		layout:fieldHeaderUI	${
+			rdf:type		slide:Paragraph ;
+			slide:alignX	"right" ;
+			slide:children @(
+				${	rdf:type	slide:Text ;
+					slide:text	"#"
+				}
+			)
+		}
+}
+
+#############################################################################################
+#
+
+add {
+	layout:moreItems
+		rdf:type		slide:Text ;
+		slide:text		"More..." ;
+		ozone:onClick	layout:browseToSource
+
+	layout:noItems
+		rdf:type		slide:Text ;
+		slide:text		"No items in list" ;
+		ozone:onClick	layout:browseToSource
+
+	layout:separatorPartData
+		rdf:type		slide:Span ;
+		slide:children	@( slide:comma slide:space )
+
+	layout:lastSeparatorPartData
+		rdf:type		slide:Span ;
+		slide:children	@( slide:space slide:and slide:space )
+
+	layout:noItemsPartData
+		rdf:type		slide:Text ;
+		slide:text		"No items in list" ;
+		ozone:onClick	layout:browseToSource
+
+	layout:moreItemsPartData
+		rdf:type		slide:Span ;
+		ozone:onClick	layout:browseToSource ;
+		slide:children @(
+			${	rdf:type	slide:Text ;
+				ozone:dataSource ${
+					rdf:type		data:ContextPropertySource ;
+					data:property	layout:invisibleCount
+				}
+			}
+			slide:space
+			${	rdf:type	slide:Text ;
+				slide:text	"more item(s)"
+			}
+		)
+}
+
+method layout:browseToResource ; adenine:precompile "true" ; adenine:preload "true"
+	= layoutManager (__context__.getProperty layout:layoutManager)
+	layoutManager.browseToSource
+
+#############################################################################################
+# Layout generators
+
+method :listViewLayoutGenerator layoutPartData
+	= layoutConstraint (queryExtract { ?x layout:layoutConstraintOf layoutPartData ; rdf:type layout:ListViewConstraint })
+	if (!= layoutConstraint null)
+		= layoutConstraint layoutConstraint[0]
+	else
+		= layoutConstraint (UniqueResource)
+		add { layoutConstraint
+			layout:layoutConstraintOf	layoutPartData ;
+			rdf:type					layout:ListViewConstraint ;
+			ozone:viewPartClass			ozone:FieldSetViewPart ;
+			layout:sortBy ${
+				rdf:type				data:SortingListSource ;
+				data:sortOrder			"ascending" ;
+				data:sortDataSource		${ rdf:type summary:TitleSource } ;
+				layout:sortCriterionFor	layoutConstraint
+			} ;
+			layout:fields ${
+				rdf:type	data:HSListSource ;
+				data:hsList ${
+					rdf:type	hs:List ;
+					hs:list @(
+						${	rdf:type					layout:Field ;
+							layout:fieldID				summary:iconAspect ;
+							layout:fieldDimension		"20" ;
+							layout:layoutConstraint		layoutConstraint
+						}
+						${	rdf:type					layout:Field ;
+							layout:fieldID				summary:documentTypeAspect ;
+							layout:fieldDimension		"25%" ;
+							layout:layoutConstraint		layoutConstraint ;
+							layout:sortDataSourceType	summary:DocumentTypeSource
+						}
+						${	rdf:type					layout:Field ;
+							layout:fieldID				summary:titleAspect ;
+							layout:fieldDimension		"25%" ;
+							layout:layoutConstraint		layoutConstraint ;
+							layout:fieldSorted			"descending" ;
+							layout:sortDataSourceType	summary:TitleSource
+						}
+						${	rdf:type					layout:Field ;
+							layout:fieldID				dc:date ;
+							layout:fieldDimension		"25%" ;
+							layout:layoutConstraint		layoutConstraint
+						}
+					)
+				}
+			} ;
+			layout:headers							layout:defaultHeaders
+		}
+
+	return layoutConstraint
+
+method :multiColumnLayoutGenerator layoutPartData
+	= layoutConstraint (queryExtract { ?x layout:layoutConstraintOf layoutPartData ; rdf:type layout:MultiColumnStackerConstraint })
+	if (!= layoutConstraint null)
+		= layoutConstraint layoutConstraint[0]
+	else
+		= layoutConstraint (UniqueResource)
+		add { layoutConstraint
+			layout:layoutConstraintOf	layoutPartData ;
+			rdf:type					layout:MultiColumnStackerConstraint ;
+			ozone:viewPartClass			ozone:VerticalAppletViewPart ;
+			layout:sortBy ${
+				rdf:type				data:SortingListSource ;
+				data:sortOrder			"ascending" ;
+				data:sortDataSource		${ rdf:type summary:TitleSource } ;
+				layout:sortCriterionFor	layoutConstraint
+			}
+		}
+
+	return layoutConstraint
+
+method :verticalFlowLayoutGenerator layoutPartData
+	= layoutConstraint (queryExtract { ?x layout:layoutConstraintOf layoutPartData ; rdf:type layout:VerticalFlowConstraint })
+	if (!= layoutConstraint null)
+		= layoutConstraint layoutConstraint[0]
+	else
+		= layoutConstraint (UniqueResource)
+		add { layoutConstraint
+			layout:layoutConstraintOf	layoutPartData ;
+			rdf:type					layout:VerticalFlowConstraint ;
+			ozone:viewPartClass			ozone:VerticalAppletViewPart ;
+			layout:sortBy ${
+				rdf:type	data:OrderedSetSource
+			} ;
+			layout:spansAllColumnsDataSource ${
+				rdf:type		data:StatementExistenceSource ;
+				data:predicate	layout:spansAllColumns ;
+				data:object		"true"
+			}
+		}
+
+	return layoutConstraint
+
+method layout:setupSpanAllColumnsOperations partData layoutInstance element viewContainerPartData ; adenine:preload "true"
+	# Set up span one column operation
+	= operation (queryExtract { ?x rdf:type op:Operation ; rdf:type layout:SpanOneColumnOperation ; :layoutInstance layoutInstance ; :element element })
+
+	if (!= operation null)
+		= operation operation[0]
+	else
+		= operation ${
+			rdf:type		op:Operation ;
+			rdf:type		layout:SpanOneColumnOperation ;
+			:layoutInstance	layoutInstance ;
+			dc:title		"Span one column" ;
+			:element		element
+		}
+
+		method operation
+			:spanOneColumn `layoutInstance `element
+
+	add { viewContainerPartData contextMenu:contextOperation operation }
+
+	# Set up span all columns operation
+	= operation (queryExtract { ?x rdf:type op:Operation ; rdf:type layout:SpanAllColumnsOperation ; :layoutInstance layoutInstance ; :element element })
+
+	if (!= operation null)
+		= operation operation[0]
+	else
+		= operation ${
+			rdf:type		op:Operation ;
+			rdf:type		layout:SpanAllColumnsOperation ;
+			:layoutInstance	layoutInstance ;
+			dc:title		"Span all columns" ;
+			:element		element
+		}
+
+		method operation
+			:spanAllColumns `layoutInstance `element
+
+	add { viewContainerPartData contextMenu:contextOperation operation }
+	
+	# Set up view switching operation
+	= viewInstance (__context__.getDescendantLocalProperty ozone:viewInstance) 
+	if (!= null viewInstance)
+		= viewInstanceDataSource ${
+			rdf:type		data:KeyValuePairSource ;
+			data:base		viewInstance ;
+			data:predicate	:memberSettings ;
+			data:key		element ;
+			data:valueName	:viewInstance
+		}
+		
+		add { viewContainerPartData 
+			ozone:putProperty	${ ozone:name ozone:viewInstanceDataSource ; ozone:value viewInstanceDataSource } ;
+			ozone:putProperty	${ ozone:name ozone:hostingViewContainerPartData ; ozone:value viewContainerPartData }
+		}
+
+method :spanOneColumn layoutInstance element
+	# Walk the context tree
+	= context __context__
+	while (!= null context)
+		if (== layoutInstance (context.getLocalProperty ozone:layoutInstance))
+			break
+
+		= context (context.getParentContext)
+
+	= layoutPart (context.getLocalProperty ozone:parentPart)
+	= layoutManager (layoutPart.getCurrentLayoutManager)
+	layoutManager.setSpanOneColumn element
+
+method :spanAllColumns layoutInstance element
+	# Walk the context tree
+	= context __context__
+	while (!= null context)
+		if (== layoutInstance (context.getLocalProperty ozone:layoutInstance))
+			break
+
+		= context (context.getParentContext)
+
+	= layoutPart (context.getLocalProperty ozone:parentPart)
+	= layoutManager (layoutPart.getCurrentLayoutManager)
+	layoutManager.setSpanAllColumns element
+
+#############################################################################################
+# Field UI
+
+add{
+	layout:Field
+	rdf:type				rdfs:Class ;
+		rdf:type			daml:Class ;
+		rdfs:label			"Column Field"
+
+	:FieldHeaderView	rdfs:label				"Field Header View"
+	:fieldHeaderViewPart
+						rdf:type				ozone:SWTPart ;
+						rdf:type				ozone:Part ;
+						rdf:type				ozone:ViewPart ;
+
+						rdf:type				ozone:FieldHeaderViewPart ;
+						ozone:viewDomain		:FieldHeaderView ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" } ;
+						ozone:template ${
+							rdf:type	ozone:PartContainer ;
+							ozone:dataSource ${
+								rdf:type			data:MappingSource ;
+								data:domain			@( "ascending" "descending" ) ;
+								data:range			@( :sortAscending :sortDescending ) ;
+								data:default		:noSort ;
+								ozone:dataSource ${
+									rdf:type			data:LiteralPropertySource ;
+									ozone:dataSource	data:underlyingSource ;
+									data:predicate		layout:fieldSorted
+								}
+							}
+						}
+#[						ozone:partDataGenerator	:presentFieldHeaderView ;
+						ozone:cachePartData		"true" ;
+						ozone:synchronous		"true" ;
+						hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.AdeninePartContainerPart" }]#
+
+	layout:Field hs:classView :FieldHeaderView
+
+
+	layout:defaultHeaders
+		rdf:type				slide:Block ;
+		slide:marginY			"3" ;
+		slide:color				"#004c99" ;
+		slide:bgcolor			"lightestGray" ;
+		slide:child ${
+			rdf:type						layout:FieldSet ; 
+			layout:enableChanges			"true" ;
+			layout:fieldPartDataGenerator	layout:headerFieldPartDataGenerator ;
+			layout:drawFieldDividers		"true"
+		}
+}
+
+#############################################################################################
+# Field Set View
+
+add {
+	:FieldSetView		rdfs:label				"Field Set View"
+	:fieldSetViewPart
+		rdf:type				ozone:Part ;
+		rdf:type				ozone:ViewPart ;
+		rdf:type				ozone:FieldSetViewPart ;
+		ozone:viewDomain		:FieldSetView ;
+		ozone:template ${
+			rdf:type					ozone:DataProviderHost ;
+			ozone:hostedDataProvider	data:underlyingSource ;
+			ozone:propertyName			lensui:underlyingSource ;
+			ozone:putProperty			${ ozone:name lensui:readOnly ; ozone:value "true" } ;
+			slide:child ${
+				rdf:type		slide:Block ;
+				slide:margin	"2" ;
+				slide:child ${
+					rdf:type						layout:AspectFieldSet
+				}
+			}
+		} ;
+		hs:javaImplementation	${ rdf:type hs:JavaClass ; hs:className	"edu.mit.lcs.haystack.ozone.standard.widgets.parts.TemplatePartContainerPart" }
+
+	daml:Thing hs:classView :FieldSetView
+}
+
+method layout:headerFieldPartDataGenerator fieldData fieldID ; adenine:precompile "true" ; adenine:preload "true"
+	return ${
+		rdf:type				ozone:ViewContainer ;
+		layout:uiOfFieldID		fieldID ;
+		layout:generatedBy		layout:headerFieldPartDataGenerator ;
+		ozone:initialResource	fieldData ;
+		ozone:viewPartClass		ozone:FieldHeaderViewPart
+	}
+
+add { :content
+	rdf:type				ozone:ViewContainer ;
+	ozone:dataSource ${
+		rdf:type			data:ResourcePropertySource ;
+		data:predicate		layout:fieldID ;
+		ozone:dataSource	data:underlyingSource
+	} ;
+	ozone:viewPartClass		ozone:InactiveInlineViewPart
+}
+
+add { :noSort
+	rdf:type		slide:Block ;
+	slide:marginX	"5" ;
+	slide:child ${
+		rdf:type			slide:Block ;
+		slide:marginBottom	"1" ;
+		slide:child			:content ;
+		ozone:onClick		:sortByUnderlyingField
+	}
+}
+
+method :sortByUnderlyingField
+	:sortByField (data:getUnderlying)
+
+method :sortByUnderlyingFieldDescending
+	:sortByField (data:getUnderlying) "descending"
+
+method :sortByUnderlyingFieldAscending
+	:sortByField (data:getUnderlying) "ascending"
+
+add { :sortAscending
+	rdf:type		slide:Block ;
+	slide:marginX	"5" ;
+	slide:child ${
+		rdf:type				slide:Block ;
+		slide:marginBottom		"1" ;
+		slide:fontBold			"true" ;
+		ozone:onClick			:sortByUnderlyingFieldDescending ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				:content
+				slide:space
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/sortAscending.gif>
+				}
+			)
+		}
+	}
+}
+
+add { :sortDescending
+	rdf:type		slide:Block ;
+	slide:marginX	"5" ;
+	slide:child ${
+		rdf:type				slide:Block ;
+		slide:marginBottom		"1" ;
+		slide:fontBold			"true" ;
+		ozone:onClick			:sortByUnderlyingFieldAscending ;
+		slide:child ${
+			rdf:type	slide:Paragraph ;
+			slide:children @(
+				:content
+				slide:space
+				${	rdf:type		slide:Image ;
+					slide:source	<http://haystack.lcs.mit.edu/data/ozone/common/sortDescending.gif>
+				}
+			)
+		}
+	}
+}
+
+method :presentFieldHeaderView underlying ; rdfs:comment "Presents a field as a field header" ; adenine:precompile "true" ; adenine:preload "true"
+	var presenters fieldID
+	with __source__ __infosource__
+		= presenters (query { underlying rdf:type ?x ?x layout:fieldHeaderPresenter ?y } (List ?y))
+	if (== (presenters.size) 1)
+		return (presenters[0][0] underlying)
+
+	with __source__ __infosource__
+		= fieldID (extract underlying layout:fieldID ?x)
+
+	var content sortBy
+
+	= part (queryExtract { ?x rdf:type ozone:Part ; ozone:dataDomain fieldID })
+	if (!= part null)
+		= content ${
+			rdf:type			ozone:PartContainer ;
+			ozone:dataSource ${
+				rdf:type		data:ResourcePropertySource ;
+				data:subject	part[0] ;
+				data:predicate	layout:fieldHeaderUI
+			}
+		}
+	else
+
+	with __source__ __infosource__
+		= sortBy (extract underlying layout:sortBy ?x)
+
+	if (== sortBy null)
+		return ${
+			rdf:type		slide:Block ;
+			slide:marginX	"5" ;
+			slide:child ${
+				rdf:type				slide:Block ;
+				slide:marginBottom		"1" ;
+				slide:child				:content
+			}
+		}
+
+	return ${
+		rdf:type	ozone:PartContainer ;
+		ozone:dataSource ${
+			rdf:type			data:MappingSource ;
+			data:domain			@( "ascending" "descending" ) ;
+			data:range			@( :sortAscending :sortDescending ) ;
+			data:default		:noSort ;
+			ozone:dataSource ${
+				rdf:type			data:LiteralPropertySource ;
+				ozone:dataSource	data:underlyingSource ;
+				data:predicate		layout:fieldSorted
+			}
+		}
+	}
+
+method :sortByField field sortOrder
+#; adenine:precompile "true" ; adenine:preload "true"
+	print '>sortbyfield' field sortOrder
+	= layoutConstraint (extract field layout:layoutConstraint ?x)
+	= sortBy (extract layoutConstraint layout:sortBy ?x)
+
+	print '>sortbyfield' field sortOrder layoutConstraint sortBy
+
+	if (== sortBy null)
+		return
+
+	if (== null sortOrder)
+		= sortOrder (extract sortBy data:sortOrder ?x)
+	if (== null sortOrder)
+		= sortOrder "ascending"
+
+	print '----sort' field sortBy sortOrder layoutConstraint
+
+	replace sortBy data:sortOrder ?x sortOrder
+	replace layoutConstraint layout:sortBy ?x sortBy
+
+	#
+	# Set properties for fields
+	#
+
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= fields (extract layoutConstraint layout:fields ?x)
+
+	= context (Context __context__)
+
+	= dataConsumer (AdenineDataConsumer __source__ context :sortByFieldOnDataChanged null null)
+	if (== dataConsumer null)
+		return
+
+	= dataProvider (DataUtilities.createDataProvider fields context __source__)
+	if (== dataProvider null)
+		return
+
+	context.putProperty :dataProvider		dataProvider
+	context.putProperty :field				field
+	context.putProperty :sortOrder			sortOrder
+
+	dataProvider.registerConsumer dataConsumer
+
+method :sortByFieldOnDataChanged dataConsumer changeType change 
+#; adenine:precompile "true" ; adenine:preload "true"
+
+	= dataProvider (__context__.getProperty :dataProvider)
+	= field (__context__.getProperty :field)
+	= sortOrder (__context__.getProperty :sortOrder)
+
+	= fields (dataProvider.getData data:list null)
+	print '----fields' fields
+	if (!= fields null)
+		for f in fields
+			if (f.equals field)
+				replace f layout:fieldSorted ?x sortOrder
+			else
+				remove f layout:fieldSorted ?x
+
+	dataProvider.unregisterConsumer dataConsumer
+	dataProvider.dispose
+

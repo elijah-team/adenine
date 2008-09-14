@@ -1,0 +1,116 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Wrapper Induction interface
+# Written by Andrew Hogue
+
+@prefix	:		<http://haystack.lcs.mit.edu/schemata/wrapperinduction#> 
+
+add { :WrappedPage
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Wrapped Page" ;
+	rdfs:isDefinedBy ^
+}
+
+add { :Pattern
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"Wrapper" ;
+	rdfs:isDefinedBy ^
+}
+
+add { :patternRoot
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Root Node" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:Pattern ;
+	rdfs:range		:PatternNode
+}
+
+add { :url
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"URL" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:Pattern ;
+	rdfs:range		xsd:string
+}
+
+#add { :semanticClass
+#	rdf:type		daml:DatatypeProperty ;
+#	rdfs:label		"Pattern Class" ;
+#	rdfs:isDefinedBy	^ ;
+#	rdfs:domain		:Pattern ;
+#	rdfs:range		rdfs:Class ;
+#	rdfs:range		daml:Class ;
+#}
+
+
+add { :PatternNode
+	rdf:type		rdfs:Class ;
+	rdf:type		daml:Class ;
+	rdfs:label		"PatternNode" ;
+	rdfs:isDefinedBy ^
+}
+
+add { :semanticRoot
+	rdf:type		rdfs:Property ;
+	rdfs:label		"Semantic Root" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:PatternNode ;
+}
+
+add { :tagName
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Tag Name" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:PatternNode ;
+	rdfs:range		xsd:string
+}
+
+add { :siblingNo
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Sibling Number" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:PatternNode ;
+	rdfs:range		xsd:int
+}
+
+add { :childNode
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Child Node" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:PatternNode ;
+	rdfs:range		:PatternNode
+}
+
+add { :semanticResource
+	rdf:type		daml:DatatypeProperty ;
+	rdfs:label		"Semantic Resource" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain		:PatternNode ;
+	rdfs:range		rdfs:Property ;
+}
+
+

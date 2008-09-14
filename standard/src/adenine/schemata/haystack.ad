@@ -1,0 +1,483 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Base Haystack Ontology
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/schemata/haystack.ad,v 1.45 2004/01/04 04:40:46 dquan Exp $
+
+@base <http://haystack.lcs.mit.edu/schemata/haystack>
+
+@prefix	dc:			<http://purl.org/dc/elements/1.1/>
+@prefix	acl:		<http://www.w3.org/2001/02/acls/ns#>
+@prefix	wsdl:		<http://schemas.xmlsoap.org/wsdl/>
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#>
+@prefix	ozone:		<http://haystack.lcs.mit.edu/schemata/ozone#>
+@prefix vcard:		<http://haystack.lcs.mit.edu/schemata/vcard#>
+@prefix vowl:		<http://haystack.lcs.mit.edu/schemata/vowl#>
+
+add { ^
+	rdf:type	daml:Ontology ;
+	dc:title	"Base Haystack Ontology"
+}
+
+#############################################################################################
+# Properties
+
+add { daml:ObjectProperty
+	rdfs:label		"Object Property" ;
+	ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/icons/types/property.gif>
+}
+
+add { daml:DatatypeProperty
+	rdfs:label		"Data Property" ;
+	ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/icons/types/property.gif>
+}
+
+add { daml:Class
+	rdfs:label		"Daml Class" ;
+	ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/icons/types/class.gif>
+}
+
+add { rdfs:Class
+	ozone:icon		<http://haystack.lcs.mit.edu/data/ozone/icons/types/class.gif>
+}
+
+add { hs:PasswordProperty
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		daml:DatatypeProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Password Property"
+}
+
+add { hs:ProprietalProperty	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Proprietal Property" ;
+	rdfs:subClassOf		rdf:Property
+}
+
+add { hs:RelationalProperty
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Relational Property" ;
+	rdfs:subClassOf		rdf:Property
+}
+
+add { hs:ContainmentProperty	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Containment Property" ;
+	rdfs:subClassOf		rdf:Property
+}
+
+add { hs:ReverseContainmentProperty	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Reverse Containment Property" ;
+	rdfs:subClassOf		rdf:Property
+}
+
+add { hs:CachedProperty	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Cached Property" ;
+	rdfs:subClassOf		rdf:Property
+}
+
+add { hs:MixinProperty	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:comment		"An anonymous property derived from multiple base classes." ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Mixin Property" ;
+	rdfs:subClassOf		rdf:Property
+}
+
+add { hs:MixinClass	
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Mixin Class" ;
+}
+
+add { hs:possibleMixin
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Possible mixin" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			hs:MixinProperty ;
+	rdfs:range			rdf:Property
+}
+
+method hs:cleanCachedProperties ; adenine:preload "true" ; dc:title "Clean cached properties"
+	= props (query { ?x rdf:type hs:CachedProperty ?a ?x ?b } @(?a ?x ?b))
+	for x in props
+		remove x[0] x[1] x[2]
+
+add {
+	rdf:first		rdf:type		hs:ProprietalProperty
+	rdf:rest		rdf:type		hs:ProprietalProperty
+
+	dc:date
+		rdf:type	daml:DatatypeProperty ;
+		rdf:type	hs:ProprietalProperty ;
+		rdf:type	daml:UniqueProperty ;
+		rdfs:range	xsd:dateTime
+
+	dc:creator
+		rdf:type	daml:ObjectProperty ;
+		rdf:type	hs:RelationalProperty
+
+	dc:format
+		rdf:type	daml:DatatypeProperty ;
+		rdf:type	daml:UniqueProperty ;
+		rdf:type	hs:ProprietalProperty ;
+		rdfs:range	xsd:string
+
+	rdfs:isDefinedBy	rdf:type	hs:ReverseContainmentProperty
+}
+
+#############################################################################################
+# Miscellaneous properties
+
+add { hs:creatable
+	rdf:type		daml:DatatypeProperty ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		hs:ProprietalProperty ;
+	rdfs:label		"Creatable" ;
+	rdfs:domain		rdfs:Class ;
+	rdfs:range		xsd:boolean
+}
+
+add { hs:user
+	rdf:type		daml:ObjectProperty ;
+	rdf:type		daml:UniqueProperty ;
+	rdf:type		hs:RelationalProperty ;
+	rdfs:label		"Works for" ;
+	rdfs:domain		rdfs:Class ;
+	rdfs:range		hs:Person
+}
+
+add { hs:serializer
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"Serializer" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			daml:Thing ;
+	rdfs:range			adenine:Method 	
+}
+
+#############################################################################################
+# Java class
+
+add { hs:JavaClass
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Java Class" ;
+	rdfs:comment		"A Java class."
+}
+
+add { hs:className
+	rdf:type			daml:DatatypeProperty ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Class Name" ;
+	rdfs:domain			hs:JavaClass ;
+	rdfs:range			xsd:string
+}
+
+add { hs:codeBase	
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Code Base" ;
+	rdfs:domain			hs:JavaClass
+}
+
+add { hs:javaImplementation
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Java Implementation" ;
+	rdfs:range			hs:JavaClass
+}
+
+#############################################################################################
+# Organization
+
+add { hs:Organization	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Organization" ;
+	rdfs:comment		"Organization or institution." ;
+	rdfs:isDefinedBy	^ ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/organization.gif>
+}
+
+#############################################################################################
+# Person
+
+add { hs:Person	
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Person" ;
+	rdfs:comment		"A person." ;
+	vowl:titleSourcePredicate	vcard:name ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:subClassOf		acl:Identity ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/person.gif>
+}
+
+#############################################################################################
+# View
+
+add { hs:View
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"View" ;
+	rdfs:comment		"A way of looking at rdf:type resource."
+}
+
+add { hs:view
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:label			"View" ;
+	rdfs:range			hs:View
+}
+
+add { hs:classView	
+	rdf:type			daml:ObjectProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Classwide View Class" ;
+	rdfs:domain			rdfs:Class ;
+	rdfs:range			rdfs:Class
+}
+
+#############################################################################################
+# Metadata view
+
+add { hs:MetadataView	
+	rdfs:isDefinedBy	^ ;
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:subClassOf		hs:View ;
+	rdfs:label			"Metadata View"
+}
+
+#############################################################################################
+# Collection
+
+add { hs:Collection
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Collection" ;
+	rdfs:comment		"A set of resources." ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/collection.gif> ;
+	rdfs:isDefinedBy	^
+}
+
+add { hs:member	
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Member" ;
+	rdfs:isDefinedBy	^ ;
+	rdf:type			hs:ContainmentProperty ;
+	rdfs:domain			hs:Collection
+}
+
+#############################################################################################
+# List
+
+add { hs:List
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"List" ;
+	rdfs:comment		"A list of resources." ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/collection.gif> ;
+	rdfs:isDefinedBy	^
+}
+
+add { hs:list
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"DAML List" ;
+	rdfs:isDefinedBy	^ ;
+	rdf:type			hs:ContainmentProperty ;
+	rdfs:domain			hs:List ;
+	rdfs:range			rdf:List
+}
+
+#############################################################################################
+# Category
+
+add { hs:Category
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Category" ;
+	rdfs:comment		"A category of resources." ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:subClassOf		hs:Collection ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/collection.gif>
+}
+
+add { hs:subcategory
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Subcategory" ;
+	rdfs:domain			hs:Category ;
+	rdfs:range			hs:Category
+}
+
+add { hs:CategorizationScheme
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Category set" ;
+	rdfs:comment		"A set of categories." ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:subClassOf		hs:Collection ;
+	ozone:icon			<http://haystack.lcs.mit.edu/data/ozone/icons/types/collection.gif>
+}
+
+add { hs:relevantDomain
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Relevant domain" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			hs:CategorizationScheme ;
+	rdfs:range			rdfs:Class
+}
+
+#############################################################################################
+# Visitation
+
+add { hs:Visitation
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Visitation" ;
+	rdfs:comment		"A record of when rdf:type resource was viewed."
+}
+
+add { hs:visitTime
+	rdf:type			daml:DatatypeProperty ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			hs:ProprietalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Visit Time" ;
+	rdfs:domain			hs:Visitation ;
+	rdfs:range			xsd:dateTime
+}
+
+add { hs:visitedBy
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Visited By" ;
+	rdfs:domain			hs:Visitation ;
+	rdfs:range			hs:Person
+}
+
+add { hs:visitedResource
+	rdf:type			daml:ObjectProperty ;
+	rdf:type			daml:UniqueProperty ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:label			"Visited Resource" ;
+	rdfs:domain			hs:Visitation
+}
+
+#############################################################################################
+# Belief
+
+add {
+	hs:trusts		rdf:type		daml:ObjectProperty ;
+					rdf:type		hs:RelationalProperty ;
+					rdfs:label		"Trusts" ;
+					rdfs:domain		hs:Person ;
+					rdfs:range		hs:Person
+
+	hs:asserts		rdf:type		daml:ObjectProperty ;
+					rdf:type		hs:RelationalProperty ;
+					rdfs:label		"Asserts" ;
+					rdfs:domain		hs:Person ;
+					rdfs:range		hs:Statement
+
+	hs:denies		rdf:type		daml:ObjectProperty ;
+					rdf:type		hs:RelationalProperty ;
+					rdfs:label		"Denies" ;
+					rdfs:domain		hs:Person ;
+					rdfs:range		rdf:Statement
+
+	hs:expiresOn	rdf:type		daml:DatatypeProperty ;
+					rdf:type		hs:ProprietalProperty ;
+					rdfs:label		"Expires On" ;
+					rdfs:domain		rdf:Statement ;
+					rdfs:range		xsd:dateTime
+}
+
+#############################################################################################
+# Service
+
+add { hs:Service	
+	rdfs:isDefinedBy	^ ;
+	rdf:type			rdfs:Class ;
+	rdf:type			daml:Class ;
+	rdfs:label			"Service" ;
+	rdfs:subClassOf		wsdl:Service
+}
+
+#############################################################################################
+# Package
+
+add { hs:Package
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Package" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:comment		"A set of statements that describe an object."
+}
+
+add { hs:packageStatement
+	rdf:type			daml:ObjectProperty ;
+	rdfs:label			"Package statement" ;
+	rdf:type			hs:RelationalProperty ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:domain			hs:Package ;
+	rdfs:range			rdf:Statement
+}
+
+add { hs:DisposablePackage
+	rdf:type			daml:Class ;
+	rdf:type			rdfs:Class ;
+	rdfs:label			"Disposable package" ;
+	rdfs:isDefinedBy	^ ;
+	rdfs:comment		"A cached set of statements that can be removed." ;
+	rdfs:subClassOf		hs:Package
+}
+

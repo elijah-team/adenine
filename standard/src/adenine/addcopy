@@ -1,0 +1,4 @@
+#!/bin/csh
+
+cat copyright $1 > tmpcopy
+mv -f tmpcopy $1

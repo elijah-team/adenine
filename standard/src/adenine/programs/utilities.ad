@@ -1,0 +1,649 @@
+# Copyright (c) 1998-2003 Massachusetts Institute of Technology. 
+# This code was developed as part of the Haystack research project 
+# (http://haystack.lcs.mit.edu/). Permission is hereby granted, 
+# free of charge, to any person obtaining a copy of this software 
+# and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation 
+# the rights to use, copy, modify, merge, publish, distribute, 
+# sublicense, and/or sell copies of the Software, and to permit 
+# persons to whom the Software is furnished to do so, subject to 
+# the following conditions: 
+# 
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software. 
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+# OTHER DEALINGS IN THE SOFTWARE. 
+#
+
+# Adenine Utilities
+# Written by Dennis Quan
+# $Header: /home/stefano/haystack/src/adenine/programs/utilities.ad,v 1.23 2004/05/06 19:13:53 kbakshi Exp $
+
+@base <http://haystack.lcs.mit.edu/programs/utilities>
+
+@prefix	hs:			<http://haystack.lcs.mit.edu/schemata/haystack#> 
+@prefix http:		<http://schemas.xmlsoap.org/wsdl/http/>
+@prefix	:			<http://haystack.lcs.mit.edu/schemata/adenine#> 
+@prefix	construct:	<http://haystack.lcs.mit.edu/schemata/constructor#>
+@prefix	create:		<http://haystack.lcs.mit.edu/programs/create#>
+@prefix util:		<http://haystack.lcs.mit.edu/programs/utilities#>
+@prefix data:	<http://haystack.lcs.mit.edu/schemata/dataProvider#>
+
+method :uninstallPackage package ; adenine:preload "true" ; adenine:precompile "true"
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	Utilities.uninstallPackage package __target__
+
+method :installN3 url package ; adenine:preload "true" ; adenine:precompile "true"
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	importjava "java.net" URL
+	Utilities.parseN3 ((URL (url.getURI)).openStream) (PackageFilterRDFContainer __source__ package)
+
+method :installAdenine url package ; adenine:preload "true" ; adenine:precompile "true"
+	importjava "edu.mit.lcs.haystack.adenine" Compiler
+	importjava "java.net" URL
+	Compiler.compile (PackageFilterRDFContainer __source__ package) ((URL (url.getURI)).openStream)
+
+method util:addToHSList list item index
+	importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+	ListUtilities.addToHSList list item index __source__
+
+method util:appendToHSList list item
+	importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+	ListUtilities.appendToHSList list item __source__
+
+method util:prependToHSList list item
+	importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+	ListUtilities.prependToHSList list item __source__
+
+method util:removeFromHSList list item
+	importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+	ListUtilities.removeFromHSList list item __source__
+
+method util:clearHSList list
+	importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+	ListUtilities.clearHSList list __source__
+
+method util:isInHSList list item
+	importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+	return (ListUtilities.isInHSList list item __source__)
+
+method util:removeFromDataSet dataSet item
+	util:removeFromDataSource (extract dataSet data:dataSource ?x) item
+
+method util:removeFromDataSource dataSource item
+	importjava "edu.mit.lcs.haystack.ozone.data" AdenineDataConsumer DataUtilities
+	importjava "edu.mit.lcs.haystack.ozone.core" Context
+
+	= context (Context __context__)
+	= dataProvider (DataUtilities.createDataProvider dataSource context __source__)
+	if (!= dataProvider null)
+		if (dataProvider.supportsChange data:setRemoval)
+			dataProvider.requestChange data:setRemoval item
+
+		dataProvider.dispose
+
+method util:parseDouble	literal
+	importjava "java.lang" Double
+	return (Double.valueOf (literal.getContent))
+
+add { :listConverter
+	rdf:type			:ResourceConverter ;
+	:conversionDomain	rdf:List ;
+	:converter			:convertList
+}
+
+method :convertList res ; adenine:preload "true" ; adenine:precompile "true"
+	importjava "edu.mit.lcs.haystack.rdf" ListUtilities
+	return (ListUtilities.retrieveDAMLList res __source__)
+
+add { :conditionSetConverter
+	rdf:type			:ResourceConverter ;
+	:conversionDomain	adenine:ConditionSet ;
+	:converter			:convertConditionSet
+}
+
+method :convertConditionSet res ; adenine:preload "true" ; adenine:precompile "true"
+	importjava "edu.mit.lcs.haystack.adenine.query" ConditionSet
+	return (ConditionSet res __source__)
+
+add { :resourceConverter
+	rdf:type			:ResourceConverter ;
+	:conversionDomain	adenine:Resource ;
+	:converter			:convertResource
+}
+
+method :convertResource res ; adenine:preload "true" ; adenine:precompile "true"
+	return (extract res adenine:resource ?x)
+
+add { :literalConverter
+	rdf:type			:ResourceConverter ;
+	:conversionDomain	adenine:Literal ;
+	:converter			:convertLiteral
+}
+
+method :convertLiteral res ; adenine:preload "true" ; adenine:precompile "true"
+	return (extract res adenine:literal ?x)
+
+
+# code in this function is identical to sample :greaterThan except for portion marked with #!!#
+method :greaterThanInt x y adenine:existentials = existentials adenine:currentResults = currentResults ;
+rdf:type			adenine:ConditionHandler ;
+:greaterThanMethod	xsd:int ; adenine:precompile "true" ; adenine:preload "true"
+
+	= xExist (existentials.contains x)
+	= yExist (existentials.contains y)
+	= xExistIndex (existentials.indexOf x)
+	= yExistIndex (existentials.indexOf y)
+
+	# One of the variables must be an existential
+	if (! (or xExist yExist))
+		return null
+
+	importjava "java.lang" Integer
+	var left right
+	var leftData rightData
+	if (! xExist)
+		= left (Integer.parseInt (x.getContent))
+	else
+		= leftData currentResults[xExistIndex]
+		if (== leftData null)
+			return null
+
+	if (! yExist)
+		= right (Integer.parseInt (y.getContent))
+	else
+		= rightData currentResults[yExistIndex]
+		if (== rightData null)
+			return null
+
+	= len 0
+	if yExist
+		= len (length currentResults[yExistIndex])
+	else
+		= len (length currentResults[xExistIndex])
+
+	= results (Set)
+
+	= i 0
+	while (lt i len)
+		if xExist
+			= left (Integer.parseInt (currentResults[xExistIndex][i].getContent))
+		if yExist
+			= right (Integer.parseInt (currentResults[yExistIndex][i].getContent))
+
+		if (gt left right)
+			= j 0
+			= datum @()
+			while (lt j (length existentials))
+				= col currentResults[j]
+				if (!= col null)
+					datum.add col[i]
+				else
+					datum.add null
+				= j (+ 1 j)
+			results.add datum
+
+		= i (+ 1 i)
+
+	return results
+
+# code in this function is identical to sample :greaterThan except for portion marked with #!!#
+method :greaterThanDate x y adenine:existentials = existentials adenine:currentResults = currentResults ; 
+rdf:type			adenine:ConditionHandler ;
+:greaterThanMethod	xsd:dateTime ; adenine:precompile "true" ; adenine:preload "true"
+
+	= xExist (existentials.contains x)
+	= yExist (existentials.contains y)
+	= xExistIndex (existentials.indexOf x)
+	= yExistIndex (existentials.indexOf y)
+
+	# One of the variables must be an existential
+	if (! (or xExist yExist))
+		return null
+
+	#!!#
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	#!!#
+	
+	var left right
+	var leftData rightData
+	if (! xExist)
+		= left (Utilities.parseDate x)
+	else
+		= leftData currentResults[xExistIndex]
+		if (== leftData null)
+			return null
+
+	if (! yExist)
+		= right (Utilities.parseDate y)
+	else
+		= rightData currentResults[yExistIndex]
+		if (== rightData null)
+			return null
+
+	= len 0
+	if yExist
+		= len (length currentResults[yExistIndex])
+	else
+		= len (length currentResults[xExistIndex])
+
+	= results (Set)
+
+	= i 0
+	while (lt i len)
+		if xExist
+			= left (Utilities.parseDate currentResults[xExistIndex][i])
+		if yExist
+			= right (Utilities.parseDate currentResults[yExistIndex][i])
+
+		if (left.after right)
+			= j 0
+			= datum @()
+			while (lt j (length existentials))
+				= col currentResults[j]
+				if (!= col null)
+					datum.add col[i]
+				else
+					datum.add null
+				= j (+ 1 j)
+			results.add datum
+
+		= i (+ 1 i)
+
+	return results
+
+method :minDate resultSet ; :minMethod	xsd:dateTime
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	= minDate null
+	for x in resultSet
+		= curDate (Utilities.parseDate x[0])
+		if (== null curDate)
+			continue
+		if (== null minDate)
+			= minDate curDate
+		else
+			if (minDate.after curDate)
+				= minDate curDate
+			
+	return minDate
+
+method :maxDate resultSet ; :maxMethod	xsd:dateTime
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	= maxDate null
+	for x in resultSet
+		= curDate (Utilities.parseDate x[0])
+		if (== null curDate)
+			continue
+		if (== null maxDate)
+			= maxDate curDate
+		else
+			if (curDate.after maxDate)
+				= maxDate curDate
+			
+	return maxDate
+
+method :minInt resultSet ; :minMethod	xsd:int
+	importjava "java.lang" Integer
+	= minInt null
+	for x in resultSet
+		= curInt (Integer.parseInt (x[0].getContent))
+		if (== null minInt)
+			= minInt curInt
+		else
+			if (gt minInt curInt)
+				= minInt curInt
+			
+	return minInt
+
+method :maxInt resultSet ; :maxMethod	xsd:int
+	importjava "java.lang" Integer
+	= maxInt null
+	for x in resultSet
+		= curInt (Integer.parseInt (x[0].getContent))
+		if (== null maxInt)
+			= maxInt curInt
+		else
+			if (lt maxInt curInt)
+				= maxInt curInt
+			
+	return maxInt
+
+
+# vs: todo: remove navView prefix {not good to have dependencies}
+@prefix	navView:	<http://haystack.lcs.mit.edu/ui/navigationView#>
+
+method :nnaryContains x y z adenine:existentials = existentials adenine:currentResults = currentResults ; 
+rdf:type adenine:ConditionHandler ; adenine:precompile "true" ; adenine:preload "true"
+
+	#var xpor
+	#var ypor
+	#var zpor
+	#if (!(existentials.contains x))
+	#	= xpor x
+	#else
+	#	= xpor '?'
+	#if (!(existentials.contains y))
+	#	= ypor (append y ' ' (navView:getTitle y))
+	#else
+	#	= ypor '?'
+	#if (!(existentials.contains z))
+	#	= zpor z
+	#else
+	#	= zpor '?'
+	#print ':nnaryContains ' xpor ' ' ypor ' ' zpor
+	#print 'currentResults: ' currentResults
+
+	#if (== y rdf:type)
+	#	if (== null currentResults)
+	#		print 'currentResults is null'
+	#	else
+	#		print 'currentResults is not null'
+	#	print 'rdf:type shorting'
+	#	return (Set)
+
+	= xExistIndex (existentials.indexOf x)
+	= yExistIndex (existentials.indexOf y)
+	= zExistIndex (existentials.indexOf z)
+
+	if (!(existentials.contains y))
+		# y is not an existential
+		# de-virtualize it
+		if (!(contains y rdf:type :nnaryVirtualPred))
+			# y is given but not virtual
+			#print 'Returning empty'
+			return (Set)
+		else
+			= yValNew y
+			= yVal (extract yValNew :pred1 ?x)
+			= yValCont (extract yValNew :pred2 ?x)
+			# if x is given
+			if (!(existentials.contains x))
+				= results (Set)
+				= xValNew x
+				= stmts (query {xValNew yVal ?a ?a yValCont ?z} @(?z))
+				for stmt in stmts
+					= zValNew stmt[0]
+					= j 0
+					= datum @()
+					while (lt j (length existentials))
+						if (== j yExistIndex)
+							datum.add yValNew
+						else
+							if (== j zExistIndex)
+								datum.add zValNew
+							else
+								# if (== j xExistIndex)
+								datum.add xValNew
+						= j (+ 1 j)
+					results.add datum
+				return results
+					
+			# if z is given
+			if (!(existentials.contains z))
+				= results (Set)
+				= zValNew z
+				= stmts (query {?x yVal ?a ?a yValCont zValNew} @(?x))
+				for stmt in stmts
+					= xValNew stmt[0]
+					= j 0
+					= datum @()
+					while (lt j (length existentials))
+						if (== j yExistIndex)
+							datum.add yValNew
+						else
+							if (== j zExistIndex)
+								datum.add zValNew
+							else
+								# if (== j xExistIndex)
+								datum.add xValNew
+						= j (+ 1 j)
+					results.add datum
+				return results
+					
+			# if x and z are not given
+			= results (Set)
+			= stmts (query {?x yVal ?a ?a yValCont ?z} @(?x ?z))
+			for stmt in stmts
+				= xValNew stmt[0]
+				= zValNew stmt[1]
+				= j 0
+				= datum @()
+				while (lt j (length existentials))
+					if (== j yExistIndex)
+						datum.add yValNew
+					else
+						if (== j zExistIndex)
+							datum.add zValNew
+						else
+							# if (== j xExistIndex)
+							datum.add xValNew
+					= j (+ 1 j)
+				results.add datum
+			return results
+					
+
+	# y is an existential (other cases are handled above)
+
+
+	
+	# only other option supported: both y and z must be existentials
+	if (!(and (existentials.contains y) (existentials.contains z)))
+		print '!!!!!!!!!!!!!!!!!!!!! returning null'
+		return null
+
+	= xVal x
+	= results (Set)
+	= regTerm (query {xVal ?y ?z} @(?y ?z))
+	for stmt in regTerm
+		# for every row of input
+		= yVal stmt[0]
+		= zVal stmt[1]
+
+		if (contains yVal rdf:type :nnaryPred)
+			= zExtend (query {zVal ?a ?b} @(?a ?b))
+			for extendRow in zExtend
+				# we need to create a new yVal in this case
+				# but first check if it already exists
+				= yValCont extendRow[0]
+				= zValNew extendRow[1]
+				= yValNew (queryExtract {?x :pred1 yVal ?x :pred2 yValCont} @(?x))
+				if (!= null yValNew)
+					= yValNew yValNew[0]
+				else
+					= yValNew (UniqueResource)
+					add { 
+						yValNew	rdf:type	:nnaryVirtualPred ; 
+								rdfs:label	(append (navView:getTitle yVal) ' ' (navView:getTitle yValCont)) ;
+								:pred1		yVal ; 
+								:pred2		yValCont 
+					}
+				# print (append yValNew zValNew)
+
+				= j 0
+				= datum @()
+				while (lt j (length existentials))
+					# print (append 'j = ' j)
+					if (== j yExistIndex)
+						datum.add yValNew
+					else
+						if (== j zExistIndex)
+							datum.add zValNew
+						else
+							# if (== j xExistIndex)
+							datum.add xVal
+					= j (+ 1 j)
+				results.add datum
+
+	return results
+
+
+method :currTime ; adenine:preload "true" ; adenine:precompile "true"
+	importjava "java.util" Date
+	return ((Date).toString)
+
+
+method :beep
+	importjava "java.awt" Toolkit
+	(Toolkit.getDefaultToolkit).beep
+
+
+method :oldSetDifference a b adenine:existentials = existentials adenine:currentResults = currentResults ; 
+rdf:type adenine:ConditionHandler
+
+	#print (a.getClass)
+	#print (b.getClass)
+	
+	# we really invalidate b after this function
+
+	# Both parameters must be existentials with 
+	if (or (! (existentials.contains a)) (! (existentials.contains b)))
+		return (Set)
+
+	= aExistIndex (existentials.indexOf a)
+	= bExistIndex (existentials.indexOf b)
+	
+	= results (Set)
+
+	# Check for literals
+	= aData currentResults[(existentials.indexOf a)]
+	= bData currentResults[(existentials.indexOf b)]
+	for x in aData
+		= inB false
+		for y in bData
+			if (== x y)
+				= inB true
+		if (== inB false)
+			# print 'adding: ' x
+			= datum @()
+			for w in existentials
+				if (== w a)
+					datum.add x
+				else
+					datum.add bData[0]
+			results.add datum
+
+	return results
+
+# implementation moved to Java
+add {:setDifference rdf:type adenine:ConditionHandler}
+
+# adenine:identity
+# when called with values
+# x y
+# 1 3
+# 2 3
+# the following will be returned
+# 1 1
+# 2 2
+# 3 3
+method adenine:identity x y adenine:existentials = existentials adenine:currentResults = currentResults ;
+rdf:type			adenine:ConditionHandler ; adenine:precompile "true" ; adenine:preload "true"
+
+	= xExist (existentials.contains x)
+	= yExist (existentials.contains y)
+	= xExistIndex (existentials.indexOf x)
+	= yExistIndex (existentials.indexOf y)
+	#print 'xExist' xExist
+	#print 'yExist' yExist
+	#print 'xExistIndex' xExistIndex
+	#print 'yExistIndex' yExistIndex
+
+	# One of the variables must be an existential
+	if (! (or xExist yExist))
+		return null
+
+	= results (Set)
+
+	function addValXY val
+		= j 0
+		= datum @()
+		while (lt j (length existentials))
+			= col currentResults[j]
+			if (== j yExistIndex)
+				datum.add val
+			else
+				if (== j xExistIndex)
+					datum.add val
+				else
+					datum.add null
+			= j (+ 1 j)
+		results.add datum
+
+	function addColumnXY existIndex nullVal
+		if (== existIndex -1)
+			addValXY nullVal
+		else
+			= colData currentResults[existIndex]
+			# we don't generate data, so we should to be called *after* the 
+			# querying happens
+			if (!= colData null)
+				= i 0
+				while (lt i (length colData))
+					#print 'considering ' colData[i]
+					addValXY colData[i]
+					= i (+ 1 i)
+
+	#print 'length existentials' (length existentials)
+	#print 'currentResults[xExistIndex]' currentResults[xExistIndex]
+	#print 'currentResults[yExistIndex]' currentResults[yExistIndex]
+
+
+	# copy x
+	#print 'considering x'
+	if yExist
+		addColumnXY xExistIndex x
+
+	# copy y
+	#print 'considering y'
+	if xExist
+		addColumnXY yExistIndex y
+
+	return results
+
+
+method	util:createDefaultEntity	type
+	= retVal null
+	= constructorList	(query {?x rdf:type construct:Constructor ?x construct:targetType type } @(?x))
+	for x in constructorList
+		if (contains x[0] construct:defaultConstructor "true")			
+			= msg (Message)
+			= retVal (apply x[0] msg)			
+			
+	if (== retVal null)
+		= retVal	(create:create	type)
+
+	return retVal
+
+method util:convertSetToCollection	set
+	= collection (UniqueResource)
+	add {collection	rdf:type	hs:Collection	}
+	for x in set
+		add {collection	hs:member	x}
+	
+	return collection
+
+method util:addToHSCollection	targetCollection	srcCollection
+	importjava "edu.mit.lcs.haystack.rdf" Utilities
+	= membersToAdd (Utilities.extractFirstItems (query { srcCollection hs:member ?x } @(?x)))
+	for x in membersToAdd
+		add {targetCollection	hs:member	x	}
+
+method	util:createDefaultLiteral	literalType
+	= retVal ""
+	if (== literalType	xsd:string)
+		= retVal ""
+	if (== literalType	xsd:boolean)
+		= retVal "false"
+	if (== literalType	xsd:integer)
+		= retVal 0
+	if (== literalType	xsd:double)
+		= retVal 0.0
+		
+	return retVal
