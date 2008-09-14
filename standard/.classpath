@@ -10,7 +10,6 @@
     </classpathentry>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" />
     <classpathentry kind="src" path="/Haystack Core" combineaccessrules="false" exported="true" />
-    <classpathentry kind="src" path="/Haystack Subfloor" combineaccessrules="false" />
     <classpathentry kind="lib" path="src/adenine" exported="true" />
     <classpathentry kind="output" path="out/" />
 </classpath>

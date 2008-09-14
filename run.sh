@@ -1,0 +1,2 @@
+#!/bin/bash
+java -cp out/production/Haystack\ Core:out/production/Haystack\ Subfloor:out/production/Haystack\ Standard\ Functionality:`find subfloor/jars -name "*jar" | paste -sd ':' -` edu.mit.lcs.haystack.adenine.Console

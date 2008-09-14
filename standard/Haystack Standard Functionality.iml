@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module relativePaths="true" classpath="eclipse" type="JAVA_MODULE" version="4" />
+<module relativePaths="true" classpath="eclipse" type="JAVA_MODULE" version="4">
+  <component name="BuildJarSettings">
+    <containerInfo />
+    <setting name="jarUrl" value="file://$MODULE_DIR$/../adenine.jar" />
+    <setting name="buildJar" value="true" />
+    <setting name="mainClass" value="edu.mit.lcs.haystack.adenine.Console" />
+  </component>
+</module>
 
