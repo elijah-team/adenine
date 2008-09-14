@@ -27,7 +27,7 @@ package edu.mit.lcs.haystack;
 
 import edu.mit.lcs.haystack.adenine.AdenineConstants;
 import edu.mit.lcs.haystack.adenine.Console;
-import edu.mit.lcs.haystack.adenine.SWTConsole;
+//import edu.mit.lcs.haystack.adenine.SWTConsole;
 import edu.mit.lcs.haystack.adenine.compilers.ICompiler;
 import edu.mit.lcs.haystack.adenine.compilers.rdfCode.RDFCodeCompiler;
 import edu.mit.lcs.haystack.adenine.interpreter.DynamicEnvironment;
@@ -41,11 +41,13 @@ import edu.mit.lcs.haystack.rdf.converters.AdenineConverter;
 import edu.mit.lcs.haystack.security.Identity;
 import edu.mit.lcs.haystack.security.IdentityManager;
 import edu.mit.lcs.haystack.server.core.service.ServiceManager;
+
 import org.apache.log4j.PropertyConfigurator;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
+
+//import org.eclipse.swt.layout.FillLayout;
+//import org.eclipse.swt.widgets.Display;
+//import org.eclipse.swt.widgets.Shell;
+//import org.eclipse.ui.PlatformUI;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -178,19 +180,19 @@ public class Haystack {
 	public static void main(String[] args) {
 		Haystack haystack = new Haystack();
 		try {
-			Display display = Display.getDefault();
-			Shell s = new Shell();
-			s.setText("Adenine Console");
-			s.setLayout(new FillLayout());
-			SWTConsole c = new SWTConsole(s, haystack.m_serviceManager.getRootRDFContainer());
+//			Display display = Display.getDefault();
+//			Shell s = new Shell();
+//			s.setText("Adenine Console");
+//			s.setLayout(new FillLayout());
+			Console c = new Console(haystack.m_serviceManager.getRootRDFContainer());
 			c.setEnvironmentValue("__identity__", haystack.m_userIdentity);
 //			c.setEnvironmentValue("__infosource__", edu.mit.lcs.haystack.ozone.core.Ozone.getInformationSource(haystack.m_serviceManager.getRootRDFContainer(), haystack.m_userIdentity, haystack.m_serviceManager));
 			c.setServiceAccessor(haystack.m_serviceManager);
-			s.open();
-			while (!s.isDisposed()) {
-				if (!display.readAndDispatch()) display.sleep();
-			} 
-			display.dispose();
+//			s.open();
+//			while (!s.isDisposed()) {
+//				if (!display.readAndDispatch()) display.sleep();
+//			}
+//			display.dispose();
 			System.exit(0);
 		} catch (Exception e) {
 			new Console(haystack.m_serviceManager.getRootRDFContainer()).run();
@@ -204,8 +206,8 @@ public class Haystack {
 				&& !m_baseSystemPath.mkdirs()
 				&& !m_baseSystemPath.canWrite()) {
 			s_logger.error("Couldn't access base directory " + m_baseSystemPath);
-			PlatformUI.getWorkbench().close();
-			//System.exit(-1);
+//			PlatformUI.getWorkbench().close();
+			System.exit(-1);
 		}
 		if (SystemProperties.s_purgeRDF) {
 			s_logger.warn("Purging the entire Haystack database");
