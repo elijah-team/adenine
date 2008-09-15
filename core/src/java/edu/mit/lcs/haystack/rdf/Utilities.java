@@ -1610,8 +1610,8 @@ public final class Utilities {
 	
 	/**
 	 * Extracts a rdf:List and returns the resulting list of resources.
-	 * @param rest: The first pair of the list
-	 * @param container: The container of RDF
+	 * @param rest The first pair of the list
+	 * @param container The container of RDF
 	 * @return A List containing all resources in the list or null if list structure is invalid
 	 */
 	public static List extractRDFList(Resource rest, IRDFContainer container) {
@@ -1634,8 +1634,8 @@ public final class Utilities {
 
 	/**
 	 * Extracts a daml:List and returns the resulting list of resources.
-	 * @param rest: The first pair of the list
-	 * @param container: The container of RDF
+	 * @param rest The first pair of the list
+	 * @param container The container of RDF
 	 * @return A List containing all resources in the list or null if list structure is invalid
 	 */
 	public static List extractDAMLList(Resource rest, IRDFContainer container) {
@@ -1654,8 +1654,8 @@ public final class Utilities {
 	
 	/**
 	 * Extracts a daml:List or rdf:List and returns List of resources.
-	 * @param rest: First pair of list
-	 * @param container: RDF container
+	 * @param rest First pair of list
+	 * @param container RDF container
 	 * @return List of resources contained in list or null if invalid input list
 	 */
 	public static List extractList(Resource rest, IRDFContainer container) {

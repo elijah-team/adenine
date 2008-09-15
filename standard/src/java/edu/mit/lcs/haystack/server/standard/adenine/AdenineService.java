@@ -55,7 +55,7 @@ public class AdenineService extends GenericService implements IDereferenceable, 
 //	Context m_context = new Context();
 	
 	/**
-	 * @see IService#init(String, ServiceManager, Resource)
+	 * @see edu.mit.lcs.haystack.server.core.service.IService#init(String, ServiceManager, Resource)
 	 */
 	public void init(String basePath, ServiceManager manager, Resource res)
 		throws ServiceException {

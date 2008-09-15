@@ -343,7 +343,7 @@ public class SerineAgent extends GenericService implements ISerineAgent, IRDFLis
 	
 	/**
 	 * Informs Serine to process patterns with the given subject immediately.
-	 * @param res
+	 * @param subject
 	 */
 	public void processSubjectImmediately(Resource subject) {
 	}

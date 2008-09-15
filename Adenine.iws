@@ -20,8 +20,52 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/.classpath" afterPath="$PROJECT_DIR$/standard/.classpath" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/IfGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/IfGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ReturnInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ReturnInstruction.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Adenine.iws" afterPath="$PROJECT_DIR$/Adenine.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ReturnGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ReturnGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportJavaInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportJavaInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/QueryInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/QueryInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/StringInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/StringInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/IndexReader.java" afterPath="$PROJECT_DIR$/subfloor/src/java/edu/mit/lcs/haystack/lucene/index/IndexReader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WhileInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WhileInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WithInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WithInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallReturnInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallReturnInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/.classpath" afterPath="$PROJECT_DIR$/web/.classpath" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Adenine.ipr" afterPath="$PROJECT_DIR$/Adenine.ipr" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportJavaGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/ImportJavaGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LibraryInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LibraryInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BNodeInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BNodeInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/VarInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/VarInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/Method2Instruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/Method2Instruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Utilities.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Utilities.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IfInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IfInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BreakInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/BreakInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ImportInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/CallInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/RDFNodeInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/RDFNodeInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ContinueInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ContinueInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionCallInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/FunctionCallInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WhileGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WhileGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/MethodGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/MethodGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java" afterPath="$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IndexInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IndexInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/AssignmentInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/AssignmentInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/DereferencementInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/DereferencementInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WithGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/WithGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ResourceInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ResourceInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LiteralInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LiteralInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.xml" afterPath="$PROJECT_DIR$/build.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ModelInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ModelInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ForInInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ForInInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/FunctionGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/FunctionGenerator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IdentifierInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/IdentifierInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/MethodInstruction.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/MethodInstruction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Time.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/rdf/Time.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/VarGenerator.java" afterPath="$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compiler/VarGenerator.java" />
     </list>
     <ignored path="Adenine.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -83,88 +127,7 @@
     <favorites_list name="Adenine" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="ContentClient.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="170" column="37" selection-start="6563" selection-end="6563" vertical-scroll-proportion="0.018897638">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="trail.gif" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/standard/src/resource/data/ozone/frame/trail.gif">
-          <provider selected="true" editor-type-id="images">
-            <state />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="antBuild.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/standard/antBuild.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="196" column="55" selection-start="8172" selection-end="8172" vertical-scroll-proportion="0.7948304">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DebugDisplay.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="38" selection-start="1525" selection-end="1525" vertical-scroll-proportion="0.13228346">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Haystack.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/Haystack.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="209" column="12" selection-start="7440" selection-end="7440" vertical-scroll-proportion="0.3511811">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Interpreter.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Interpreter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="776" column="19" selection-start="26646" selection-end="26646" vertical-scroll-proportion="0.33228347">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Console.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="212" column="0" selection-start="7885" selection-end="7885" vertical-scroll-proportion="1.3354331">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CoreLoader.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="1" selection-start="1595" selection-end="1595" vertical-scroll-proportion="0.018461538">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -236,6 +199,356 @@
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Libraries" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.LibraryGroupNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Libraries" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.LibraryGroupNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar!/org" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Libraries" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.LibraryGroupNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar!/org" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar!/org/apache" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar!/org/apache/xml/serialize" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Libraries" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.LibraryGroupNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar!/org" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar!/org/apache" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Libraries" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.LibraryGroupNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/jars/loadfirst/xercesImpl.jar" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src/java/edu/mit/lcs/haystack/lucene" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src/java/edu/mit/lcs/haystack/lucene" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/subfloor/src/java/edu/mit/lcs/haystack/lucene/index" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack/server" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack/server/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack/server/standard/serine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack/server" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack/server/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Haystack Standard Functionality" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="PsiDirectory:/Users/jim/Projects/ifcx/thirdparty/adenine/standard/src/java/edu/mit/lcs/haystack/server" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Adenine" />
+          <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
           <option name="myItemId" value="Haystack Core" />
           <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
         </PATH_ELEMENT>
@@ -268,8 +581,8 @@
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="false" />
-    <property name="RunManagerConfig.showSettingsBeforeRunnig" value="false" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="RunManagerConfig.showSettingsBeforeRunnig" value="false" />
     <property name="GenerateAntBuildDialog.backupFiles" value="true" />
   </component>
   <component name="RunManager" selected="Application.Adenine Console">
@@ -302,22 +615,6 @@
         <option name="Make" value="true" />
       </method>
     </configuration>
-    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="" />
-      <envs />
-      <method>
-        <option name="Make" value="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit" enabled="false" merge="false">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -340,13 +637,6 @@
         <option name="Make" value="true" />
       </method>
     </configuration>
-    <configuration default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
-    </configuration>
     <configuration default="true" type="Applet" factoryName="Applet">
       <module name="" />
       <option name="MAIN_CLASS_NAME" />
@@ -358,6 +648,29 @@
       <option name="VM_PARAMETERS" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method>
+        <option name="Make" value="true" />
+      </method>
     </configuration>
     <configuration default="false" name="Adenine Console" type="Application" factoryName="Application" enabled="false" merge="false">
       <option name="MAIN_CLASS_NAME" value="edu.mit.lcs.haystack.adenine.Console" />
@@ -399,7 +712,7 @@
   <component name="StructureViewFactory">
     <option name="AUTOSCROLL_MODE" value="true" />
     <option name="AUTOSCROLL_FROM_SOURCE" value="false" />
-    <option name="ACTIVE_ACTIONS" value="" />
+    <option name="ACTIVE_ACTIONS" value="ALPHA_COMPARATOR" />
   </component>
   <component name="SvnConfiguration">
     <option name="USER" value="" />
@@ -439,10 +752,10 @@
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="2" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="3" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="7" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.232496" order="0" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="1" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20791021" order="7" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" order="8" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.232496" order="0" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29791272" order="1" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21004811" order="7" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" order="6" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" order="4" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5056926" order="8" />
@@ -450,7 +763,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" order="1" />
       <window_info id="Maven projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32994652" order="6" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30929792" order="8" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" order="2" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" order="2" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" order="0" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" order="4" />
@@ -522,181 +835,116 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/fs/src/java/edu/mit/lcs/haystack/server/extensions/fs/FilesystemAgent.java">
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LibraryInstruction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="28" selection-start="1735" selection-end="1735" vertical-scroll-proportion="0.32125986">
-          <folding>
-            <marker date="1221328155000" expanded="false" signature="0:1310" placeholder="/.../" />
-            <marker date="1221328155000" expanded="true" signature="2477:2507" placeholder="/**...*/" />
-            <marker date="1221328155000" expanded="true" signature="2658:4668" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="6004:7303" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="7447:8965" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="9065:10210" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="10282:10393" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="10533:10552" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="10755:11201" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="11763:12154" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="12200:12788" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="12813:13010" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="12841:12955" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="12925:12951" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="13240:13306" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="13539:13605" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="13840:14075" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="14244:14264" placeholder="{...}" />
-            <marker date="1221328155000" expanded="true" signature="14462:14478" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/extensions/query/LuceneAgent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="39" selection-start="2339" selection-end="2339" vertical-scroll-proportion="0.3323077">
+        <state line="67" column="14" selection-start="2649" selection-end="2649" vertical-scroll-proportion="0.2944882">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/src/java/edu/mit/lcs/haystack/server/extensions/wrapperinduction/dom/NodeID.java">
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/LiteralInstruction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="28" selection-start="1376" selection-end="1376" vertical-scroll-proportion="0.07559055">
-          <folding>
-            <marker date="1221328179000" expanded="false" signature="0:1276" placeholder="/.../" />
-            <marker date="1221328179000" expanded="true" signature="1804:1943" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="2299:2926" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="2932:2978" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="3012:3111" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="3172:3573" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="3579:3638" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="3667:3701" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="3730:3805" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="3846:3973" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="3979:4165" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="4238:4499" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="4505:4724" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="4795:5030" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="5036:5124" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="5198:5327" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="5362:5401" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="5432:5512" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="5571:6566" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="6572:6656" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="6697:6769" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="6775:6859" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="6900:7225" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="7281:7638" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="7644:7726" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="7766:7836" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="7842:7924" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="7964:8158" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="8164:8302" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="8347:8620" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="8626:8764" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="8801:9216" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="9222:9338" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="9386:9819" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="9825:10038" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="10081:10668" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="10674:10921" placeholder="/**...*/" />
-            <marker date="1221328179000" expanded="true" signature="10998:11897" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="11925:11975" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="12050:12491" placeholder="{...}" />
-            <marker date="1221328179000" expanded="true" signature="12591:12975" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/serine/SerineAgent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="193" column="38" selection-start="6554" selection-end="6554" vertical-scroll-proportion="0.3511811">
+        <state line="65" column="13" selection-start="2560" selection-end="2560" vertical-scroll-proportion="0.29538462">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/server/standard/adenine/AdenineService.java">
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/Method2Instruction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="130" column="22" selection-start="5250" selection-end="5250" vertical-scroll-proportion="0.68818897">
+        <state line="89" column="14" selection-start="3513" selection-end="3513" vertical-scroll-proportion="0.2944882">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/core/CoreLoader.java">
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/MethodInstruction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="1" selection-start="1595" selection-end="1595" vertical-scroll-proportion="0.018461538">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/JavaByteCodeUtilities.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="62" selection-start="1941" selection-end="1941" vertical-scroll-proportion="0.3023622">
+        <state line="89" column="13" selection-start="3523" selection-end="3523" vertical-scroll-proportion="0.2944882">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/Interpreter.java">
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ModelInstruction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="776" column="19" selection-start="26646" selection-end="26646" vertical-scroll-proportion="0.33228347">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/Console.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="212" column="0" selection-start="7885" selection-end="7885" vertical-scroll-proportion="1.3354331">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/compilers/javaByteCode/CodeFrame.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="0" selection-start="1340" selection-end="1340" vertical-scroll-proportion="0.018461538">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/standard/antBuild.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="196" column="55" selection-start="8172" selection-end="8172" vertical-scroll-proportion="0.7948304">
+        <state line="95" column="14" selection-start="3591" selection-end="3591" vertical-scroll-proportion="0.2944882">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/Haystack.java">
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/QueryInstruction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="209" column="12" selection-start="7440" selection-end="7440" vertical-scroll-proportion="0.3511811">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/interpreter/DebugDisplay.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="38" selection-start="1525" selection-end="1525" vertical-scroll-proportion="0.13228346">
+        <state line="70" column="13" selection-start="2730" selection-end="2730" vertical-scroll-proportion="0.2944882">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/content/ContentClient.java">
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/RDFNodeInstruction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="37" selection-start="6563" selection-end="6563" vertical-scroll-proportion="0.018897638">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="65" column="14" selection-start="2561" selection-end="2561" vertical-scroll-proportion="0.29538462">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/standard/src/resource/data/ozone/frame/trail.gif">
-      <provider selected="true" editor-type-id="images">
-        <state />
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ResourceInstruction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="64" column="13" selection-start="2520" selection-end="2520" vertical-scroll-proportion="0.29538462">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/ReturnInstruction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="14" selection-start="2641" selection-end="2641" vertical-scroll-proportion="0.2944882">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/StringInstruction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="64" column="14" selection-start="2519" selection-end="2519" vertical-scroll-proportion="0.29538462">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/VarInstruction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="14" selection-start="2805" selection-end="2805" vertical-scroll-proportion="0.2944882">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WhileInstruction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="64" column="14" selection-start="2519" selection-end="2519" vertical-scroll-proportion="0.2944882">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/instructions/WithInstruction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="64" column="14" selection-start="2518" selection-end="2518" vertical-scroll-proportion="0.2944882">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/GenerateUserID.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="42" column="0" selection-start="1649" selection-end="1649" vertical-scroll-proportion="0.18897638">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/standard/src/java/edu/mit/lcs/haystack/SystemProperties.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="61" column="0" selection-start="1909" selection-end="1909" vertical-scroll-proportion="0.33228347">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/java/edu/mit/lcs/haystack/adenine/parser/BlockException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="0" selection-start="1360" selection-end="1360" vertical-scroll-proportion="0.14769231">
+          <folding />
+        </state>
       </provider>
     </entry>
   </component>

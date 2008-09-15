@@ -102,7 +102,7 @@ public class ForInInstruction implements IInstructionHandler {
 	}
 
 	/**
-	 * @see InstructionHandler#evaluate(Resource, Environment, DynamicEnvironment)
+	 * @see IInstructionHandler#evaluate(Resource, Environment, DynamicEnvironment)
 	 */
 	public Object evaluate(Resource res, Environment env, DynamicEnvironment denv)
 		throws AdenineException {

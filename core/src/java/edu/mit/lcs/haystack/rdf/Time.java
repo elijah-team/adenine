@@ -219,7 +219,7 @@ public class Time implements java.io.Serializable {
     /**
      * stringify method returns the time as it would be in GMT, only accurate to the
      * second...millis probably get lost.
-     * @return
+     * @return String in Zulu format
      */
     public String toString() {
         if(_value==null) {

@@ -87,7 +87,7 @@ public class Method2Instruction implements IInstructionHandler {
 	}
 
 	/**
-	 * @see InstructionHandler#evaluate(Resource, Environment, DynamicEnvironment)
+	 * @see IInstructionHandler#evaluate(Resource, Environment, DynamicEnvironment)
 	 */
 	public Object evaluate(Resource instruction, Environment env, DynamicEnvironment denv)
 		throws AdenineException {

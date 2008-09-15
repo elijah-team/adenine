@@ -45,7 +45,7 @@ import java.util.ListIterator;
 public class ImportGenerator implements IInstructionGenerator {
 
 	/**
-	 * @see IInstructionGenerator#generateInstruction(Compiler, Token, HashMap, Iterator, Iterator)
+	 * @see IInstructionGenerator#generateInstruction(Compiler, Token, HashMap, ListIterator, ListIterator)
 	 */
 	public ExistentialExpression generateInstruction(
 		Compiler compiler,

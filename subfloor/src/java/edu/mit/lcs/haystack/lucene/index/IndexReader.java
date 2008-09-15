@@ -219,7 +219,7 @@ public abstract class IndexReader {
    *  in a given vectorized field.
    *  If no such fields existed, the method returns null.
    *
-   * @see Field#isTermVectorStored()
+   * @see edu.mit.lcs.haystack.lucene.document.Field#isTermVectorStored()
    */
   abstract public TermFreqVector[] getTermFreqVectors(int docNumber)
           throws IOException;
@@ -229,7 +229,7 @@ public abstract class IndexReader {
    *  the specified field of this document, if the field had storeTermVector
    *  flag set.  If the flag was not set, the method returns null.
    *
-   * @see Field#isTermVectorStored()
+   * @see edu.mit.lcs.haystack.lucene.document.Field#isTermVectorStored()
    */
   abstract public TermFreqVector getTermFreqVector(int docNumber, String field)
           throws IOException;
@@ -288,21 +288,21 @@ public abstract class IndexReader {
   /** Returns the byte-encoded normalization factor for the named field of
    * every document.  This is used by the search code to score documents.
    *
-   * @see Field#setBoost(float)
+   * @see edu.mit.lcs.haystack.lucene.document.Field#setBoost(float)
    */
   public abstract byte[] norms(String field) throws IOException;
 
   /** Reads the byte-encoded normalization factor for the named field of every
    *  document.  This is used by the search code to score documents.
    *
-   * @see Field#setBoost(float)
+   * @see edu.mit.lcs.haystack.lucene.document.Field#setBoost(float)
    */
   public abstract void norms(String field, byte[] bytes, int offset)
     throws IOException;
 
   /** Expert: Resets the normalization factor for the named field of the named
    * document.  The norm represents the product of the field's {@link
-   * Field#setBoost(float) boost} and its {@link Similarity#lengthNorm(String,
+   * edu.mit.lcs.haystack.lucene.document.Field#setBoost(float) boost} and its {@link Similarity#lengthNorm(String,
           * int) length normalization}.  Thus, to preserve the length normalization
    * values when resetting this, one should base the new value upon the old.
    *

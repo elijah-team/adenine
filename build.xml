@@ -76,7 +76,6 @@
   
   <!-- Global Libraries -->
   
-  
   <!-- Modules -->
   
   
@@ -99,12 +98,10 @@
   </path>
   
   <path id="haystack_file_system.module.classpath">
-    <path refid="library.eclipse.classpath"/>
     <path refid="${module.jdk.classpath.haystack_file_system}"/>
   </path>
   
   <path id="haystack_file_system.runtime.module.classpath">
-    <path refid="library.eclipse.classpath"/>
     <path refid="${module.jdk.classpath.haystack_file_system}"/>
     <pathelement location="${haystack_file_system.output.dir}"/>
     <pathelement location="${haystack_file_system.testoutput.dir}"/>
@@ -266,7 +263,6 @@
     <pathelement location="${module.haystack_web_operation.basedir}/web/lib/java/xalan.jar"/>
     <pathelement location="${module.haystack_web_operation.basedir}/web/lib/java/lapis.jar"/>
     <pathelement location="${module.haystack_web_operation.basedir}/web/lib/win32/swt.jar"/>
-    <path refid="library.eclipse.classpath"/>
     <path refid="${module.jdk.classpath.haystack_web_operation}"/>
   </path>
   
@@ -274,7 +270,6 @@
     <pathelement location="${module.haystack_web_operation.basedir}/web/lib/java/xalan.jar"/>
     <pathelement location="${module.haystack_web_operation.basedir}/web/lib/java/lapis.jar"/>
     <pathelement location="${module.haystack_web_operation.basedir}/web/lib/win32/swt.jar"/>
-    <path refid="library.eclipse.classpath"/>
     <path refid="${module.jdk.classpath.haystack_web_operation}"/>
     <pathelement location="${haystack_web_operation.output.dir}"/>
     <pathelement location="${haystack_web_operation.testoutput.dir}"/>
@@ -496,7 +491,7 @@
     <pathelement location="${module.haystack_standard_functionality.basedir}/standard/src/adenine"/>
   </path>
   
-  <fileset id="subfloor_jars.files" dir="${module.haystack_standard_functionality.basedir}/subfloor/jars" includes="*.jar"/>
+  <fileset id="subfloor.jars" dir="${module.haystack_standard_functionality.basedir}/subfloor/jars" includes="*.jar"/>
   
   <patternset id="excluded.from.module.haystack_standard_functionality">
     <patternset refid="ignored.files"/>
@@ -554,7 +549,7 @@
   </target>
   
   <target name="jar" depends="init, compile.module.haystack_file_system, compile.module.haystack_subfloor, compile.module.haystack_web_operation, compile.module.haystack_core, compile.module.haystack_standard_functionality" description="Make adenine.jar">
-     <pathconvert pathsep=" " dirsep="/" refid="subfloor_jars.files" property="external.jars">
+     <pathconvert pathsep=" " dirsep="/" refid="subfloor.jars" property="external.jars">
           <map from="${module.haystack_standard_functionality.basedir}/" to=""/>
      </pathconvert>
      <jar destfile="adenine.jar" index="yes">
@@ -564,7 +559,7 @@
        <manifest>
           <attribute name="Main-Class" value="edu.mit.lcs.haystack.adenine.Console"/>
 <!-- 
-    This doesn't seem to be working.
+    This Class-Path thing doesn't seem to be working.
           <attribute name="Class-Path" value="${external.jars}"/>
  -->
        </manifest>
