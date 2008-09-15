@@ -558,9 +558,23 @@ public class Compiler implements ICompiler {
 		
 		return ee;
 	}
-	
-	boolean isURIIdentifier(String str) {
-		return (str.indexOf(":") != -1) || (str.indexOf("?") == 0);
+
+    /**
+     *  An identifier that denotes a URI is one that:
+     *    A) contains a ":",
+     *    B) begins with a "?" (a placeholder),
+     *    C) is "^" (the @base value).
+     *  I (<mailto:jim@pagesmiths.com>) added the "^" case so that compileBlock/compileToken
+     *  would work properly.  Apparently this case didn't arise before because folks had only
+     *  used @base and ^ with top-level compilation.  But the IFCX Wings and it's JSR-223
+     *  ScriptEngine work via Interpreter.eval/compileBlock but also supply an implied @base
+     *  so that ^ will work.
+     *  This change appears to be the right thing because I looked at all the uses of isURIIdentifier
+     *  and they all look like they would want ^ to appear as an URI (because they all seem to be
+     *  checking to make sure the id is *not* a URI). 
+     */
+    boolean isURIIdentifier(String str) {
+		return (str.indexOf(":") != -1) || (str.indexOf("?") == 0) || (str.equals("^"));
 	}
 	
 	public Resource identifierToResource(int line, String str, HashMap prefixes) throws AdenineException {
